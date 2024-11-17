@@ -1,0 +1,17 @@
+services:
+
+  db:
+    env_file:
+      - .env
+    container_name: nri_db
+    hostname: ${DB_HOST}
+    image: postgres:14.2
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - ./postgres:/var/lib/postgresql/data

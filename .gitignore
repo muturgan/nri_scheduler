@@ -1,3 +1,6 @@
+# local development db
+postgres
+
 # dotenv environment variables file
 .env
 .env.test
