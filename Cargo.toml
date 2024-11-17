@@ -1,6 +1,6 @@
 [package]
-name = "my-rust-template"
-description = "template for new rust projects"
+name = "nri_scheduler"
+description = "my outstanding trpg scheduler"
 version = "0.1.0"
 edition = "2021"
 

@@ -9,7 +9,7 @@ dev() {
 }
 
 start_release() {
-	export $(cat .env | grep -v '^#' | xargs) && ./target/release/my-rust-template
+	export $(cat .env | grep -v '^#' | xargs) && ./target/release/nri_scheduler
 }
 
 start() {
