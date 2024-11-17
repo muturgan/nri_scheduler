@@ -1,0 +1,20 @@
+[package]
+name = "my-rust-template"
+description = "template for new rust projects"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+
+[dependencies]
+
+[dev-dependencies]
+cargo-husky = { version = "^1.5.0", default-features = false, features = ["user-hooks"] }
+
+[lints.clippy]
+needless_return = "allow"

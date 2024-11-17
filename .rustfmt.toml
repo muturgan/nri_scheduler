@@ -1,0 +1,5 @@
+tab_spaces = 3
+hard_tabs = true
+style_edition = "2024"
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
