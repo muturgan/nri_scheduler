@@ -69,7 +69,7 @@ pub(crate) fn hash_password(password: &str) -> CoreResult<String> {
 	let password_hash = ARGON
 		.hash_password(password.as_bytes(), &salt)
 		.map_err(|e| {
-			eprintln!("Ошибка хэширования пароля: {}", e);
+			eprintln!("Ошибка хэширования пароля: {e}");
 			AppError::ScenarioError(String::from("Ошибка хэширования пароля"), None)
 		})?;
 
@@ -80,14 +80,14 @@ pub(crate) fn hash_password(password: &str) -> CoreResult<String> {
 pub(crate) async fn verify_password(password: &str, password_hash: String) -> CoreResult {
 	let full_hash = format!("$argon2id$v=19$m=19456,t=2,p=1${password_hash}");
 	let parsed_hash = PasswordHash::new(&full_hash).map_err(|e| {
-		eprintln!("Ошибка парсига пароля: {}", e);
+		eprintln!("Ошибка парсига пароля: {e}");
 		AppError::system_error("Ошибка парсига пароля")
 	})?;
 
 	ARGON
 		.verify_password(password.as_bytes(), &parsed_hash)
 		.map_err(|e| {
-			println!("Неверный пароль: {}", e);
+			println!("Неверный пароль: {e}");
 			AppError::unauthorized("Неверный пароль")
 		})?;
 
@@ -145,8 +145,10 @@ pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
 		exp: expiration_time,
 	};
 
-	let token = encode(&JWT_HEADER, &claims, &PRIVATE_KEY)
-		.map_err(|_| AppError::system_error("Ошибка формирования JWT"))?;
+	let token = encode(&JWT_HEADER, &claims, &PRIVATE_KEY).map_err(|e| {
+		println!("Ошибка формирования JWT: {e}");
+		AppError::system_error("Ошибка формирования JWT")
+	})?;
 
 	Ok(token)
 }
