@@ -1,6 +1,9 @@
 # local development db
 postgres
 
+# crypto keys
+*.pem
+
 # dotenv environment variables file
 .env
 .env.test

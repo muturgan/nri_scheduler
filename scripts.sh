@@ -45,4 +45,14 @@ full_check() {
 	check && clippy && fmt;
 }
 
+ecdsa() {
+	openssl ecparam -genkey -noout -name prime256v1 | openssl pkcs8 -topk8 -nocrypt -out private_key.pem
+	openssl ec -in private_key.pem -pubout -out public_key.pem
+}
+
+ed25519() {
+	openssl genpkey -algorithm ED25519 -out private_key.pem;
+	openssl pkey -in private_key.pem -pubout -out public_key.pem;
+}
+
 "$@"
