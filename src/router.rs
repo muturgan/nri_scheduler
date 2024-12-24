@@ -17,6 +17,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 				.merge(
 					Router::new()
 						.route("/check", get(H::who_i_am))
+						.route("/companies", post(H::companies::add_company))
 						.layer(middleware::from_fn(auth::auth_middleware)),
 				),
 		)

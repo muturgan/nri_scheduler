@@ -1,6 +1,7 @@
 mod pool;
 
 use sqlx::{Error as EqlxError, PgPool};
+use uuid::Uuid;
 
 use super::super::Store;
 use crate::{
@@ -18,7 +19,6 @@ impl From<EqlxError> for AppError {
 	}
 }
 
-#[derive(Clone)]
 pub struct PostgresStore {
 	pool: PgPool,
 }
@@ -89,6 +89,26 @@ impl Store for PostgresStore {
 		})?;
 
 		Ok(new_loc_id)
+	}
+
+	async fn add_company(
+		&self,
+		master: Uuid,
+		name: &str,
+		system: &str,
+		descr: &Option<String>,
+	) -> CoreResult<RecordId> {
+		let new_comp_id = sqlx::query_scalar::<_, RecordId>(
+			"INSERT INTO companies (master, name, system, description) values ($1, $2, $3, $4) returning id;",
+		)
+		.bind(master)
+		.bind(name)
+		.bind(system)
+		.bind(descr)
+		.fetch_one(&self.pool)
+		.await?;
+
+		Ok(new_comp_id)
 	}
 
 	async fn close(&self) {
