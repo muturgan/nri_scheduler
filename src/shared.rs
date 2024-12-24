@@ -28,16 +28,15 @@ impl Type<Postgres> for RecordId {
 	}
 }
 
-impl<'r> Decode<'r, sqlx::Postgres> for RecordId {
+impl<'r> Decode<'r, Postgres> for RecordId {
 	fn decode(value: PgValueRef<'r>) -> Result<Self, BoxDynError> {
-		let uuid = <Uuid as Decode<sqlx::Postgres>>::decode(value)?;
-
+		let uuid = <Uuid as Decode<Postgres>>::decode(value)?;
 		Ok(RecordId(uuid))
 	}
 }
 
 impl Encode<'_, Postgres> for RecordId {
 	fn encode_by_ref(&self, buf: &mut PgArgumentBuffer) -> Result<IsNull, BoxDynError> {
-		<Uuid as Encode<sqlx::Postgres>>::encode_by_ref(&self.0, buf)
+		<Uuid as Encode<Postgres>>::encode_by_ref(&self.0, buf)
 	}
 }
