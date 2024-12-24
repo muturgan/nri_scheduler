@@ -1,5 +1,6 @@
 use ::std::{io::Error as IoError, sync::Arc};
 use nri_scheduler::{config, graceful_shutdown::shutdown_signal, repository::Repository, router};
+use tokio::net::TcpListener as AsyncTcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), IoError> {
@@ -8,7 +9,7 @@ async fn main() -> Result<(), IoError> {
 	let app = router::create_router(repo.clone());
 
 	let addr = config::get_http_host_to_serve();
-	let listener = tokio::net::TcpListener::bind(addr).await?;
+	let listener = AsyncTcpListener::bind(addr).await?;
 
 	println!(":) Server started successfully");
 
