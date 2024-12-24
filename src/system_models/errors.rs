@@ -44,16 +44,6 @@ impl AppError {
 		AppError::UnauthorizedError(message.into())
 	}
 
-	pub fn user_already_exists<S: Into<String> + AsRef<str>>(phone: S) -> Self {
-		AppError::ScenarioError(
-			format!(
-				"Пользователь с номером телефона {} уже существует",
-				phone.as_ref()
-			),
-			Some(phone.into()),
-		)
-	}
-
 	pub fn promo_not_exists() -> Self {
 		AppError::ScenarioError(String::from("Данный промокод не существует"), None)
 	}
@@ -63,6 +53,10 @@ impl AppError {
 			String::from("Данный промокод уже был активирован ранее"),
 			None,
 		)
+	}
+
+	pub fn scenario_error(msg: impl ToString, ctx: Option<impl ToString>) -> Self {
+		AppError::ScenarioError(msg.to_string(), ctx.map(|c| c.to_string()))
 	}
 
 	pub fn system_error<S: ToString>(msg: S) -> Self {
