@@ -40,19 +40,8 @@ impl Display for AppError {
 impl Error for AppError {}
 
 impl AppError {
-	pub fn unauthorized<S: Into<String>>(message: S) -> Self {
+	pub fn unauthorized(message: impl Into<String>) -> Self {
 		AppError::UnauthorizedError(message.into())
-	}
-
-	pub fn promo_not_exists() -> Self {
-		AppError::ScenarioError(String::from("Данный промокод не существует"), None)
-	}
-
-	pub fn promo_already_activated() -> Self {
-		AppError::ScenarioError(
-			String::from("Данный промокод уже был активирован ранее"),
-			None,
-		)
 	}
 
 	pub fn scenario_error(msg: impl ToString, ctx: Option<impl ToString>) -> Self {
