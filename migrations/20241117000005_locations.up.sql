@@ -1,6 +1,6 @@
 CREATE TABLE "locations" (
 	"id"           UUID  DEFAULT uuid_v6(),
-	"name"         TEXT  NOT NULL,
+	"name"         TEXT  NOT NULL UNIQUE,
 	"address"      TEXT,
 	"description"  TEXT,
 

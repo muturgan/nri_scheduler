@@ -1,3 +1,5 @@
+pub mod locations;
+
 use ::std::sync::Arc;
 use axum::{
 	Extension,
@@ -9,7 +11,10 @@ use uuid::Uuid;
 
 use crate::{
 	auth, config,
-	dto::{Dto, RegistrationDto, SignInDto},
+	dto::{
+		Dto,
+		auth::{RegistrationDto, SignInDto},
+	},
 	repository::Repository,
 	system_models::{AppError, AppResponse, AppResult},
 };

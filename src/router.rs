@@ -4,7 +4,7 @@ use axum::{
 	routing::{get, post},
 };
 
-use crate::{auth, handler as H, repository::Repository};
+use crate::{auth, handlers as H, repository::Repository};
 
 pub fn create_router(repo: Arc<Repository>) -> Router {
 	return Router::new()
@@ -13,6 +13,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 			Router::new()
 				.route("/registration", post(H::registration))
 				.route("/signin", post(H::sign_in))
+				.route("/locations", post(H::locations::add_location))
 				.merge(
 					Router::new()
 						.route("/check", get(H::who_i_am))

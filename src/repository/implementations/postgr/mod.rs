@@ -6,6 +6,7 @@ use super::super::Store;
 use crate::{
 	auth,
 	repository::models::UserForAuth,
+	shared::RecordId,
 	system_models::{AppError, CoreResult},
 };
 
@@ -49,6 +50,24 @@ impl Store for PostgresStore {
 				.await?;
 
 		Ok(may_be_user)
+	}
+
+	async fn add_location(
+		&self,
+		name: &str,
+		address: &Option<String>,
+		descr: &Option<String>,
+	) -> CoreResult<RecordId> {
+		let new_loc_id = sqlx::query_scalar::<_, RecordId>(
+			"INSERT INTO locations (name, address, description) values ($1, $2, $3) returning id;",
+		)
+		.bind(name)
+		.bind(address)
+		.bind(descr)
+		.fetch_one(&self.pool)
+		.await?;
+
+		Ok(new_loc_id)
 	}
 
 	async fn close(&self) {
