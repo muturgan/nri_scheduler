@@ -17,6 +17,7 @@ axum = "0.7.9"
 axum-extra = { version = "0.9.6", features = ["cookie"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 derive-masked = "0.1.0"
+futures = "0.3.31"
 jsonwebtoken = "9.3.0"
 lazy_static = "1.5.0"
 rand = "0.8.5"

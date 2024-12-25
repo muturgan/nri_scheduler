@@ -22,7 +22,7 @@ pub struct User {
 #[derive(Debug, Deserialize, Serialize, FromRow)]
 pub struct Company {
 	pub id: Uuid,
-	pub master: Option<Uuid>,
+	pub master: Uuid,
 	pub name: String,
 	pub system: String,
 	pub description: Option<String>,

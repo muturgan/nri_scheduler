@@ -1,6 +1,6 @@
 CREATE TABLE "companies" (
 	"id"           UUID  DEFAULT uuid_v6(),
-	"master"       UUID  DEFAULT NULL,
+	"master"       UUID  NOT NULL,
 	"name"         TEXT  NOT NULL,
 	"system"       TEXT  NOT NULL,
 	"description"  TEXT,

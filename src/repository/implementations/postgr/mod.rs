@@ -1,12 +1,13 @@
 mod pool;
 
+use chrono::NaiveDateTime;
 use sqlx::{Error as EqlxError, PgPool};
 use uuid::Uuid;
 
 use super::super::Store;
 use crate::{
 	auth,
-	repository::models::UserForAuth,
+	repository::models::{Company, Location, UserForAuth},
 	shared::RecordId,
 	system_models::{AppError, CoreResult},
 };
@@ -64,6 +65,15 @@ impl Store for PostgresStore {
 		Ok(may_be_user)
 	}
 
+	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>> {
+		let may_be_location = sqlx::query_as::<_, Location>("SELECT * FROM locations WHERE id = $1;")
+			.bind(location_id)
+			.fetch_optional(&self.pool)
+			.await?;
+
+		Ok(may_be_location)
+	}
+
 	async fn add_location(
 		&self,
 		name: &str,
@@ -91,6 +101,15 @@ impl Store for PostgresStore {
 		Ok(new_loc_id)
 	}
 
+	async fn get_company_by_id(&self, company_id: Uuid) -> CoreResult<Option<Company>> {
+		let may_be_company = sqlx::query_as::<_, Company>("SELECT * FROM companies WHERE id = $1;")
+			.bind(company_id)
+			.fetch_optional(&self.pool)
+			.await?;
+
+		Ok(may_be_company)
+	}
+
 	async fn add_company(
 		&self,
 		master: Uuid,
@@ -109,6 +128,24 @@ impl Store for PostgresStore {
 		.await?;
 
 		Ok(new_comp_id)
+	}
+
+	async fn add_event(
+		&self,
+		company: Uuid,
+		location: &Option<Uuid>,
+		date: NaiveDateTime,
+	) -> CoreResult<RecordId> {
+		let new_evt_id = sqlx::query_scalar::<_, RecordId>(
+			"INSERT INTO events (company, location, date) values ($1, $2, $3) returning id;",
+		)
+		.bind(company)
+		.bind(location)
+		.bind(date)
+		.fetch_one(&self.pool)
+		.await?;
+
+		Ok(new_evt_id)
 	}
 
 	async fn close(&self) {

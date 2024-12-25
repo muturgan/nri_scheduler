@@ -10,7 +10,6 @@ use crate::{
 
 pub async fn add_company(
 	State(repo): State<Arc<Repository>>,
-
 	Extension(user_id): Extension<Uuid>,
 	Dto(body): Dto<NewCompanyDto>,
 ) -> AppResult {

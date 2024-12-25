@@ -1,4 +1,5 @@
 pub mod companies;
+pub mod events;
 pub mod locations;
 
 use ::std::sync::Arc;
