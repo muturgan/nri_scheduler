@@ -3,6 +3,7 @@ use ::std::{
 	fmt::{Display, Formatter, Result as FmtResult},
 };
 use axum::response::{IntoResponse, Response};
+use serde_json::Error as JsonSerializationError;
 
 use super::AppResponse;
 
@@ -50,6 +51,12 @@ impl AppError {
 
 	pub fn system_error<S: ToString>(msg: S) -> Self {
 		AppError::SystemError(msg.to_string())
+	}
+}
+
+impl From<JsonSerializationError> for AppError {
+	fn from(err: JsonSerializationError) -> Self {
+		return AppError::system_error(err);
 	}
 }
 

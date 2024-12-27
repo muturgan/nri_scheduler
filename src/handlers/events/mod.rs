@@ -1,13 +1,34 @@
 use ::std::sync::Arc;
-use axum::{Extension, extract::State};
+use axum::{
+	Extension,
+	extract::{Query, State},
+};
 use futures::try_join;
 use uuid::Uuid;
 
 use crate::{
-	dto::{Dto, event::NewEventDto},
+	dto::{
+		Dto,
+		event::{NewEventDto, ReadEventsDto},
+	},
 	repository::Repository,
 	system_models::{AppError, AppResponse, AppResult},
 };
+
+pub async fn read_event(
+	State(repo): State<Arc<Repository>>,
+	Extension(_user_id): Extension<Option<Uuid>>,
+	Query(query): Query<ReadEventsDto>,
+) -> AppResult {
+	let events = repo.read_events(query.date_from, query.date_to).await?;
+
+	let json_value = serde_json::to_value(&events)?;
+
+	return Ok(AppResponse::scenario_success(
+		"Список событий",
+		Some(json_value),
+	));
+}
 
 pub async fn add_event(
 	State(repo): State<Arc<Repository>>,

@@ -132,6 +132,43 @@ pub(crate) async fn auth_middleware(
 	next.run(req).await
 }
 
+pub(crate) async fn optional_auth_middleware(
+	cookie_jar: CookieJar,
+	mut req: Request<Body>,
+	next: Next,
+) -> Response {
+	let (cookie_key, _) = config::get_cookie_params();
+
+	let cookie_token = cookie_jar.get(cookie_key).map(|cookie| cookie.value());
+
+	let Some(jwt) = cookie_token else {
+		req.extensions_mut().insert(None::<Uuid>);
+
+		return next.run(req).await;
+	};
+
+	let Ok(TokenData { claims, .. }) =
+		decode_and_verify::<Claims>(jwt, &PUBLIC_KEY, &JWT_VALIDATION)
+	else {
+		return AppError::unauthorized("Неверный пароль").into_response();
+	};
+
+	let Ok(now) = SystemTime::now()
+		.duration_since(UNIX_EPOCH)
+		.map(|dur| dur.as_secs())
+	else {
+		return AppResponse::system_error("Time went backwards", None).into_response();
+	};
+
+	if now >= claims.exp {
+		return AppError::SessionExpired.into_response();
+	}
+
+	req.extensions_mut().insert(Some(claims.sub));
+
+	next.run(req).await
+}
+
 pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
 	// Время истечения срока действия токена (текущее время + 1 час)
 	let expiration_time = SystemTime::now()

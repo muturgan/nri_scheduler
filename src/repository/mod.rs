@@ -3,7 +3,7 @@ pub mod models;
 
 use chrono::NaiveDateTime;
 use implementations::PostgresStore;
-use models::{Company, Location, UserForAuth};
+use models::{Company, Event, Location, UserForAuth};
 use uuid::Uuid;
 
 use crate::{shared::RecordId, system_models::CoreResult};
@@ -30,6 +30,12 @@ trait Store {
 		system: &str,
 		descr: &Option<String>,
 	) -> CoreResult<RecordId>;
+
+	async fn read_events(
+		&self,
+		date_from: NaiveDateTime,
+		date_to: NaiveDateTime,
+	) -> CoreResult<Vec<Event>>;
 
 	async fn add_event(
 		&self,
@@ -96,6 +102,14 @@ impl Repository {
 		descr: &Option<String>,
 	) -> CoreResult<RecordId> {
 		return self.store.add_company(master, name, system, descr).await;
+	}
+
+	pub(crate) async fn read_events(
+		&self,
+		date_from: NaiveDateTime,
+		date_to: NaiveDateTime,
+	) -> CoreResult<Vec<Event>> {
+		return self.store.read_events(date_from, date_to).await;
 	}
 
 	pub(crate) async fn add_event(

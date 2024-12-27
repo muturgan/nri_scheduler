@@ -7,7 +7,7 @@ use uuid::Uuid;
 use super::super::Store;
 use crate::{
 	auth,
-	repository::models::{Company, Location, UserForAuth},
+	repository::models::{Company, Event, Location, UserForAuth},
 	shared::RecordId,
 	system_models::{AppError, CoreResult},
 };
@@ -128,6 +128,21 @@ impl Store for PostgresStore {
 		.await?;
 
 		Ok(new_comp_id)
+	}
+
+	async fn read_events(
+		&self,
+		date_from: NaiveDateTime,
+		date_to: NaiveDateTime,
+	) -> CoreResult<Vec<Event>> {
+		let events =
+			sqlx::query_as::<_, Event>("SELECT * FROM events WHERE date >= $1 AND date <= $2;")
+				.bind(date_from)
+				.bind(date_to)
+				.fetch_all(&self.pool)
+				.await?;
+
+		Ok(events)
 	}
 
 	async fn add_event(
