@@ -1,8 +1,5 @@
 use ::std::sync::Arc;
-use axum::{
-	Extension,
-	extract::{Query, State},
-};
+use axum::{Extension, extract::State};
 use futures::try_join;
 use uuid::Uuid;
 
@@ -18,7 +15,7 @@ use crate::{
 pub async fn read_event(
 	State(repo): State<Arc<Repository>>,
 	Extension(_user_id): Extension<Option<Uuid>>,
-	Query(query): Query<ReadEventsDto>,
+	Dto(query): Dto<ReadEventsDto>,
 ) -> AppResult {
 	let events = repo.read_events(query.date_from, query.date_to).await?;
 

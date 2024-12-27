@@ -2,6 +2,7 @@ use ::std::error::Error;
 use axum::{
 	Json, RequestExt, async_trait,
 	extract::{FromRequest, Request, rejection::JsonRejection},
+	http::Method,
 };
 use serde::de::DeserializeOwned;
 
@@ -18,10 +19,25 @@ where
 	type Rejection = AppError;
 
 	async fn from_request(req: Request, _: &S) -> Result<Self, Self::Rejection> {
-		let body = req.extract::<Json<T>, _>().await;
-		match body {
-			Err(err) => Err(handle_json_rejection(err)),
-			Ok(Json(dto)) => Ok(Dto(dto)),
+		match req.method() {
+			&Method::GET => {
+				let query = req.uri().query().unwrap_or_default();
+				let params = serde_urlencoded::from_str::<'_, T>(query);
+				match params {
+					Err(_) => Err(AppError::ScenarioError(
+						"Переданы некорректные параметры запроса".into(),
+						None,
+					)),
+					Ok(dto) => Ok(Dto(dto)),
+				}
+			}
+			_ => {
+				let body = req.extract::<Json<T>, _>().await;
+				match body {
+					Err(err) => Err(handle_json_rejection(err)),
+					Ok(Json(dto)) => Ok(Dto(dto)),
+				}
+			}
 		}
 	}
 }
@@ -33,11 +49,11 @@ fn handle_json_rejection(err: JsonRejection) -> AppError {
 				format!("Передано некорректное тело запроса: {source_err}"),
 				None,
 			),
-			None => AppError::ScenarioError(String::from("Передано некорректное тело запроса"), None),
+			None => AppError::ScenarioError("Передано некорректное тело запроса".into(), None),
 		},
 
 		JsonRejection::JsonSyntaxError(_) => {
-			AppError::ScenarioError(String::from("Передано некорректное тело запроса"), None)
+			AppError::ScenarioError("Передано некорректное тело запроса".into(), None)
 		}
 
 		JsonRejection::MissingJsonContentType(_) => AppError::ScenarioError(
