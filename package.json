@@ -1,0 +1,24 @@
+{
+	"name": "nri_scheduler",
+	"version": "0.1.0",
+	"scripts": {
+		"start": "vite",
+		"force": "vite --force",
+		"build": "tsc && vite build",
+		"preview": "npm run build && vite preview",
+		"tsc": "tsc",
+		"prebuild": "rm -rf static || npx rimraf static"
+	},
+	"dependencies": {
+		"normalize.css": "^8.0.1",
+		"preact": "^10.25.4",
+		"primereact": "^10.8.5"
+	},
+	"devDependencies": {
+		"@preact/preset-vite": "^2.9.3",
+		"@types/node": "^22.10.2",
+		"terser": "^5.37.0",
+		"typescript": "^5.7.2",
+		"vite": "^6.0.6"
+	}
+}

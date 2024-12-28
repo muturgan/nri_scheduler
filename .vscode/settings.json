@@ -1,8 +1,15 @@
 {
-  "[rust]": {
-    "editor.inlayHints.enabled": "offUnlessPressed",
-    "editor.defaultFormatter": "rust-lang.rust-analyzer",
-    "editor.formatOnSave": true
-  },
-  "rust-analyzer.rustfmt.extraArgs": ["+nightly"]
+	"[rust]": {
+		"editor.inlayHints.enabled": "offUnlessPressed",
+		"editor.defaultFormatter": "rust-lang.rust-analyzer",
+		"editor.formatOnSave": true
+	},
+	"rust-analyzer.rustfmt.extraArgs": ["+nightly"],
+
+
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"typescript.preferences.importModuleSpecifier": "relative"
 }

@@ -1,6 +1,10 @@
 # local development db
 postgres
 
+# preact
+node_modules
+static
+
 # crypto keys
 *.pem
 

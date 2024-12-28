@@ -3,11 +3,13 @@ use axum::{
 	Router, middleware,
 	routing::{get, post},
 };
+#[cfg(debug_assertions)]
+use tower_http::services::{ServeDir, ServeFile};
 
 use crate::{auth, handlers as H, repository::Repository};
 
 pub fn create_router(repo: Arc<Repository>) -> Router {
-	return Router::new()
+	let router = Router::new()
 		.nest(
 			"/api",
 			Router::new()
@@ -28,4 +30,11 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 				),
 		)
 		.with_state(repo);
+
+	#[cfg(debug_assertions)]
+	let router = router
+		.nest_service("/", ServeFile::new("static/index.html"))
+		.nest_service("/assets", ServeDir::new("static/assets"));
+
+	return router;
 }

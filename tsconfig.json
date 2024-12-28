@@ -1,0 +1,38 @@
+{
+	"compilerOptions": {
+    "rootDir": "./client",
+		"outDir": "./static",
+		"target": "ES2022",
+		"useDefineForClassFields": true,
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ES2022"
+		],
+		"module": "ES2020",
+		"allowJs": true,
+		"skipLibCheck": true,
+
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+
+		"paths": {
+			"react": ["./node_modules/preact/compat"],
+			"react-dom": ["./node_modules/preact/compat"],
+			"react/jsx-runtime": ["./node_modules/preact/jsx-runtime"]
+		}
+	},
+	"include": [
+		"client"
+	],
+}
