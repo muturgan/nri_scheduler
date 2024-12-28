@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-    "rootDir": "./client",
+		"rootDir": "./client",
 		"outDir": "./static",
 		"target": "ES2022",
 		"useDefineForClassFields": true,
