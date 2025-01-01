@@ -1,0 +1,33 @@
+.registration-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+.registration-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.p-field {
+    margin-bottom: 1rem;
+}
+
+.p-fluid .p-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.p-fluid .p-field .p-inputtext,
+.p-fluid .p-field .p-password {
+    width: 100%;
+}
+
+.p-button {
+    width: 100%;
+}

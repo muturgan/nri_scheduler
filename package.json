@@ -12,6 +12,7 @@
 	"dependencies": {
 		"normalize.css": "^8.0.1",
 		"preact": "^10.25.4",
+		"primeflex": "^3.3.1",
 		"primereact": "^10.8.5"
 	},
 	"devDependencies": {
