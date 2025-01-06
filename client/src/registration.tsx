@@ -41,7 +41,7 @@ export const RegistrationPage = () => {
 								name="name"
 								placeholder="Введите ваше имя"
 								value={formData.name}
-								onChange={(e) => {}}
+								onChange={handleChange}
 								required
 							/>
 
