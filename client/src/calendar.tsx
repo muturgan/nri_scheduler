@@ -1,24 +1,16 @@
-import { Calendar as FullCalendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import ruLocale from '@fullcalendar/core/locales/ru';
-import { h } from '@fullcalendar/core/preact'
-import { useEffect, useRef } from 'preact/hooks';
+import '@schedule-x/theme-default/dist/index.css';
+
+import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/preact';
+import { createViewMonthGrid } from '@schedule-x/calendar';
+
+import { h } from 'preact';
 
 export const Calendar = () => {
-	const calendarRef = useRef<HTMLDivElement>(null);
+	const calendar = useCalendarApp({
+		views: [
+			createViewMonthGrid(),
+		],
+	});
 
-	useEffect(() => {
-		const calendarEl = calendarRef.current;
-		if (calendarEl !== null) {
-			const calendar = new FullCalendar(calendarEl, {
-					plugins: [dayGridPlugin],
-					initialView: 'dayGridMonth',
-					locale: ruLocale,
-			});
-
-			calendar.render();
-		}
-	}, []);
-
-	return <div ref={calendarRef}></div>;
+	return <ScheduleXCalendar calendarApp={calendar} />;
 };
