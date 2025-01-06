@@ -1,6 +1,6 @@
 use ::std::error::Error;
 use axum::{
-	Json, RequestExt, async_trait,
+	Json, RequestExt,
 	extract::{FromRequest, Request, rejection::JsonRejection},
 	http::Method,
 };
@@ -10,7 +10,6 @@ use crate::system_models::AppError;
 
 pub struct Dto<T>(pub T);
 
-#[async_trait]
 impl<T, S> FromRequest<S> for Dto<T>
 where
 	T: 'static + DeserializeOwned,
