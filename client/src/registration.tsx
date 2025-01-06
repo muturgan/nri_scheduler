@@ -10,14 +10,13 @@ export const RegistrationPage = () => {
 		password: '',
 	});
 
-	const handleChange = (e: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
-		// @ts-ignore
-		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name]: value,
-		});
-	};
+const handleChange = (e: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+	const { name, value } = e.target as HTMLInputElement;
+	setFormData({
+		...formData,
+		[name]: value,
+	});
+};
 
 	const handleSubmit = (e: h.JSX.TargetedSubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
