@@ -1,13 +1,9 @@
-import 'normalize.css/normalize.css'
-import 'primeflex/primeflex.css';
-import 'primereact/resources/themes/saga-green/theme.css';
+import 'purecss/build/pure.css';
+import './index.css';
 
 import { h, render } from 'preact';
-import { PrimeReactProvider } from 'primereact/api';
 import { RegistrationPage } from './registration';
 
-const App = <PrimeReactProvider>
-	<RegistrationPage />
-</PrimeReactProvider>;
+const App = <RegistrationPage />;
 
 render(App, document.querySelector('body')!);

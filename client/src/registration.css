@@ -1,33 +1,46 @@
 .registration-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
-    background-color: #f4f4f4;
+	padding: 20px;
+	max-width: 1200px;
+	margin: 0 auto;
 }
 
-.registration-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.pure-form-stacked {
+	background: #f9f9f9;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.p-field {
-    margin-bottom: 1rem;
+.pure-form-stacked legend {
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 20px;
+	color: #333;
 }
 
-.p-fluid .p-field label {
-    display: block;
-    margin-bottom: 0.5rem;
+.pure-form-stacked label {
+	font-weight: bold;
+	margin-top: 10px;
 }
 
-.p-fluid .p-field .p-inputtext,
-.p-fluid .p-field .p-password {
-    width: 100%;
+.pure-form-stacked input {
+	width: 100%;
+	padding: 10px;
+	margin-top: 5px;
+	margin-bottom: 15px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
 }
 
-.p-button {
-    width: 100%;
+.pure-button-primary {
+	background-color: #0078e7;
+	color: white;
+	width: 100%;
+	padding: 10px;
+	border-radius: 4px;
+	font-size: 1em;
+}
+
+.pure-button-primary:hover {
+	background-color: #005bb5;
 }

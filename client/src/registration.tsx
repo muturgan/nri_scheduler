@@ -1,82 +1,81 @@
-import { h } from 'preact';
-import { TargetedEvent, useState } from 'react';
-import { Card } from 'primereact/card';
-import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
-import { Button } from 'primereact/button';
-import { Message } from 'primereact/message';
 import './registration.css';
 
+import { h } from 'preact';
+import { useState } from 'react';
+
 export const RegistrationPage = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
+	const [formData, setFormData] = useState({
+		name: '',
+		email: '',
+		password: '',
+	});
 
-    const handleSubmit = (e: SubmitEvent) => {
-        e.preventDefault();
-        if (password !== confirmPassword) {
-            setError('Пароли не совпадают');
-            return;
-        }
-        // Здесь можно добавить логику для отправки данных на сервер
-        console.log('Username:', username);
-        console.log('Email:', email);
-        console.log('Password:', password);
-        setError('');
-    };
+	const handleChange = (e: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+		// @ts-ignore
+		const { name, value } = e.target;
+		setFormData({
+			...formData,
+			[name]: value,
+		});
+	};
 
-    return (
-        <div className="registration-page">
-            <Card title="Регистрация" className="registration-card">
-                <form onSubmit={handleSubmit}>
-                    <div className="p-fluid">
-                        <div className="p-field">
-                            <label htmlFor="username">Имя пользователя</label>
-                            <InputText
-                                id="username"
-                                value={username}
-                                // @ts-ignore
-                                onChange={(e) => setUsername(e.target?.['value'])}
-                                required
-                            />
-                        </div>
-                        <div className="p-field">
-                            <label htmlFor="email">Email</label>
-                            <InputText
-                                id="email"
-                                value={email}
-                                // @ts-ignore
-                                onChange={(e: TargetedEvent) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="p-field">
-                            <label htmlFor="password">Пароль</label>
-                            <Password
-                                id="password"
-                                value={password}
-                                // @ts-ignore
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="p-field">
-                            <label htmlFor="confirmPassword">Подтвердите пароль</label>
-                            <Password
-                                id="confirmPassword"
-                                value={confirmPassword}
-                                // @ts-ignore
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        {error && <Message severity="error" text={error} />}
-                        <Button label="Зарегистрироваться" type="submit" className="p-mt-3" />
-                    </div>
-                </form>
-            </Card>
-        </div>
-    );
+	const handleSubmit = (e: h.JSX.TargetedSubmitEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		console.log('Форма отправлена:', formData);
+		// Здесь можно добавить логику отправки данных на сервер
+	};
+
+	return (
+		<div className="registration-page">
+			<div className="pure-g">
+				<div className="pure-u-1 pure-u-md-1-3"></div> {/* Пустой блок для центрирования */}
+				<div className="pure-u-1 pure-u-md-1-3">
+					<form className="pure-form pure-form-stacked" onSubmit={handleSubmit}>
+						<fieldset>
+							<legend>Регистрация</legend>
+
+							<label htmlFor="name">Имя</label>
+							<input
+								id="name"
+								type="text"
+								name="name"
+								placeholder="Введите ваше имя"
+								value={formData.name}
+								onChange={(e) => {}}
+								required
+							/>
+
+							<label htmlFor="email">Электронная почта</label>
+							<input
+								id="email"
+								type="email"
+								name="email"
+								placeholder="Введите вашу почту"
+								value={formData.email}
+								onChange={handleChange}
+								required
+							/>
+
+							<label htmlFor="password">Пароль</label>
+							<input
+								id="password"
+								type="password"
+								name="password"
+								placeholder="Введите пароль"
+								value={formData.password}
+								onChange={handleChange}
+								required
+							/>
+
+							<button type="button" className="pure-button pure-button-primary">
+								Зарегистрироваться
+							</button>
+						</fieldset>
+					</form>
+				</div>
+
+				<div className="pure-u-1 pure-u-md-1-3"></div> {/* Пустой блок для центрирования */}
+			</div>
+		</div>
+	);
 };
