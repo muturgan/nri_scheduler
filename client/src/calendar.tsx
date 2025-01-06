@@ -1,16 +1,24 @@
-// import { h } from 'preact';
-// import { addLocale } from 'primereact/api';
-// import { Calendar } from 'primereact/calendar';
+import { Calendar as FullCalendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import ruLocale from '@fullcalendar/core/locales/ru';
+import { h } from '@fullcalendar/core/preact'
+import { useEffect, useRef } from 'preact/hooks';
 
-// addLocale('ru', {
-// 	firstDayOfWeek: 1,
-// 	dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-// 	dayNamesShort: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-// 	dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-// 	monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-// 	monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-// 	today: 'Сегодня',
-// 	clear: 'Очистить',
-// });
+export const Calendar = () => {
+	const calendarRef = useRef<HTMLDivElement>(null);
 
-// export const CalendarPage = <Calendar inline locale="ru"/>;
+	useEffect(() => {
+		const calendarEl = calendarRef.current;
+		if (calendarEl !== null) {
+			const calendar = new FullCalendar(calendarEl, {
+					plugins: [dayGridPlugin],
+					initialView: 'dayGridMonth',
+					locale: ruLocale,
+			});
+
+			calendar.render();
+		}
+	}, []);
+
+	return <div ref={calendarRef}></div>;
+};
