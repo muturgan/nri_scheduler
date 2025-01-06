@@ -7,6 +7,7 @@ import { h } from 'preact';
 
 export const Calendar = () => {
 	const calendar = useCalendarApp({
+		locale: 'ru-RU',
 		views: [
 			createViewMonthGrid(),
 		],
