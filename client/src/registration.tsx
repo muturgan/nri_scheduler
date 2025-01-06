@@ -1,7 +1,7 @@
 import './registration.css';
 
 import { h } from 'preact';
-import { useState } from 'react';
+import { useState } from 'preact/hooks';
 
 export const RegistrationPage = () => {
 	const [formData, setFormData] = useState({
