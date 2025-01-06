@@ -33,7 +33,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 
 	#[cfg(debug_assertions)]
 	let router = router
-		.nest_service("/", ServeFile::new("static/index.html"))
+		.fallback_service(ServeFile::new("static/index.html"))
 		.nest_service("/assets", ServeDir::new("static/assets"));
 
 	return router;
