@@ -1,3 +1,5 @@
+import { startFetching, stopFetching } from "./fetching";
+
 const POST = 'POST';
 
 export const enum EScenarioStatus {
@@ -30,6 +32,8 @@ const ajax = (input: string, init?: IRequestInit): Promise<IApiResponse> => {
 		timeoutId = setTimeout(() => controller!.abort(), init.timeoutMilliseconds);
 	}
 
+	startFetching();
+
 	return fetch(
 		input,
 		{
@@ -42,6 +46,7 @@ const ajax = (input: string, init?: IRequestInit): Promise<IApiResponse> => {
 		.then((res) => checkResponse(res))
 		.finally(() => {
 			clearTimeout(timeoutId);
+			stopFetching();
 		});
 };
 
@@ -112,4 +117,15 @@ export const registration = (nickname: string, email: string, password: string) 
 		'/api/registration',
 		prepareAjax({nickname, email, password}, POST),
 	);
+};
+
+export const signIn = (email: string, password: string) => {
+	return ajax(
+		'/api/signin',
+		prepareAjax({email, password}, POST),
+	);
+};
+
+export const whoIAm = () => {
+	return ajax('/api/check');
 };

@@ -1,10 +1,14 @@
 import './registration.css';
 
 import { h } from 'preact';
+import { route as navigate } from 'preact-router';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { registration } from './api';
+import { useFetchingStore } from './fetching';
 
 export const RegistrationPage = () => {
+	const fetching = useFetchingStore((state) => state.fetching);
+
 	const nameInput  = useRef<HTMLInputElement>(null);
 	const emailInput = useRef<HTMLInputElement>(null);
 	const passInput1 = useRef<HTMLInputElement>(null);
@@ -16,7 +20,6 @@ export const RegistrationPage = () => {
 	const [password2, setPassword2] = useState('');
 
 	const [isFormValid, setIsFormValid] = useState(false);
-	const [fetching, setFetching] = useState(false);
 
 	useEffect(() => {
 		setIsFormValid(Boolean(
@@ -44,10 +47,12 @@ export const RegistrationPage = () => {
 	};
 
 	const handleSubmit = () => {
-		setFetching(true);
 		registration(name, email, password1)
-			.finally(() => setFetching(false));
+			.finally(() => {
+				navigate('/signin', true);
+			});
 	};
+
 
 	return (
 		<div className="registration-page">

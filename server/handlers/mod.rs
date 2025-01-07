@@ -64,6 +64,9 @@ pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInD
 	res
 }
 
-pub async fn who_i_am(Extension(user_id): Extension<Uuid>) -> impl IntoResponse {
-	format!("my id is {user_id}")
+pub async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {
+	AppResponse::scenario_success(
+		"I know who I am",
+		Some(serde_json::Value::String(user_id.to_string())),
+	)
 }

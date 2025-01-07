@@ -5,11 +5,15 @@ import { h, render } from 'preact';
 import { Router, Route } from 'preact-router';
 import AsyncRoute from 'preact-async-route';
 
-import { RegistrationPage } from './registration';
+import { SignInPage } from './sign_in';
 
 const App = () => (
 	<Router>
-		<Route path="/" component={RegistrationPage} />
+		<AsyncRoute
+			path="/"
+			getComponent={() => import('./registration').then((module) => module.RegistrationPage)}
+		/>
+		<Route path="/signin" component={SignInPage} />
 		<AsyncRoute
 			path="/calendar"
 			getComponent={() => import('./calendar').then((module) => module.Calendar)}
