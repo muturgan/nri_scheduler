@@ -17,11 +17,11 @@ impl<'de> Deserialize<'de> for EScenarioStatus {
 		D: Deserializer<'de>,
 	{
 		match u8::deserialize(deserializer)? {
-			1 => Ok(EScenarioStatus::SCENARIO_SUCCESS),
-			2 => Ok(EScenarioStatus::UNAUTHORIZED),
-			3 => Ok(EScenarioStatus::SCENARIO_FAIL),
-			4 => Ok(EScenarioStatus::SYSTEM_ERROR),
-			5 => Ok(EScenarioStatus::SESSION_EXPIRED),
+			0 => Ok(EScenarioStatus::SCENARIO_SUCCESS),
+			1 => Ok(EScenarioStatus::UNAUTHORIZED),
+			2 => Ok(EScenarioStatus::SCENARIO_FAIL),
+			3 => Ok(EScenarioStatus::SYSTEM_ERROR),
+			4 => Ok(EScenarioStatus::SESSION_EXPIRED),
 			_ => Err(D::Error::custom("incorrect scenario status")),
 		}
 	}
@@ -33,11 +33,11 @@ impl Serialize for EScenarioStatus {
 		S: Serializer,
 	{
 		let numval: u8 = match self {
-			EScenarioStatus::SCENARIO_SUCCESS => 1,
-			EScenarioStatus::UNAUTHORIZED => 2,
-			EScenarioStatus::SCENARIO_FAIL => 3,
-			EScenarioStatus::SYSTEM_ERROR => 4,
-			EScenarioStatus::SESSION_EXPIRED => 5,
+			EScenarioStatus::SCENARIO_SUCCESS => 0,
+			EScenarioStatus::UNAUTHORIZED => 1,
+			EScenarioStatus::SCENARIO_FAIL => 2,
+			EScenarioStatus::SYSTEM_ERROR => 3,
+			EScenarioStatus::SESSION_EXPIRED => 4,
 		};
 		return serializer.serialize_u8(numval);
 	}
