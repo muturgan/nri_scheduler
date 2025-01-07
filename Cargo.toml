@@ -4,6 +4,14 @@ description = "my outstanding trpg scheduler"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "nri_scheduler"
+path = "server/main.rs"
+
+[lib]
+name = "nri_scheduler"
+path = "server/lib.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [profile.release]
 strip = true
@@ -22,7 +30,7 @@ jsonwebtoken = "9.3.0"
 lazy_static = "1.5.0"
 rand = "0.8.5"
 serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.134"
+serde_json = "1.0.135"
 serde_urlencoded = "0.7.1"
 sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-native-tls", "postgres", "chrono", "uuid"] }
 tokio = { version = "1.42.0", features = ["full"] }
