@@ -1,6 +1,12 @@
 use derive_masked::DebugMasked;
+use lazy_static::lazy_static;
+use regex::Regex;
 use serde::{Deserialize, Deserializer, de::Error as _};
 
+lazy_static! {
+	static ref EMAIL_REGEX: Regex =
+		Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").expect("Email regex should build without errors");
+}
 #[derive(DebugMasked)]
 pub struct RegistrationDto {
 	pub nickname: String,
@@ -30,7 +36,7 @@ impl<'de> Deserialize<'de> for RegistrationDto {
 		if nickname.is_empty() {
 			return Err(D::Error::custom("Введено некорректное имя"));
 		}
-		if email.is_empty() {
+		if !EMAIL_REGEX.is_match(&email) {
 			return Err(D::Error::custom("Введен некорректный email"));
 		}
 		if password.is_empty() {
@@ -65,7 +71,7 @@ impl<'de> Deserialize<'de> for SignInDto {
 
 		let PlainBody { email, password } = PlainBody::deserialize(deserializer)?;
 
-		if email.is_empty() {
+		if !EMAIL_REGEX.is_match(&email) {
 			return Err(D::Error::custom("Введен некорректный email"));
 		}
 		if password.is_empty() {
