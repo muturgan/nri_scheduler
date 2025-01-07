@@ -3,9 +3,9 @@ use axum::{
 	Router, middleware,
 	routing::{get, post},
 };
-#[cfg(debug_assertions)]
-use tower_http::services::{ServeDir, ServeFile};
 
+#[cfg(debug_assertions)]
+use crate::vite::proxy_to_vite;
 use crate::{auth, handlers as H, repository::Repository};
 
 pub fn create_router(repo: Arc<Repository>) -> Router {
@@ -32,9 +32,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 		.with_state(repo);
 
 	#[cfg(debug_assertions)]
-	let router = router
-		.fallback_service(ServeFile::new("static/index.html"))
-		.nest_service("/assets", ServeDir::new("static/assets"));
+	let router = router.fallback(proxy_to_vite);
 
 	return router;
 }

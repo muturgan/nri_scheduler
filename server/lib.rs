@@ -7,3 +7,5 @@ pub mod repository;
 pub mod router;
 pub mod shared;
 pub mod system_models;
+#[cfg(debug_assertions)]
+pub mod vite;

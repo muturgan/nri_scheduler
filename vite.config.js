@@ -1,5 +1,10 @@
-import preact from '@preact/preset-vite';
+import { preact } from '@preact/preset-vite';
 import { defineConfig } from 'vite';
+
+const VITE_PORT = parseInt(process.env.VITE_PORT);
+if (!VITE_PORT) {
+	throw new Error('VITE_PORT environment variable is not defined');
+}
 
 
 // https://vitejs.dev/config/
@@ -13,18 +18,18 @@ export default defineConfig(({ command }) => ({
 	},
 	server: {
 		host:       '0.0.0.0',
-		port:       3000,
+		port:       VITE_PORT,
 		strictPort: true,
 		hmr:        {
 			host:       '0.0.0.0',
-			clientPort: 3000,
-			port:       3000,
+			clientPort: VITE_PORT,
+			port:       VITE_PORT,
 			path:       '/hmr',
 		},
 	},
 	preview: {
 		host:       '0.0.0.0',
-		port:       3000,
+		port:       VITE_PORT,
 		strictPort: true,
 	},
 	resolve: {

@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"scripts": {
 		"start": "vite",
+		"dev": "export $(cat .env | grep -v '^#' | xargs) && vite",
 		"force": "vite --force",
 		"build": "tsc && vite build",
 		"preview": "npm run build && vite preview",
