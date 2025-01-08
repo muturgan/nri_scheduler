@@ -1,2 +1,4 @@
 #!/bin/sh
-sh scripts.sh lint
+if git diff --cached --name-only | grep -q '\.rs$'; then
+	sh scripts.sh lint
+fi
