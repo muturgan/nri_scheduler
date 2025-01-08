@@ -1,5 +1,3 @@
-import './registration.css';
-
 import { h } from 'preact';
 import { route as navigate } from 'preact-router';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -55,75 +53,69 @@ export const RegistrationPage = () => {
 
 
 	return (
-		<div className="registration-page">
-			<div className="pure-g">
-				<div className="pure-u-1 pure-u-md-1-3"></div> {/* Пустой блок для центрирования */}
+		<div className="form-page">
+			<div className="form-container">
+				<form className="pure-form pure-form-stacked">
+					<fieldset>
+						<legend>Регистрация</legend>
 
-				<div className="pure-u-1 pure-u-md-1-3">
-					<form className="pure-form pure-form-stacked">
-						<fieldset>
-							<legend>Регистрация</legend>
+						<label>Логин
+						<input
+							type="text"
+							placeholder="Придумайте логин"
+							value={name}
+							onInput={(e) => handleInput(e, setName)}
+							ref={nameInput}
+							required
+						/>
+						</label>
 
-							<label>Логин
-							<input
-								type="text"
-								placeholder="Придумайте логин"
-								value={name}
-								onInput={(e) => handleInput(e, setName)}
-								ref={nameInput}
-								required
-							/>
-							</label>
+						<label>Электронная почта
+						<input
+							type="email"
+							pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+							placeholder="Введите вашу почту"
+							value={email}
+							onInput={(e) => handleInput(e, setEmail)}
+							ref={emailInput}
+							required
+						/>
+						</label>
 
-							<label>Электронная почта
-							<input
-								type="email"
-								pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-								placeholder="Введите вашу почту"
-								value={email}
-								onInput={(e) => handleInput(e, setEmail)}
-								ref={emailInput}
-								required
-							/>
-							</label>
+						<label>Пароль
+						<input
+							type="password"
+							placeholder="Введите пароль"
+							value={password1}
+							onInput={(e) => handleInput(e, setPassword1)}
+							ref={passInput1}
+							autocomplete="off"
+							required
+						/>
+						</label>
 
-							<label>Пароль
-							<input
-								type="password"
-								placeholder="Введите пароль"
-								value={password1}
-								onInput={(e) => handleInput(e, setPassword1)}
-								ref={passInput1}
-								autocomplete="off"
-								required
-							/>
-							</label>
+						<label>Повторите пароль
+						<input
+							type="password"
+							placeholder="Повторите пароль"
+							value={password2}
+							onInput={(e) => handleInput(e, setPassword2)}
+							ref={passInput2}
+							autocomplete="off"
+							required
+						/>
+						</label>
 
-							<label>Повторите пароль
-							<input
-								type="password"
-								placeholder="Повторите пароль"
-								value={password2}
-								onInput={(e) => handleInput(e, setPassword2)}
-								ref={passInput2}
-								autocomplete="off"
-								required
-							/>
-							</label>
-
-							<button
-								type="button"
-								onClick={handleSubmit}
-								disabled={!isFormValid || fetching}
-								className="pure-button pure-button-primary"
-							>
-								Зарегистрироваться
-							</button>
-						</fieldset>
-					</form>
-				</div>
-
-				<div className="pure-u-1 pure-u-md-1-3"></div> {/* Пустой блок для центрирования */}
+						<button
+							type="button"
+							onClick={handleSubmit}
+							disabled={!isFormValid || fetching}
+							className="pure-button pure-button-primary"
+						>
+							Зарегистрироваться
+						</button>
+					</fieldset>
+				</form>
 			</div>
 		</div>
 	);

@@ -1,6 +1,3 @@
-/** @todo сделать свои стили */
-import './registration.css';
-
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { signIn, whoIAm } from './api';
@@ -39,52 +36,47 @@ export const SignInPage = () => {
 
 
 	return (
-		<div className="registration-page">
-			<div className="pure-g">
-				<div className="pure-u-1 pure-u-md-1-3"></div> {/* Пустой блок для центрирования */}
+		<div className="form-page">
+			<div className="form-container">
+				<form className="pure-form pure-form-stacked">
+					<fieldset>
+						<legend>Авторизация</legend>
 
-				<div className="pure-u-1 pure-u-md-1-3">
-					<form className="pure-form pure-form-stacked">
-						<fieldset>
-							<legend>Авторизация</legend>
+						<label>Электронная почта
+						<input
+							type="email"
+							pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+							placeholder="Введите вашу почту"
+							value={email}
+							onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
+							ref={emailInput}
+							autocomplete="email"
+							required
+						/>
+						</label>
 
-							<label>Электронная почта
-							<input
-								type="email"
-								pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-								placeholder="Введите вашу почту"
-								value={email}
-								onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
-								ref={emailInput}
-								required
-							/>
-							</label>
+						<label>Пароль
+						<input
+							type="password"
+							placeholder="Введите пароль"
+							value={password}
+							onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
+							ref={passInput}
+							autocomplete="current-password"
+							required
+						/>
+						</label>
 
-							<label>Пароль
-							<input
-								type="password"
-								placeholder="Введите пароль"
-								value={password}
-								onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
-								ref={passInput}
-								autocomplete="off"
-								required
-							/>
-							</label>
-
-							<button
-								type="button"
-								onClick={handleSubmit}
-								disabled={!isFormValid || fetching}
-								className="pure-button pure-button-primary"
-							>
-								Войти
-							</button>
-						</fieldset>
-					</form>
-				</div>
-
-				<div className="pure-u-1 pure-u-md-1-3"></div> {/* Пустой блок для центрирования */}
+						<button
+							type="button"
+							onClick={handleSubmit}
+							disabled={!isFormValid || fetching}
+							className="pure-button pure-button-primary"
+						>
+							Войти
+						</button>
+					</fieldset>
+				</form>
 			</div>
 		</div>
 	);
