@@ -1,5 +1,4 @@
 #!/bin/sh
-echo "staged:"
-git diff --staged --name-only | grep '\.rs$'
-exit 1;
-sh scripts.sh full_check
+if git diff --name-only HEAD..origin/$(git branch --show-current) | grep '\.rs$'; then
+	sh scripts.sh full_check
+fi
