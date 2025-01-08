@@ -1,8 +1,8 @@
 import { h } from 'preact';
 import { route as navigate } from 'preact-router';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { registration } from './api';
-import { useFetchingStore } from './fetching';
+import { registration } from '../api';
+import { useFetchingStore } from '../fetching';
 
 export const RegistrationPage = () => {
 	const fetching = useFetchingStore((state) => state.fetching);
