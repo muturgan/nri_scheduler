@@ -1,14 +1,4 @@
 #!/bin/sh
-sh_files=$(git diff --name-only HEAD^ HEAD | grep '\.sh$')
-echo 'sh_files:'
-echo $sh_files
-rs_files=$(git diff --name-only HEAD^ HEAD | grep '\.rs$')
-echo 'rs_files:'
-echo $rs_files
-
-if rs_files; then
-	echo "Файлы с расширением .rs найдены в последнем коммите."
+if git diff --staged --name-only | grep '\.rs$'; then
 	sh scripts.sh lint
-else
-	echo "Файлы с расширением .rs НЕ найдены в последнем коммите."
 fi
