@@ -1,7 +1,7 @@
 mod implementations;
 pub mod models;
 
-use chrono::NaiveDateTime;
+use chrono::{DateTime, FixedOffset};
 use implementations::PostgresStore;
 use models::{Company, Event, Location, UserForAuth};
 use uuid::Uuid;
@@ -36,15 +36,15 @@ trait Store {
 
 	async fn read_events(
 		&self,
-		date_from: NaiveDateTime,
-		date_to: NaiveDateTime,
+		date_from: DateTime<FixedOffset>,
+		date_to: DateTime<FixedOffset>,
 	) -> CoreResult<Vec<Event>>;
 
 	async fn add_event(
 		&self,
 		company: Uuid,
 		location: &Option<Uuid>,
-		date: NaiveDateTime,
+		date: DateTime<FixedOffset>,
 	) -> CoreResult<RecordId>;
 
 	async fn close(&self);
@@ -109,8 +109,8 @@ impl Repository {
 
 	pub(crate) async fn read_events(
 		&self,
-		date_from: NaiveDateTime,
-		date_to: NaiveDateTime,
+		date_from: DateTime<FixedOffset>,
+		date_to: DateTime<FixedOffset>,
 	) -> CoreResult<Vec<Event>> {
 		return self.store.read_events(date_from, date_to).await;
 	}
@@ -119,7 +119,7 @@ impl Repository {
 		&self,
 		company: Uuid,
 		location: &Option<Uuid>,
-		date: NaiveDateTime,
+		date: DateTime<FixedOffset>,
 	) -> CoreResult<RecordId> {
 		return self.store.add_event(company, location, date).await;
 	}

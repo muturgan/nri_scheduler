@@ -10,20 +10,20 @@ export const enum EScenarioStatus {
 	SESSION_EXPIRED,
 }
 
-export interface IApiResponse {
-	status: EScenarioStatus,
-	result: string,
-	payload: object | null,
+export interface IApiResponse<T = null> {
+	readonly status: EScenarioStatus,
+	readonly result: string,
+	readonly payload: T,
 }
 
 export interface IRequestInit {
-	body?: string | FormData;
-	headers?: Record<string, string>;
-	method?: string;
-	timeoutMilliseconds?: number;
+	readonly body?: string | FormData;
+	readonly headers?: Record<string, string>;
+	readonly method?: string;
+	readonly timeoutMilliseconds?: number;
 }
 
-const ajax = (input: string, init?: IRequestInit): Promise<IApiResponse> => {
+const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T>> => {
 	let controller: AbortController | undefined;
 	let timeoutId: ReturnType<typeof setTimeout>;
 
@@ -43,14 +43,14 @@ const ajax = (input: string, init?: IRequestInit): Promise<IApiResponse> => {
 			signal:  controller?.signal,
 		},
 	)
-		.then((res) => checkResponse(res))
+		.then((res) => checkResponse<T>(res))
 		.finally(() => {
 			clearTimeout(timeoutId);
 			stopFetching();
 		});
 };
 
-const checkResponse = async (response: Response): Promise<IApiResponse> => {
+const checkResponse = async <T>(response: Response): Promise<IApiResponse<T>> => {
 	if (response.ok === false) {
 		let payload: object | string | null = null;
 
@@ -69,7 +69,7 @@ const checkResponse = async (response: Response): Promise<IApiResponse> => {
 
 		let status = response.status;
 
-		let apiRes: IApiResponse = {
+		let apiRes: IApiResponse<any> = {
 			status: EScenarioStatus.SYSTEM_ERROR,
 			result: `(${status}) ${typeof payload === 'string' ? payload : 'Неизвестная ошибка'}`,
 			payload: typeof payload === 'string' ? null : {payload, status},
@@ -79,7 +79,7 @@ const checkResponse = async (response: Response): Promise<IApiResponse> => {
 	}
 
 	try {
-		let apiRes: IApiResponse = await response.json();
+		let apiRes: IApiResponse<T> = await response.json();
 
 		if (apiRes.status === EScenarioStatus.UNAUTHORIZED || apiRes.status === EScenarioStatus.SESSION_EXPIRED) {
 			/** @TODO обработать ошибку авторизации */
@@ -90,7 +90,7 @@ const checkResponse = async (response: Response): Promise<IApiResponse> => {
 	} catch (err) {
 		let msg = (err as Error | undefined)?.message;
 
-		let apiRes: IApiResponse = {
+		let apiRes: IApiResponse<any> = {
 			status: EScenarioStatus.SYSTEM_ERROR,
 			result: typeof msg === 'string' ? msg : 'Ошибка получения ответа',
 			payload: typeof msg === 'string' ? null : err as object,
@@ -113,17 +113,28 @@ const prepareAjax = (payload?: object, method?: string): IRequestInit => {
 };
 
 export const registration = (nickname: string, email: string, password: string) => {
-	return ajax(
+	return ajax<null>(
 		'/api/registration',
 		prepareAjax({nickname, email, password}, POST),
 	);
 };
 
 export const signIn = (email: string, password: string) => {
-	return ajax(
+	return ajax<null>(
 		'/api/signin',
 		prepareAjax({email, password}, POST),
 	);
+};
+
+export interface IApiEvent {
+	readonly company: string;
+	readonly date: string;
+	readonly id: string;
+	readonly location: string;
+}
+
+export const readEvents = (from: string, to: string) => {
+	return ajax<IApiEvent[]>(`/api/events?date_from=${encodeURIComponent(from)}&date_to=${encodeURIComponent(to)}`);
 };
 
 export const whoIAm = () => {

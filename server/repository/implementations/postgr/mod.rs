@@ -1,6 +1,6 @@
 mod pool;
 
-use chrono::NaiveDateTime;
+use chrono::{DateTime, FixedOffset};
 use sqlx::{Error as EqlxError, PgPool};
 use uuid::Uuid;
 
@@ -132,8 +132,8 @@ impl Store for PostgresStore {
 
 	async fn read_events(
 		&self,
-		date_from: NaiveDateTime,
-		date_to: NaiveDateTime,
+		date_from: DateTime<FixedOffset>,
+		date_to: DateTime<FixedOffset>,
 	) -> CoreResult<Vec<Event>> {
 		let events =
 			sqlx::query_as::<_, Event>("SELECT * FROM events WHERE date >= $1 AND date <= $2;")
@@ -149,7 +149,7 @@ impl Store for PostgresStore {
 		&self,
 		company: Uuid,
 		location: &Option<Uuid>,
-		date: NaiveDateTime,
+		date: DateTime<FixedOffset>,
 	) -> CoreResult<RecordId> {
 		let new_evt_id = sqlx::query_scalar::<_, RecordId>(
 			"INSERT INTO events (company, location, date) values ($1, $2, $3) returning id;",
