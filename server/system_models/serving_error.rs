@@ -26,18 +26,18 @@ impl StdError for ServingError {}
 
 impl From<SqlxError> for ServingError {
 	fn from(err: SqlxError) -> Self {
-		ServingError::ConnectionError(err)
+		Self::ConnectionError(err)
 	}
 }
 
 impl From<MigrateError> for ServingError {
 	fn from(err: MigrateError) -> Self {
-		ServingError::MigrationError(err)
+		Self::MigrationError(err)
 	}
 }
 
 impl From<IoError> for ServingError {
 	fn from(err: IoError) -> Self {
-		ServingError::IoError(err)
+		Self::IoError(err)
 	}
 }
