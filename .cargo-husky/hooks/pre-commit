@@ -1,8 +1,8 @@
 #!/bin/sh
-sh_files=$(git diff --cached --name-only | grep '\.sh$')
+sh_files=$(git diff --name-only HEAD^ HEAD | grep '\.sh$')
 echo 'sh_files:'
 echo $sh_files
-rs_files=$(git diff --cached --name-only | grep '\.rs$')
+rs_files=$(git diff --name-only HEAD^ HEAD | grep '\.rs$')
 echo 'rs_files:'
 echo $rs_files
 
