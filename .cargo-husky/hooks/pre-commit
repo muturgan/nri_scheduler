@@ -1,4 +1,11 @@
 #!/bin/sh
-if git diff --cached --name-only | grep -q '\.rs$'; then
+sh_files=$(git diff --cached --name-only | grep '\.sh$')
+echo 'sh_files:'
+echo $sh_files
+rs_files=$(git diff --cached --name-only | grep '\.rs$')
+echo 'rs_files:'
+echo $rs_files
+
+if rs_files; then
 	sh scripts.sh lint
 fi
