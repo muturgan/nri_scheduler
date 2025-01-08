@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { signIn, whoIAm } from './api';
-import { useFetchingStore } from './fetching';
+import { signIn, whoIAm } from '../api';
+import { useFetchingStore } from '../fetching';
 
 export const SignInPage = () => {
 	const fetching = useFetchingStore((state) => state.fetching);
