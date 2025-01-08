@@ -1,4 +1,4 @@
-import { startFetching, stopFetching } from "./fetching";
+import { startFetching, stopFetching } from "./store/fetching";
 
 const POST = 'POST';
 
