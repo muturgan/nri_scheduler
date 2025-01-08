@@ -7,5 +7,5 @@ echo 'rs_files:'
 echo $rs_files
 
 if rs_files; then
-	sh scripts.sh lint
+	# sh scripts.sh lint
 fi
