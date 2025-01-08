@@ -9,7 +9,7 @@ use crate::{
 	auth,
 	repository::models::{Company, Event, Location, UserForAuth},
 	shared::RecordId,
-	system_models::{AppError, CoreResult},
+	system_models::{AppError, CoreResult, ServingError},
 };
 
 const DUPLICATE_KEY: &str = "duplicate key";
@@ -25,9 +25,9 @@ pub struct PostgresStore {
 }
 
 impl PostgresStore {
-	pub async fn new() -> Self {
-		let pool = pool::create_db_connection().await;
-		Self { pool }
+	pub async fn new() -> Result<Self, ServingError> {
+		let pool = pool::create_db_connection().await?;
+		Ok(Self { pool })
 	}
 }
 

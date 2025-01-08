@@ -6,7 +6,10 @@ use implementations::PostgresStore;
 use models::{Company, Event, Location, UserForAuth};
 use uuid::Uuid;
 
-use crate::{shared::RecordId, system_models::CoreResult};
+use crate::{
+	shared::RecordId,
+	system_models::{CoreResult, ServingError},
+};
 
 trait Store {
 	async fn registration(&self, nickname: &str, email: &str, password: &str) -> CoreResult;
@@ -52,10 +55,10 @@ pub struct Repository {
 }
 
 impl Repository {
-	pub async fn new() -> Self {
-		return Self {
-			store: PostgresStore::new().await,
-		};
+	pub async fn new() -> Result<Self, ServingError> {
+		return Ok(Self {
+			store: PostgresStore::new().await?,
+		});
 	}
 
 	pub(crate) async fn registration(
