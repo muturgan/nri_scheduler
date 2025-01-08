@@ -4,6 +4,7 @@ use tokio::net::TcpListener as AsyncTcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), IoError> {
+	println!("lets try");
 	let repo = Repository::new().await;
 	let repo = Arc::new(repo);
 	let app = router::create_router(repo.clone());
