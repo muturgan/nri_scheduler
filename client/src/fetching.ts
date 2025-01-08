@@ -10,8 +10,8 @@ export let startFetching: () => void;
 export let stopFetching: () => void;
 
 export const useFetchingStore = create<IFetchingStore>((set) => {
-	startFetching = () => set(() => ({ fetching: true  }));
-	stopFetching = () => set(() => ({ fetching: false }));
+	startFetching = () => set({ fetching: true  });
+	stopFetching  = () => set({ fetching: false });
 
 	return {
 		fetching: false,
