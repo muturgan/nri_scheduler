@@ -1,10 +1,11 @@
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useStore } from '@nanostores/preact';
 import { signIn, whoIAm } from '../api';
-import { useFetchingStore } from '../store/fetching';
+import { $fetching } from '../store/fetching';
 
 export const SignInPage = () => {
-	const fetching = useFetchingStore((state) => state.fetching);
+	const fetching = useStore($fetching);
 
 	const emailInput = useRef<HTMLInputElement>(null);
 	const passInput  = useRef<HTMLInputElement>(null);

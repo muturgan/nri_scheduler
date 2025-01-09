@@ -1,11 +1,12 @@
 import { h } from 'preact';
 import { route as navigate } from 'preact-router';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useStore } from '@nanostores/preact';
 import { registration } from '../api';
-import { useFetchingStore } from '../store/fetching';
+import { $fetching } from '../store/fetching';
 
 export const RegistrationPage = () => {
-	const fetching = useFetchingStore((state) => state.fetching);
+	const fetching = useStore($fetching);
 
 	const nameInput  = useRef<HTMLInputElement>(null);
 	const emailInput = useRef<HTMLInputElement>(null);

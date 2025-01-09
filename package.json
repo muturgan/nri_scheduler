@@ -11,15 +11,16 @@
 		"prebuild": "rm -rf static || npx rimraf static"
 	},
 	"dependencies": {
+		"@nanostores/preact": "^0.5.2",
 		"@schedule-x/calendar": "^2.12.1",
 		"@schedule-x/preact": "^2.9.1",
 		"@schedule-x/theme-default": "^2.13.0",
 		"dayjs": "^1.11.13",
+		"nanostores": "^0.11.3",
 		"preact": "^10.25.4",
 		"preact-async-route": "^2.2.1",
 		"preact-router": "^4.1.2",
-		"purecss": "^3.0.0",
-		"zustand": "^5.0.3"
+		"purecss": "^3.0.0"
 	},
 	"devDependencies": {
 		"@preact/preset-vite": "^2.9.4",

@@ -1,21 +1,11 @@
-import { create } from 'zustand';
+import { atom, ReadableAtom, WritableAtom } from 'nanostores';
 
-interface IFetchingStore {
-	readonly fetching: boolean;
-	startFetching(): void;
-	stopFetching(): void;
+export const $fetching: ReadableAtom<boolean> = atom(false);
+
+export const startFetching = () => {
+	($fetching as WritableAtom<boolean>).set(true);
 }
 
-export let startFetching: () => void;
-export let stopFetching: () => void;
-
-export const useFetchingStore = create<IFetchingStore>((set) => {
-	startFetching = () => set({ fetching: true  });
-	stopFetching  = () => set({ fetching: false });
-
-	return {
-		fetching: false,
-		startFetching,
-		stopFetching,
-	};
-});
+export const stopFetching = () => {
+	($fetching as WritableAtom<boolean>).set(false);
+}
