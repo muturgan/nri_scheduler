@@ -127,13 +127,17 @@ export const signIn = (email: string, password: string) => {
 };
 
 export interface IApiEvent {
-	readonly company: string;
-	readonly date: string;
 	readonly id: string;
+	readonly company: string;
+	readonly master: string;
 	readonly location: string;
+	readonly date: string;
+	readonly players: string[];
+	readonly you_applied: boolean;
+	readonly your_approval: boolean | null;
 }
 
-export const readEvents = (from: string, to: string) => {
+export const readEventsList = (from: string, to: string) => {
 	return ajax<IApiEvent[]>(`/api/events?date_from=${encodeURIComponent(from)}&date_to=${encodeURIComponent(to)}`);
 };
 

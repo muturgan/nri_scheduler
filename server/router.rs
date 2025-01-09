@@ -18,7 +18,8 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 				.route("/locations", post(H::locations::add_location))
 				.merge(
 					Router::new()
-						.route("/events", get(H::events::read_event))
+						.route("/events", get(H::events::read_events_list))
+						.route("/events/{id}", get(H::events::read_event))
 						.layer(middleware::from_fn(auth::optional_auth_middleware)),
 				)
 				.merge(
@@ -26,6 +27,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 						.route("/check", get(H::who_i_am))
 						.route("/companies", post(H::companies::add_company))
 						.route("/events", post(H::events::add_event))
+						.route("/events/apply/{id}", post(H::events::apply_event))
 						.layer(middleware::from_fn(auth::auth_middleware)),
 				),
 		)

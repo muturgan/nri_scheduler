@@ -14,3 +14,8 @@ pub struct NewEventDto {
 	pub location: Option<Uuid>,
 	pub date: DateTime<FixedOffset>,
 }
+
+#[derive(Deserialize)]
+pub struct ApplyventDto {
+	pub event: Uuid,
+}

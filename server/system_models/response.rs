@@ -31,23 +31,35 @@ impl AppResponse {
 		};
 	}
 
-	pub fn scenario_success<S: Into<String>>(result: S, payload: Option<serde_json::Value>) -> Self {
+	pub(crate) fn scenario_success<S: Into<String>>(
+		result: S,
+		payload: Option<serde_json::Value>,
+	) -> Self {
 		return Self::new(EScenarioStatus::SCENARIO_SUCCESS, result.into(), payload);
 	}
 
-	pub fn unauthorized<S: Into<String>>(result: S, payload: Option<serde_json::Value>) -> Self {
+	pub(crate) fn unauthorized<S: Into<String>>(
+		result: S,
+		payload: Option<serde_json::Value>,
+	) -> Self {
 		return Self::new(EScenarioStatus::UNAUTHORIZED, result.into(), payload);
 	}
 
-	fn scenario_fail<S: Into<String>>(result: S, payload: Option<serde_json::Value>) -> Self {
+	pub(crate) fn scenario_fail<S: Into<String>>(
+		result: S,
+		payload: Option<serde_json::Value>,
+	) -> Self {
 		return Self::new(EScenarioStatus::SCENARIO_FAIL, result.into(), payload);
 	}
 
-	pub fn system_error<S: Into<String>>(result: S, payload: Option<serde_json::Value>) -> Self {
+	pub(crate) fn system_error<S: Into<String>>(
+		result: S,
+		payload: Option<serde_json::Value>,
+	) -> Self {
 		return Self::new(EScenarioStatus::SYSTEM_ERROR, result.into(), payload);
 	}
 
-	pub fn session_expired() -> Self {
+	pub(crate) fn session_expired() -> Self {
 		return Self::new(EScenarioStatus::SESSION_EXPIRED, "Session expired", None);
 	}
 

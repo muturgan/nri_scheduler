@@ -7,7 +7,7 @@ use uuid::Uuid;
 use super::super::Store;
 use crate::{
 	auth,
-	repository::models::{Company, Event, Location, UserForAuth},
+	repository::models::{Company, Event, EventForApplying, Location, UserForAuth},
 	shared::RecordId,
 	system_models::{AppError, CoreResult, ServingError},
 };
@@ -130,19 +130,123 @@ impl Store for PostgresStore {
 		Ok(new_comp_id)
 	}
 
-	async fn read_events(
+	async fn read_events_list(
 		&self,
 		date_from: DateTime<FixedOffset>,
 		date_to: DateTime<FixedOffset>,
+		player_id: Option<Uuid>,
 	) -> CoreResult<Vec<Event>> {
-		let events =
-			sqlx::query_as::<_, Event>("SELECT * FROM events WHERE date >= $1 AND date <= $2;")
-				.bind(date_from)
-				.bind(date_to)
-				.fetch_all(&self.pool)
-				.await?;
+		let events = sqlx::query_as::<_, Event>(
+			"SELECT
+					e.id
+					, c.name AS company
+					, m.nickname AS master
+					, l.name AS location
+					, e.date
+					, jsonb_agg(u.nickname) AS players
+					, bool_or(y.id is not null) AS you_applied
+					, y.approval AS your_approval
+				FROM events e
+				INNER JOIN companies c
+					ON c.id = e.company
+				INNER JOIN locations l
+					ON l.id = e.location
+				INNER JOIN users m
+					ON m.id = c.master
+				LEFT JOIN applications y
+					ON y.player = $3 and y.event = e.id
+				LEFT JOIN applications ap
+					ON ap.event = e.id
+				LEFT JOIN users u
+					ON u.id = ap.player
+				WHERE e.date >= $1 AND e.date <= $2
+				GROUP BY e.id, c.name, m.nickname, l.name, e.date, y.approval;",
+		)
+		.bind(date_from)
+		.bind(date_to)
+		.bind(player_id)
+		.fetch_all(&self.pool)
+		.await?;
 
 		Ok(events)
+	}
+
+	async fn read_event(
+		&self,
+		event_id: Uuid,
+		player_id: Option<Uuid>,
+	) -> CoreResult<Option<Event>> {
+		let event = sqlx::query_as::<_, Event>(
+			"SELECT
+				e.id
+				, c.name AS company
+				, m.nickname AS master
+				, l.name AS location
+				, e.date
+				, jsonb_agg(u.nickname) AS players
+				, bool_or(y.id is not null) AS you_applied
+				, y.approval AS your_approval
+			FROM events e
+			INNER JOIN companies c
+				ON c.id = e.company
+			INNER JOIN locations l
+				ON l.id = e.location
+			INNER JOIN users m
+				ON m.id = c.master
+			LEFT JOIN applications y
+				ON y.player = $2 and y.event = e.id
+			LEFT JOIN applications ap
+				ON ap.event = e.id
+			LEFT JOIN users u
+				ON u.id = ap.player
+			WHERE e.id = $1
+			GROUP BY e.id, c.name, m.nickname, l.name, e.date, y.approval;",
+		)
+		.bind(event_id)
+		.bind(player_id)
+		.fetch_optional(&self.pool)
+		.await?;
+
+		Ok(event)
+	}
+
+	async fn get_event_for_applying(
+		&self,
+		event_id: Uuid,
+		player_id: Uuid,
+	) -> CoreResult<Option<EventForApplying>> {
+		let event = sqlx::query_as::<_, EventForApplying>(
+			"select
+				e.id
+				, (c.master = $2) as you_are_master
+				, bool_or(a.id is not null) AS already_applied
+			from events e
+			inner join companies c
+				on c.id = e.company
+			left join applications a
+				on a.event = e.id
+				and a.player = $2
+			where e.id = $1
+			group by e.id, c.master;",
+		)
+		.bind(event_id)
+		.bind(player_id)
+		.fetch_optional(&self.pool)
+		.await?;
+
+		Ok(event)
+	}
+
+	async fn apply_event(&self, event_id: Uuid, player_id: Uuid) -> CoreResult<RecordId> {
+		let new_app_id = sqlx::query_scalar::<_, RecordId>(
+			"INSERT INTO applications (event, player) values ($1, $2) returning id;",
+		)
+		.bind(event_id)
+		.bind(player_id)
+		.fetch_one(&self.pool)
+		.await?;
+
+		Ok(new_app_id)
 	}
 
 	async fn add_event(

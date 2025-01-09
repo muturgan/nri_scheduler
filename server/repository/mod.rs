@@ -3,7 +3,7 @@ pub mod models;
 
 use chrono::{DateTime, FixedOffset};
 use implementations::PostgresStore;
-use models::{Company, Event, Location, UserForAuth};
+use models::{Company, Event, EventForApplying, Location, UserForAuth};
 use uuid::Uuid;
 
 use crate::{
@@ -11,6 +11,7 @@ use crate::{
 	system_models::{CoreResult, ServingError},
 };
 
+// TODO: разделить на разные репозитоии, только пока не знаю как
 trait Store {
 	async fn registration(&self, nickname: &str, email: &str, password: &str) -> CoreResult;
 	async fn get_user_for_signing_in(&self, email: &str) -> CoreResult<Option<UserForAuth>>;
@@ -34,11 +35,23 @@ trait Store {
 		descr: &Option<String>,
 	) -> CoreResult<RecordId>;
 
-	async fn read_events(
+	async fn read_events_list(
 		&self,
 		date_from: DateTime<FixedOffset>,
 		date_to: DateTime<FixedOffset>,
+		player_id: Option<Uuid>,
 	) -> CoreResult<Vec<Event>>;
+
+	async fn read_event(&self, event_id: Uuid, player_id: Option<Uuid>)
+	-> CoreResult<Option<Event>>;
+
+	async fn get_event_for_applying(
+		&self,
+		event_id: Uuid,
+		player_id: Uuid,
+	) -> CoreResult<Option<EventForApplying>>;
+
+	async fn apply_event(&self, event_id: Uuid, player_id: Uuid) -> CoreResult<RecordId>;
 
 	async fn add_event(
 		&self,
@@ -107,12 +120,36 @@ impl Repository {
 		return self.store.add_company(master, name, system, descr).await;
 	}
 
-	pub(crate) async fn read_events(
+	pub(crate) async fn read_events_list(
 		&self,
 		date_from: DateTime<FixedOffset>,
 		date_to: DateTime<FixedOffset>,
+		player_id: Option<Uuid>,
 	) -> CoreResult<Vec<Event>> {
-		return self.store.read_events(date_from, date_to).await;
+		return self
+			.store
+			.read_events_list(date_from, date_to, player_id)
+			.await;
+	}
+
+	pub(crate) async fn read_event(
+		&self,
+		event_id: Uuid,
+		player_id: Option<Uuid>,
+	) -> CoreResult<Option<Event>> {
+		return self.store.read_event(event_id, player_id).await;
+	}
+
+	pub(crate) async fn get_event_for_applying(
+		&self,
+		event_id: Uuid,
+		player_id: Uuid,
+	) -> CoreResult<Option<EventForApplying>> {
+		return self.store.get_event_for_applying(event_id, player_id).await;
+	}
+
+	pub(crate) async fn apply_event(&self, event_id: Uuid, player_id: Uuid) -> CoreResult<RecordId> {
+		return self.store.apply_event(event_id, player_id).await;
 	}
 
 	pub(crate) async fn add_event(

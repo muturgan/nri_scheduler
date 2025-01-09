@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use derive_masked::DebugMasked;
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{FromRow, types::Json as SqlxJson};
 use uuid::Uuid;
 
 #[derive(DebugMasked, Deserialize, Serialize, FromRow)]
@@ -39,15 +39,18 @@ pub struct Location {
 #[derive(Debug, Deserialize, Serialize, FromRow)]
 pub struct Event {
 	pub id: Uuid,
-	pub company: Uuid,
-	pub location: Uuid,
+	pub company: String,
+	pub master: String,
+	pub location: String,
 	pub date: DateTime<Utc>,
+	pub players: SqlxJson<Vec<String>>,
+	pub you_applied: bool,
+	pub your_approval: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
-pub struct Application {
+pub struct EventForApplying {
 	pub id: Uuid,
-	pub player: Uuid,
-	pub event: Uuid,
-	pub approval: Option<bool>,
+	pub you_are_master: bool,
+	pub already_applied: bool,
 }

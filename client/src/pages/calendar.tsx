@@ -10,7 +10,7 @@ import { createViewMonthGrid } from '@schedule-x/calendar';
 
 import { h } from 'preact';
 import { useEffect } from 'preact/hooks';
-import { readEvents } from '../api';
+import { readEventsList } from '../api';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -40,7 +40,7 @@ export const Calendar = () => {
 		const monthEnd = now.endOf('M').format();
 
 		/** @todo передавать таймзону, возвращать в нужной таймзоне, присылать название кампании, локации, список людей */
-		readEvents(monthStart, monthEnd)
+		readEventsList(monthStart, monthEnd)
 			.then((res) => {
 				calendar.events.set(
 					res.payload.map((apiEv) => {
@@ -50,6 +50,8 @@ export const Calendar = () => {
 						return {
 							id: apiEv.id,
 							title: apiEv.company,
+							location: apiEv.location,
+							people: apiEv.players,
 							start: start.format(EVENT_FORMAT),
 							end: end.format(EVENT_FORMAT),
 						};

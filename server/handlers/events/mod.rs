@@ -1,5 +1,8 @@
 use ::std::sync::Arc;
-use axum::{Extension, extract::State};
+use axum::{
+	Extension,
+	extract::{Path, State},
+};
 use futures::try_join;
 use uuid::Uuid;
 
@@ -12,19 +15,42 @@ use crate::{
 	system_models::{AppError, AppResponse, AppResult},
 };
 
-pub async fn read_event(
+pub async fn read_events_list(
 	State(repo): State<Arc<Repository>>,
-	Extension(_user_id): Extension<Option<Uuid>>,
+	Extension(user_id): Extension<Option<Uuid>>,
 	Dto(query): Dto<ReadEventsDto>,
 ) -> AppResult {
-	let events = repo.read_events(query.date_from, query.date_to).await?;
+	let events = repo
+		.read_events_list(query.date_from, query.date_to, user_id)
+		.await?;
 
-	let json_value = serde_json::to_value(&events)?;
+	let json_value = serde_json::to_value(events)?;
 
 	return Ok(AppResponse::scenario_success(
 		"Список событий",
 		Some(json_value),
 	));
+}
+
+pub async fn read_event(
+	State(repo): State<Arc<Repository>>,
+	Extension(user_id): Extension<Option<Uuid>>,
+	Path(event_id): Path<Uuid>,
+) -> AppResult {
+	let event = repo.read_event(event_id, user_id).await?;
+
+	let res = match event {
+		None => {
+			let payload = serde_json::to_value(event_id)?;
+			AppResponse::scenario_fail("Событие не найдено", Some(payload))
+		}
+		Some(ev) => {
+			let payload = serde_json::to_value(ev)?;
+			AppResponse::scenario_success("Событие", Some(payload))
+		}
+	};
+
+	Ok(res)
 }
 
 pub async fn add_event(
@@ -45,6 +71,45 @@ pub async fn add_event(
 		"Событие успешно создано",
 		new_evt_id.to_api(),
 	));
+}
+
+pub async fn apply_event(
+	State(repo): State<Arc<Repository>>,
+	Extension(user_id): Extension<Uuid>,
+	Path(event_id): Path<Uuid>,
+) -> AppResult {
+	let event = repo.get_event_for_applying(event_id, user_id).await?;
+
+	let Some(event) = event else {
+		let payload = serde_json::to_value(event_id)?;
+		return Ok(AppResponse::scenario_fail(
+			"Событие не найдено",
+			Some(payload),
+		));
+	};
+
+	if event.you_are_master {
+		let payload = serde_json::to_value(event_id)?;
+		return Ok(AppResponse::scenario_fail(
+			"Вы являетесь мастером на данном событии",
+			Some(payload),
+		));
+	}
+
+	if event.already_applied {
+		let payload = serde_json::to_value(event_id)?;
+		return Ok(AppResponse::scenario_fail(
+			"Вы уже подали заявку на данное событие",
+			Some(payload),
+		));
+	}
+
+	let new_app_id = repo.apply_event(event_id, user_id).await?;
+
+	Ok(AppResponse::scenario_success(
+		"Заявка на событие успешно создана",
+		new_app_id.to_api(),
+	))
 }
 
 async fn check_company(
