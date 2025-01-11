@@ -6,13 +6,13 @@ use ::std::sync::Arc;
 use axum::{
 	Extension,
 	extract::State,
-	http::{HeaderValue, header},
 	response::{IntoResponse, Response},
 };
 use uuid::Uuid;
 
 use crate::{
-	auth, config,
+	auth,
+	cookie::{remove_auth_cookie, set_auth_cookie},
 	dto::{
 		Dto,
 		auth::{RegistrationDto, SignInDto},
@@ -51,35 +51,21 @@ pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInD
 		Ok(jwt) => jwt,
 	};
 
-	let (cookie_key, secure) = config::get_cookie_params();
-
-	let auth_cookie = format!(
-		"{cookie_key}={jwt}; SameSite; {secure}HttpOnly; max-age={}",
-		auth::SESSION_LIFETIME,
-	);
-
-	let Ok(cookie_val) = HeaderValue::from_str(&auth_cookie) else {
-		return AppError::system_error("Ошибка установки cookie").into_response();
-	};
-
 	let mut res = AppResponse::scenario_success("Успешная авторизация", None).into_response();
-	res.headers_mut().append(header::SET_COOKIE, cookie_val);
-	res
+
+	match set_auth_cookie(&mut res, jwt) {
+		Ok(()) => res,
+		Err(err) => err.into_response(),
+	}
 }
 
 pub async fn logout() -> Response {
-	let (cookie_key, secure) = config::get_cookie_params();
-
-	let auth_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0",);
-
-	let Ok(cookie_val) = HeaderValue::from_str(&auth_cookie) else {
-		return AppError::system_error("Ошибка установки cookie").into_response();
-	};
-
 	let mut res = AppResponse::scenario_success("Сессия завершена", None).into_response();
 
-	res.headers_mut().append(header::SET_COOKIE, cookie_val);
-	res
+	match remove_auth_cookie(&mut res) {
+		Ok(()) => res,
+		Err(err) => err.into_response(),
+	}
 }
 
 pub async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {

@@ -9,7 +9,7 @@ use argon2::{
 };
 use axum::{
 	body::Body,
-	http::{HeaderValue, Request, header},
+	http::Request,
 	middleware::Next,
 	response::{IntoResponse, Response},
 };
@@ -25,11 +25,11 @@ use tokio::time::sleep;
 use uuid::Uuid;
 
 use crate::{
-	config,
+	cookie::{extract_jwt_from_cookie, remove_auth_cookie},
 	system_models::{AppError, AppResponse, CoreResult},
 };
 
-pub const SESSION_LIFETIME: u64 = 3600; // 1 час в секундах
+pub(crate) const SESSION_LIFETIME: u64 = 3600; // 1 час в секундах
 
 lazy_static! {
 	// default params
@@ -104,11 +104,7 @@ pub(crate) async fn auth_middleware(
 	mut req: Request<Body>,
 	next: Next,
 ) -> Response {
-	let (cookie_key, _) = config::get_cookie_params();
-
-	let cookie_token = cookie_jar.get(cookie_key).map(|cookie| cookie.value());
-
-	let Some(jwt) = cookie_token else {
+	let Some(jwt) = extract_jwt_from_cookie(&cookie_jar) else {
 		return AppError::unauthorized("Необходима авторизация").into_response();
 	};
 
@@ -139,11 +135,7 @@ pub(crate) async fn optional_auth_middleware(
 	mut req: Request<Body>,
 	next: Next,
 ) -> Response {
-	let (cookie_key, _) = config::get_cookie_params();
-
-	let cookie_token = cookie_jar.get(cookie_key).map(|cookie| cookie.value());
-
-	let Some(jwt) = cookie_token else {
+	let Some(jwt) = extract_jwt_from_cookie(&cookie_jar) else {
 		req.extensions_mut().insert(None::<Uuid>);
 
 		return next.run(req).await;
@@ -175,17 +167,10 @@ async fn handle_invalid_jwt_for_optional_auth(mut req: Request<Body>, next: Next
 	req.extensions_mut().insert(None::<Uuid>);
 	let mut res = next.run(req).await;
 
-	// todo: надо как-то поместить работу с куками в одно место
-	let (cookie_key, secure) = config::get_cookie_params();
-	let zero_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
-
-	if let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) {
-		res.headers_mut().append(header::SET_COOKIE, cookie_val);
-	} else {
-		return AppError::system_error("Ошибка установки cookie").into_response();
+	match remove_auth_cookie(&mut res) {
+		Ok(()) => res,
+		Err(err) => err.into_response(),
 	}
-
-	res
 }
 
 pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {

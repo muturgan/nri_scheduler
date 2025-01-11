@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod config;
+pub mod cookie;
 pub mod dto;
 pub mod graceful_shutdown;
 pub mod handlers;
