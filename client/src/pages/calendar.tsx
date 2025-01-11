@@ -42,21 +42,23 @@ export const Calendar = () => {
 		/** @todo передавать таймзону, возвращать в нужной таймзоне, присылать название кампании, локации, список людей */
 		readEventsList(monthStart, monthEnd)
 			.then((res) => {
-				calendar.events.set(
-					res.payload.map((apiEv) => {
-						const start = dayjs(apiEv.date);
-						const end = start.add(2, 'h');
+				if (res !== null) {
+					calendar.events.set(
+						res.payload.map((apiEv) => {
+							const start = dayjs(apiEv.date);
+							const end = start.add(2, 'h');
 
-						return {
-							id: apiEv.id,
-							title: apiEv.company,
-							location: apiEv.location,
-							people: apiEv.players,
-							start: start.format(EVENT_FORMAT),
-							end: end.format(EVENT_FORMAT),
-						};
-					})
-				);
+							return {
+								id: apiEv.id,
+								title: apiEv.company,
+								location: apiEv.location,
+								people: apiEv.players,
+								start: start.format(EVENT_FORMAT),
+								end: end.format(EVENT_FORMAT),
+							};
+						})
+					);
+				}
 			});
 	}, []);
 

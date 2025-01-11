@@ -25,13 +25,13 @@ export const SignInPage = () => {
 	const handleSubmit = () => {
 		signIn(email, password)
 			.then((res) => {
-				console.log('after login');
-				console.log(res);
-				return whoIAm();
+				return res === null ? null : whoIAm();
 			})
 			.then((res) => {
-				console.log('who I am:');
-				console.log(res);
+				if (res !== null) {
+					console.log('who I am:');
+					console.log(res);
+				}
 			});
 	};
 

@@ -47,8 +47,10 @@ export const RegistrationPage = () => {
 
 	const handleSubmit = () => {
 		registration(name, email, password1)
-			.finally(() => {
-				navigate('/signin', true);
+			.then((res) => {
+				if (res !== null) {
+					navigate('/signin', true);
+				}
 			});
 	};
 

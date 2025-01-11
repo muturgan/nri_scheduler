@@ -1,3 +1,6 @@
+import { route as navigate } from 'preact-router';
+import { toast } from 'react-hot-toast';
+
 import { startFetching, stopFetching } from "./store/fetching";
 
 const POST = 'POST';
@@ -23,7 +26,7 @@ export interface IRequestInit {
 	readonly timeoutMilliseconds?: number;
 }
 
-const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T>> => {
+const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T> | null> => {
 	let controller: AbortController | undefined;
 	let timeoutId: ReturnType<typeof setTimeout>;
 
@@ -50,15 +53,15 @@ const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T>> =
 		});
 };
 
-const checkResponse = async <T>(response: Response): Promise<IApiResponse<T>> => {
+const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | null> => {
 	if (response.ok === false) {
-		let payload: object | string | null = null;
+		let body: object | string | null = null;
 
 		try {
-			payload = await response.text();
+			body = await response.text();
 			try {
-				const parsed = JSON.parse(payload);
-				payload = parsed;
+				const parsed = JSON.parse(body);
+				body = parsed;
 			} catch {
 				// payload is not a json string
 			}
@@ -67,36 +70,50 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T>> =>
 			console.error(err);
 		}
 
-		let status = response.status;
+		toast.error('Ошибка обращения к серверу');
+		console.info('Http response is not ok');
+		console.error({
+			status: response.status,
+			statusText: response.statusText,
+			body,
+		});
 
-		let apiRes: IApiResponse<any> = {
-			status: EScenarioStatus.SYSTEM_ERROR,
-			result: `(${status}) ${typeof payload === 'string' ? payload : 'Неизвестная ошибка'}`,
-			payload: typeof payload === 'string' ? null : {payload, status},
-		};
-
-		return apiRes;
+		return null;
 	}
 
 	try {
 		let apiRes: IApiResponse<T> = await response.json();
 
-		if (apiRes.status === EScenarioStatus.UNAUTHORIZED || apiRes.status === EScenarioStatus.SESSION_EXPIRED) {
-			/** @TODO обработать ошибку авторизации */
+		switch (apiRes.status) {
+			case EScenarioStatus.SCENARIO_SUCCESS:
+				return apiRes;
+
+			case EScenarioStatus.UNAUTHORIZED:
+			/** @todo добавить refresh */
+			case EScenarioStatus.SESSION_EXPIRED:
+				navigate('/signin');
+				break;
+
+			case EScenarioStatus.SCENARIO_FAIL:
+			case EScenarioStatus.SYSTEM_ERROR:
+				toast.error(apiRes.result);
+				break;
+
+			default:
+				toast.error('Неизвестный статус ответа');
+				console.info('Неизвестный статус');
+				console.error(apiRes);
+				break;
 		}
 
-		return apiRes;
+		return null;
 
 	} catch (err) {
-		let msg = (err as Error | undefined)?.message;
+		toast.error('Неизвестная ошибка');
+		console.info('Хрень какая-то...');
+		console.error(err);
 
-		let apiRes: IApiResponse<any> = {
-			status: EScenarioStatus.SYSTEM_ERROR,
-			result: typeof msg === 'string' ? msg : 'Ошибка получения ответа',
-			payload: typeof msg === 'string' ? null : err as object,
-		};
-
-		return apiRes;
+		return null;
 	}
 };
 

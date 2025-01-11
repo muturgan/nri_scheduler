@@ -20,7 +20,8 @@
 		"preact": "^10.25.4",
 		"preact-async-route": "^2.2.1",
 		"preact-router": "^4.1.2",
-		"purecss": "^3.0.0"
+		"purecss": "^3.0.0",
+		"react-hot-toast": "^2.5.1"
 	},
 	"devDependencies": {
 		"@preact/preset-vite": "^2.9.4",
