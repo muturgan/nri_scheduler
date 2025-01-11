@@ -3,8 +3,8 @@ my outstanding trpg scheduler
 
 ## steps to start a local development
 - clone the repository ¯\\\_(ツ)_/¯
-- exec `cp env.example .env`
 - exec `cargo test` to enable git hooks
+- exec `cp env.example .env`
 - fill the .env file with values
 - exec `docker compose up` to start a database
 - exec `./script.sh` to start an axum server
