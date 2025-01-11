@@ -67,6 +67,21 @@ pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInD
 	res
 }
 
+pub async fn logout() -> Response {
+	let (cookie_key, secure) = config::get_cookie_params();
+
+	let auth_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0",);
+
+	let Ok(cookie_val) = HeaderValue::from_str(&auth_cookie) else {
+		return AppError::system_error("Ошибка установки cookie").into_response();
+	};
+
+	let mut res = AppResponse::scenario_success("Сессия завершена", None).into_response();
+
+	res.headers_mut().append(header::SET_COOKIE, cookie_val);
+	res
+}
+
 pub async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {
 	AppResponse::scenario_success(
 		"I know who I am",

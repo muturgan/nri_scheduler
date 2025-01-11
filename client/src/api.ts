@@ -143,6 +143,8 @@ export const signIn = (email: string, password: string) => {
 	);
 };
 
+export const logout = () => ajax<null>('/api/logout');
+
 export interface IApiEvent {
 	readonly id: string;
 	readonly company: string;

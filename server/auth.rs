@@ -155,8 +155,8 @@ pub(crate) async fn optional_auth_middleware(
 		req.extensions_mut().insert(None::<Uuid>);
 		let mut res = next.run(req).await;
 
-		let (cookie_key, _) = config::get_cookie_params();
-		let zero_cookie = format!("{cookie_key}=any; max-age=0");
+		let (cookie_key, secure) = config::get_cookie_params();
+		let zero_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
 		let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) else {
 			return AppError::system_error("Ошибка установки cookie").into_response();
 		};
@@ -176,9 +176,9 @@ pub(crate) async fn optional_auth_middleware(
 		req.extensions_mut().insert(None::<Uuid>);
 		let mut res = next.run(req).await;
 
-		let (cookie_key, _) = config::get_cookie_params();
+		let (cookie_key, secure) = config::get_cookie_params();
 		// todo: надо как-то поместить работу с куками в одно место
-		let zero_cookie = format!("{cookie_key}=any; max-age=0");
+		let zero_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
 		let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) else {
 			return AppError::system_error("Ошибка установки cookie").into_response();
 		};

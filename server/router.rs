@@ -15,6 +15,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 			Router::new()
 				.route("/registration", post(H::registration))
 				.route("/signin", post(H::sign_in))
+				.route("/logout", get(H::logout))
 				.route("/locations", post(H::locations::add_location))
 				.merge(
 					Router::new()
