@@ -5,7 +5,7 @@ my outstanding trpg scheduler
 - clone the repository ¯\\\_(ツ)_/¯
 - exec `cargo test` to enable git hooks
 - exec `cp env.example .env`
-- fill the .env file with values
+- fill the `.env` file with values
 - exec `docker compose up` to start a database
 - exec `./script.sh` to start an axum server
 - exec `npm run dev` to start a client
