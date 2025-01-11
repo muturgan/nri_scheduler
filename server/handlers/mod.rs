@@ -53,7 +53,10 @@ pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInD
 
 	let (cookie_key, secure) = config::get_cookie_params();
 
-	let auth_cookie = format!("{cookie_key}={}; SameSite; {secure}HttpOnly", jwt);
+	let auth_cookie = format!(
+		"{cookie_key}={jwt}; SameSite; {secure}HttpOnly; max-age={}",
+		auth::SESSION_LIFETIME,
+	);
 
 	let Ok(cookie_val) = HeaderValue::from_str(&auth_cookie) else {
 		return AppError::system_error("Ошибка установки cookie").into_response();

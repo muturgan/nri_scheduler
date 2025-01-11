@@ -9,7 +9,7 @@ use argon2::{
 };
 use axum::{
 	body::Body,
-	http::Request,
+	http::{HeaderValue, Request, header},
 	middleware::Next,
 	response::{IntoResponse, Response},
 };
@@ -28,6 +28,8 @@ use crate::{
 	config,
 	system_models::{AppError, AppResponse, CoreResult},
 };
+
+pub const SESSION_LIFETIME: u64 = 3600; // 1 час в секундах
 
 lazy_static! {
 	// default params
@@ -150,7 +152,17 @@ pub(crate) async fn optional_auth_middleware(
 	let Ok(TokenData { claims, .. }) =
 		decode_and_verify::<Claims>(jwt, &PUBLIC_KEY, &JWT_VALIDATION)
 	else {
-		return AppError::unauthorized("Неверный пароль").into_response();
+		req.extensions_mut().insert(None::<Uuid>);
+		let mut res = next.run(req).await;
+
+		let (cookie_key, _) = config::get_cookie_params();
+		let zero_cookie = format!("{cookie_key}=any; max-age=0");
+		let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) else {
+			return AppError::system_error("Ошибка установки cookie").into_response();
+		};
+		res.headers_mut().append(header::SET_COOKIE, cookie_val);
+
+		return res;
 	};
 
 	let Ok(now) = SystemTime::now()
@@ -161,7 +173,18 @@ pub(crate) async fn optional_auth_middleware(
 	};
 
 	if now >= claims.exp {
-		return AppError::SessionExpired.into_response();
+		req.extensions_mut().insert(None::<Uuid>);
+		let mut res = next.run(req).await;
+
+		let (cookie_key, _) = config::get_cookie_params();
+		// todo: надо как-то поместить работу с куками в одно место
+		let zero_cookie = format!("{cookie_key}=any; max-age=0");
+		let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) else {
+			return AppError::system_error("Ошибка установки cookie").into_response();
+		};
+		res.headers_mut().append(header::SET_COOKIE, cookie_val);
+
+		return res;
 	}
 
 	req.extensions_mut().insert(Some(claims.sub));
@@ -170,12 +193,12 @@ pub(crate) async fn optional_auth_middleware(
 }
 
 pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
-	// Время истечения срока действия токена (текущее время + 1 час)
+	// Время истечения срока действия токена (текущее время + время жизни сессии)
 	let expiration_time = SystemTime::now()
 		.duration_since(UNIX_EPOCH)
 		.map_err(|_| AppError::system_error("Time went backwards"))?
 		.as_secs()
-		+ 3600;
+		+ SESSION_LIFETIME;
 
 	let claims = Claims {
 		sub: user_id,
