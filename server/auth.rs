@@ -152,17 +152,7 @@ pub(crate) async fn optional_auth_middleware(
 	let Ok(TokenData { claims, .. }) =
 		decode_and_verify::<Claims>(jwt, &PUBLIC_KEY, &JWT_VALIDATION)
 	else {
-		req.extensions_mut().insert(None::<Uuid>);
-		let mut res = next.run(req).await;
-
-		let (cookie_key, secure) = config::get_cookie_params();
-		let zero_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
-		let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) else {
-			return AppError::system_error("Ошибка установки cookie").into_response();
-		};
-		res.headers_mut().append(header::SET_COOKIE, cookie_val);
-
-		return res;
+		return handle_invalid_jwt_for_optional_auth(req, next).await;
 	};
 
 	let Ok(now) = SystemTime::now()
@@ -173,23 +163,29 @@ pub(crate) async fn optional_auth_middleware(
 	};
 
 	if now >= claims.exp {
-		req.extensions_mut().insert(None::<Uuid>);
-		let mut res = next.run(req).await;
-
-		let (cookie_key, secure) = config::get_cookie_params();
-		// todo: надо как-то поместить работу с куками в одно место
-		let zero_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
-		let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) else {
-			return AppError::system_error("Ошибка установки cookie").into_response();
-		};
-		res.headers_mut().append(header::SET_COOKIE, cookie_val);
-
-		return res;
+		return handle_invalid_jwt_for_optional_auth(req, next).await;
 	}
 
 	req.extensions_mut().insert(Some(claims.sub));
 
 	next.run(req).await
+}
+
+async fn handle_invalid_jwt_for_optional_auth(mut req: Request<Body>, next: Next) -> Response {
+	req.extensions_mut().insert(None::<Uuid>);
+	let mut res = next.run(req).await;
+
+	// todo: надо как-то поместить работу с куками в одно место
+	let (cookie_key, secure) = config::get_cookie_params();
+	let zero_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
+
+	if let Ok(cookie_val) = HeaderValue::from_str(&zero_cookie) {
+		res.headers_mut().append(header::SET_COOKIE, cookie_val);
+	} else {
+		return AppError::system_error("Ошибка установки cookie").into_response();
+	}
+
+	res
 }
 
 pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
