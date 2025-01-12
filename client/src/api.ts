@@ -2,6 +2,7 @@ import { route as navigate } from 'preact-router';
 import { toast } from 'react-hot-toast';
 
 import { startFetching, stopFetching } from "./store/fetching";
+import { enter, leave } from "./store/profile";
 
 const POST = 'POST';
 
@@ -91,6 +92,7 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | n
 			case EScenarioStatus.UNAUTHORIZED:
 			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
+				leave();
 				navigate('/signin');
 				break;
 
@@ -140,10 +142,24 @@ export const signIn = (email: string, password: string) => {
 	return ajax<null>(
 		'/api/signin',
 		prepareAjax({email, password}, POST),
-	);
+	)
+	.then((res) => {
+		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
+			enter();
+		}
+
+		return res;
+	});
 };
 
-export const logout = () => ajax<null>('/api/logout');
+export const logout = () => ajax<null>('/api/logout')
+	.then((res) => {
+		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
+			leave();
+		}
+
+		return res;
+	});
 
 export interface IApiEvent {
 	readonly id: string;
@@ -158,6 +174,10 @@ export interface IApiEvent {
 
 export const readEventsList = (from: string, to: string) => {
 	return ajax<IApiEvent[]>(`/api/events?date_from=${encodeURIComponent(from)}&date_to=${encodeURIComponent(to)}`);
+};
+
+export const readEvent = (eventId: string) => {
+	return ajax<IApiEvent>(`/api/events/${eventId}`);
 };
 
 export const whoIAm = () => {

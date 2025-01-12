@@ -14,7 +14,23 @@ indent_style = tab
 indent_size = 1
 indent_style = space
 
-[*.js, *.ts, *.tsx]
+[*.ts]
+indent_size = 3
+indent_style = tab
+
+[*.tsx]
+indent_size = 3
+indent_style = tab
+
+[*.js]
+indent_size = 3
+indent_style = tab
+
+[*.html]
+indent_size = 3
+indent_style = tab
+
+[*.css]
 indent_size = 3
 indent_style = tab
 

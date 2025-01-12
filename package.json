@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@nanostores/preact": "^0.5.2",
+		"@nanostores/query": "^0.3.4",
 		"@schedule-x/calendar": "^2.12.1",
 		"@schedule-x/preact": "^2.9.1",
 		"@schedule-x/theme-default": "^2.13.0",
@@ -27,7 +28,7 @@
 		"@preact/preset-vite": "^2.9.4",
 		"@types/node": "^22.10.5",
 		"terser": "^5.37.0",
-		"typescript": "^5.7.2",
+		"typescript": "^5.7.3",
 		"vite": "^6.0.7"
 	}
 }

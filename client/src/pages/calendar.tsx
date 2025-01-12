@@ -2,23 +2,23 @@ import '@schedule-x/theme-default/dist/index.css';
 import './calendar.css';
 
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/preact';
 import { createViewMonthGrid } from '@schedule-x/calendar';
 
 import { h } from 'preact';
 import { useEffect } from 'preact/hooks';
+import { route as navigate } from 'preact-router';
+import { useStore } from '@nanostores/preact';
+
 import { readEventsList } from '../api';
+import { $tz } from '../store/tz';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-const localTz = dayjs.tz.guess();
 const EVENT_FORMAT = 'YYYY-MM-DD HH:mm';
 
-export const Calendar = () => {
+export const CalendarPage = () => {
+	const tz = useStore($tz);
+
 	const calendar = useCalendarApp({
 		locale: 'ru-RU',
 		views: [
@@ -26,16 +26,13 @@ export const Calendar = () => {
 		],
 		callbacks: {
 			onEventClick(event) {
-				console.log(event);
+				navigate(`/event/${event.id}`);
 			},
-			onClickDate(date) {
-				console.log({date});
-			}
 		},
 	});
 
 	useEffect(() => {
-		const now = dayjs().tz(localTz);
+		const now = dayjs().tz(tz);
 		const monthStart = now.startOf('M').format();
 		const monthEnd = now.endOf('M').format();
 

@@ -7,6 +7,7 @@ import AsyncRoute from 'preact-async-route';
 import { Toaster } from 'react-hot-toast';
 
 import { SignInPage } from './pages/sign_in';
+import { EventPage } from './pages/event';
 
 const App = () => (
 	<>
@@ -18,8 +19,9 @@ const App = () => (
 		<Route path="/signin" component={SignInPage} />
 		<AsyncRoute
 			path="/calendar"
-			getComponent={() => import('./pages/calendar').then((module) => module.Calendar)}
+			getComponent={() => import('./pages/calendar').then((module) => module.CalendarPage)}
 		/>
+		<Route path="/event/:id" component={EventPage} />
 		<Route default component={() => <h1>404 - Страница не найдена</h1>} />
 	</Router>
 	<Toaster
