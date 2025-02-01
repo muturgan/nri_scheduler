@@ -1,6 +1,6 @@
 #!/bin/sh
 current_branch=$(git branch --show-current)
 
-if [ $(git diff --name-only HEAD..origin/$current_branch | grep '\.rs$') ]; then
+if git diff --name-only HEAD..origin/$current_branch | grep -q '\.rs$'; then
 	sh scripts.sh check
 fi
