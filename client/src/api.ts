@@ -5,6 +5,7 @@ import { startFetching, stopFetching } from "./store/fetching";
 import { enter, leave } from "./store/profile";
 
 const POST = 'POST';
+const URL_ENCODED = true;
 
 export const enum EScenarioStatus {
 	SCENARIO_SUCCESS,
@@ -21,7 +22,7 @@ export interface IApiResponse<T = null> {
 }
 
 export interface IRequestInit {
-	readonly body?: string | FormData;
+	readonly body?: string | FormData | URLSearchParams;
 	readonly headers?: Record<string, string>;
 	readonly method?: string;
 	readonly timeoutMilliseconds?: number;
@@ -119,13 +120,17 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | n
 	}
 };
 
-const prepareAjax = (payload?: object, method?: string): IRequestInit => {
+const prepareAjax = (payload?: object, method?: string, urlencoded = false): IRequestInit => {
 	return {
 		body: payload
-			? JSON.stringify(payload)
+			? urlencoded
+				? new URLSearchParams(payload as Record<string, string>)
+				: JSON.stringify(payload)
 			: undefined,
 		headers: payload
-			? {'Content-Type': 'application/json'}
+			? urlencoded
+				? {'Content-Type': 'application/x-www-form-urlencoded'}
+				: {'Content-Type': 'application/json'}
 			: undefined,
 		method,
 	};
@@ -134,14 +139,14 @@ const prepareAjax = (payload?: object, method?: string): IRequestInit => {
 export const registration = (nickname: string, email: string, password: string) => {
 	return ajax<null>(
 		'/api/registration',
-		prepareAjax({nickname, email, password}, POST),
+		prepareAjax({nickname, email, password}, POST, URL_ENCODED),
 	);
 };
 
 export const signIn = (email: string, password: string) => {
 	return ajax<null>(
 		'/api/signin',
-		prepareAjax({email, password}, POST),
+		prepareAjax({email, password}, POST, URL_ENCODED),
 	)
 	.then((res) => {
 		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
@@ -166,6 +171,7 @@ export interface IApiEvent {
 	readonly company: string;
 	readonly master: string;
 	readonly location: string;
+	readonly location_id: string;
 	readonly date: string;
 	readonly players: string[];
 	readonly you_applied: boolean;

@@ -3,6 +3,9 @@ CREATE TABLE "events" (
 	"company"    UUID  NOT NULL,
 	"location"   UUID,
 	"date"       TIMESTAMPTZ,
+	"max_slots"  smallint
+						CONSTRAINT positive_slots CHECK (max_slots > 0)
+						DEFAULT NULL,
 
 	CONSTRAINT "PK_events" PRIMARY KEY ("id"),
 	CONSTRAINT "FK_events_companies" FOREIGN KEY ("company")

@@ -1,4 +1,7 @@
+mod init;
+
 use ::std::{env::var as readEnvVar, net::SocketAddr};
+pub use init::init_static;
 
 pub fn get_http_host_to_serve() -> SocketAddr {
 	let app_host = readEnvVar("APP_HOST").expect("APP_HOST environment variable is not defined");
@@ -54,8 +57,5 @@ pub fn get_cookie_params() -> (&'static str, &'static str) {
 }
 
 pub fn is_test() -> bool {
-	return match readEnvVar("ENV") {
-		Err(_) => false,
-		Ok(val) => val == "test",
-	};
+	readEnvVar("ENV").is_ok_and(|val| val == "test")
 }

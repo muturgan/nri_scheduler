@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use super::AppResult;
 use crate::{
-	repository::models,
+	repository::models::User,
 	system_models::{errors::AppError, scenario_status::EScenarioStatus},
 };
 
@@ -84,7 +84,7 @@ impl AppResponse {
 		return Ok(Self::scenario_success("Промокод успешно активирован", None));
 	}
 
-	pub fn user_list(users: Vec<models::User>) -> AppResult {
+	pub fn user_list(users: &[User]) -> AppResult {
 		let payload = serde_json::json!(users);
 		return Ok(Self::scenario_success(
 			"Список пользователей",

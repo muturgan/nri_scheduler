@@ -42,8 +42,8 @@ pub async fn shutdown_signal(repo: Arc<Repository>) {
 	let sigterm = std::future::pending::<()>();
 
 	tokio::select! {
-		_ = ctrl_c() => {},
-		_ = sigint() => {},
-		_ = sigterm() => {},
+		() = ctrl_c() => {},
+		() = sigint() => {},
+		() = sigterm() => {},
 	}
 }

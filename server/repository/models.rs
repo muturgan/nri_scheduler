@@ -42,6 +42,7 @@ pub struct Event {
 	pub company: String,
 	pub master: String,
 	pub location: String,
+	pub location_id: Uuid,
 	pub date: DateTime<Utc>,
 	pub players: SqlxJson<Vec<String>>,
 	pub you_applied: bool,

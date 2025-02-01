@@ -6,16 +6,16 @@
 		"dev": "export $(cat .env | grep -v '^#' | xargs) && vite",
 		"force": "vite --force",
 		"build": "tsc && vite build",
-		"preview": "npm run build && vite preview",
+		"preview": "npm run build && export $(cat .env | grep -v '^#' | xargs) && vite preview",
 		"tsc": "tsc",
 		"prebuild": "rm -rf static || npx rimraf static"
 	},
 	"dependencies": {
 		"@nanostores/preact": "^0.5.2",
 		"@nanostores/query": "^0.3.4",
-		"@schedule-x/calendar": "^2.12.1",
-		"@schedule-x/preact": "^2.9.1",
-		"@schedule-x/theme-default": "^2.13.0",
+		"@schedule-x/calendar": "^2.16.1",
+		"@schedule-x/preact": "^2.11.1",
+		"@schedule-x/theme-default": "^2.16.1",
 		"dayjs": "^1.11.13",
 		"nanostores": "^0.11.3",
 		"preact": "^10.25.4",
@@ -25,10 +25,10 @@
 		"react-hot-toast": "^2.5.1"
 	},
 	"devDependencies": {
-		"@preact/preset-vite": "^2.9.4",
-		"@types/node": "^22.10.5",
+		"@preact/preset-vite": "^2.10.0",
+		"@types/node": "^22.13.0",
 		"terser": "^5.37.0",
 		"typescript": "^5.7.3",
-		"vite": "^6.0.7"
+		"vite": "^6.0.11"
 	}
 }

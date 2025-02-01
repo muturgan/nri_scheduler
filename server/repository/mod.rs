@@ -7,6 +7,7 @@ use models::{Company, Event, EventForApplying, Location, UserForAuth};
 use uuid::Uuid;
 
 use crate::{
+	dto::event::ReadEventsDto,
 	shared::RecordId,
 	system_models::{CoreResult, ServingError},
 };
@@ -37,8 +38,7 @@ trait Store {
 
 	async fn read_events_list(
 		&self,
-		date_from: DateTime<FixedOffset>,
-		date_to: DateTime<FixedOffset>,
+		query: ReadEventsDto,
 		player_id: Option<Uuid>,
 	) -> CoreResult<Vec<Event>>;
 
@@ -122,14 +122,10 @@ impl Repository {
 
 	pub(crate) async fn read_events_list(
 		&self,
-		date_from: DateTime<FixedOffset>,
-		date_to: DateTime<FixedOffset>,
+		query: ReadEventsDto,
 		player_id: Option<Uuid>,
 	) -> CoreResult<Vec<Event>> {
-		return self
-			.store
-			.read_events_list(date_from, date_to, player_id)
-			.await;
+		return self.store.read_events_list(query, player_id).await;
 	}
 
 	pub(crate) async fn read_event(

@@ -1,5 +1,6 @@
 use std::{
 	fs::read_to_string as read_file_to_string,
+	sync::LazyLock,
 	time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -18,7 +19,6 @@ use jsonwebtoken::{
 	Algorithm::ES256, DecodingKey, EncodingKey, Header as JwtHeader, TokenData, Validation,
 	decode as decode_and_verify, encode,
 };
-use lazy_static::lazy_static;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
@@ -31,34 +31,36 @@ use crate::{
 
 pub(crate) const SESSION_LIFETIME: u64 = 3600; // 1 час в секундах
 
-lazy_static! {
-	// default params
-	// alg: argon2id
-	// version: 19
-	// params: m=19456,t=2,p=1
-	// prefix: $argon2id$v=19$m=19456,t=2,p=1$ (len 31, salt+delimiter+hash len 66)
-	// $argon2id$v=19$m=19456,t=2,p=1$goAxCzRvjpKz3c2yj1xIdQ$j39vSFfn0rSE67hsPJ58qz3TdvEr1kzFLUf8oIL7g0E
-	// pref.len = 31
-	// suf.len = 66
-	static ref ARGON: Argon2<'static> = Argon2::default();
+// default params
+// alg: argon2id
+// version: 19
+// params: m=19456,t=2,p=1
+// prefix: $argon2id$v=19$m=19456,t=2,p=1$ (len 31, salt+delimiter+hash len 66)
+// $argon2id$v=19$m=19456,t=2,p=1$goAxCzRvjpKz3c2yj1xIdQ$j39vSFfn0rSE67hsPJ58qz3TdvEr1kzFLUf8oIL7g0E
+// pref.len = 31
+// suf.len = 66
+static ARGON: LazyLock<Argon2<'static>> = LazyLock::new(Argon2::default);
 
-	static ref PRIVATE_KEY: EncodingKey = EncodingKey::from_ec_pem(
+static PRIVATE_KEY: LazyLock<EncodingKey> = LazyLock::new(|| {
+	EncodingKey::from_ec_pem(
 		read_file_to_string("private_key.pem")
 			.expect("can't read a private key")
-			.as_bytes()
+			.as_bytes(),
 	)
-	.expect("can't parse private key");
+	.expect("can't parse private key")
+});
 
-	static ref PUBLIC_KEY: DecodingKey = DecodingKey::from_ec_pem(
+static PUBLIC_KEY: LazyLock<DecodingKey> = LazyLock::new(|| {
+	DecodingKey::from_ec_pem(
 		read_file_to_string("public_key.pem")
 			.expect("can't read a public key")
-			.as_bytes()
+			.as_bytes(),
 	)
-	.expect("can't parse a public key");
+	.expect("can't parse a public key")
+});
 
-	static ref JWT_HEADER: JwtHeader = JwtHeader::new(ES256);
-	static ref JWT_VALIDATION: Validation = Validation::new(ES256);
-}
+static JWT_HEADER: LazyLock<JwtHeader> = LazyLock::new(|| JwtHeader::new(ES256));
+static JWT_VALIDATION: LazyLock<Validation> = LazyLock::new(|| Validation::new(ES256));
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Claims {
@@ -93,7 +95,7 @@ pub(crate) async fn verify_password(password: &str, password_hash: String) -> Co
 			AppError::unauthorized("Неверный пароль")
 		})?;
 
-	let random_millis: u64 = rand::thread_rng().gen_range(1..=50);
+	let random_millis: u64 = rand::rng().random_range(1..=50);
 	sleep(Duration::from_millis(random_millis)).await;
 
 	Ok(())
@@ -192,4 +194,16 @@ pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
 	})?;
 
 	Ok(token)
+}
+
+pub(super) fn init_static() {
+	let _ = *PRIVATE_KEY;
+	println!("+ a private key is ok");
+
+	let _ = *PUBLIC_KEY;
+	println!("+ a public key is ok");
+
+	let _ = *ARGON;
+	let _ = *JWT_HEADER;
+	let _ = *JWT_VALIDATION;
 }

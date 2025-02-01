@@ -53,7 +53,7 @@ pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInD
 
 	let mut res = AppResponse::scenario_success("Успешная авторизация", None).into_response();
 
-	match set_auth_cookie(&mut res, jwt) {
+	match set_auth_cookie(&mut res, &jwt) {
 		Ok(()) => res,
 		Err(err) => err.into_response(),
 	}

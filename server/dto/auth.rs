@@ -1,12 +1,17 @@
+use ::std::sync::LazyLock;
 use derive_masked::DebugMasked;
-use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Deserializer, de::Error as _};
 
-lazy_static! {
-	static ref EMAIL_REGEX: Regex =
-		Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").expect("Email regex should build without errors");
+static EMAIL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+	Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").expect("Email regex should build without errors")
+});
+
+pub(super) fn init_static() {
+	let _ = *EMAIL_REGEX;
+	println!("+ a email regex is ok");
 }
+
 #[derive(DebugMasked)]
 pub struct RegistrationDto {
 	pub nickname: String,

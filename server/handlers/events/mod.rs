@@ -20,9 +20,7 @@ pub async fn read_events_list(
 	Extension(user_id): Extension<Option<Uuid>>,
 	Dto(query): Dto<ReadEventsDto>,
 ) -> AppResult {
-	let events = repo
-		.read_events_list(query.date_from, query.date_to, user_id)
-		.await?;
+	let events = repo.read_events_list(query, user_id).await?;
 
 	let json_value = serde_json::to_value(events)?;
 

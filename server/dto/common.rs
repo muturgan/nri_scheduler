@@ -1,12 +1,25 @@
-use ::std::error::Error;
+use ::std::{error::Error, sync::LazyLock};
 use axum::{
-	Json, RequestExt,
-	extract::{FromRequest, Request, rejection::JsonRejection},
-	http::Method,
+	Form, Json, RequestExt,
+	extract::{
+		FromRequest, Request,
+		rejection::{FormRejection, JsonRejection},
+	},
+	http::{HeaderValue, Method, header},
 };
 use serde::de::DeserializeOwned;
 
 use crate::system_models::AppError;
+
+static URL_ENCODED: LazyLock<HeaderValue> = LazyLock::new(|| {
+	HeaderValue::from_str("application/x-www-form-urlencoded")
+		.expect("can't parse an urlencoded header value")
+});
+
+pub(super) fn init_static() {
+	let _ = *URL_ENCODED;
+	println!("+ an urlencoded header values is ok");
+}
 
 pub struct Dto<T>(pub T);
 
@@ -18,25 +31,26 @@ where
 	type Rejection = AppError;
 
 	async fn from_request(req: Request, _: &S) -> Result<Self, Self::Rejection> {
-		match req.method() {
-			&Method::GET => {
-				let query = req.uri().query().unwrap_or_default();
-				let params = serde_urlencoded::from_str::<'_, T>(query);
-				match params {
-					Err(_) => Err(AppError::ScenarioError(
-						"Переданы некорректные параметры запроса".into(),
-						None,
-					)),
-					Ok(dto) => Ok(Dto(dto)),
+		if req.method() == Method::GET {
+			let query = req.uri().query().unwrap_or_default();
+			let params = serde_urlencoded::from_str::<'_, T>(query);
+			params.map(Dto).map_err(|err| {
+				AppError::scenario_error("Переданы некорректные параметры запроса", Some(err))
+			})
+		} else {
+			if let Some(content_type) = req.headers().get(header::CONTENT_TYPE) {
+				if content_type == URL_ENCODED.as_ref() {
+					let body = req.extract::<Form<T>, _>().await;
+					return body
+						.map(|Form(dto)| Dto(dto))
+						.map_err(handle_form_rejection);
 				}
 			}
-			_ => {
-				let body = req.extract::<Json<T>, _>().await;
-				match body {
-					Err(err) => Err(handle_json_rejection(err)),
-					Ok(Json(dto)) => Ok(Dto(dto)),
-				}
-			}
+
+			let body = req.extract::<Json<T>, _>().await;
+			body
+				.map(|Json(dto)| Dto(dto))
+				.map_err(handle_json_rejection)
 		}
 	}
 }
@@ -62,6 +76,39 @@ fn handle_json_rejection(err: JsonRejection) -> AppError {
 
 		JsonRejection::BytesRejection(_) => {
 			AppError::system_error("Не удалось прочитать тело запроса")
+		}
+
+		non_exhaustive => AppError::system_error(non_exhaustive),
+	};
+}
+
+fn handle_form_rejection(err: FormRejection) -> AppError {
+	return match err {
+		FormRejection::InvalidFormContentType(_) => AppError::ScenarioError(
+			String::from(
+				"Пожалуйста, укажите заголовок `Content-Type: application/x-www-form-urlencoded`",
+			),
+			None,
+		),
+
+		FormRejection::FailedToDeserializeForm(data_err) => match data_err.source() {
+			Some(source_err) => AppError::ScenarioError(
+				format!("Передано некорректное тело запроса: {source_err}"),
+				None,
+			),
+			None => AppError::ScenarioError("Передано некорректное тело запроса".into(), None),
+		},
+
+		FormRejection::FailedToDeserializeFormBody(data_err) => match data_err.source() {
+			Some(source_err) => AppError::ScenarioError(
+				format!("Передано некорректное тело запроса: {source_err}"),
+				None,
+			),
+			None => AppError::ScenarioError("Передано некорректное тело запроса".into(), None),
+		},
+
+		FormRejection::BytesRejection(data_err) => {
+			AppError::system_error(format!("Не удалось прочитать тело запроса {data_err}"))
 		}
 
 		non_exhaustive => AppError::system_error(non_exhaustive),

@@ -1,7 +1,12 @@
-pub mod auth;
+pub(crate) mod auth;
 mod common;
-pub mod company;
-pub mod event;
-pub mod location;
+pub(crate) mod company;
+pub(crate) mod event;
+pub(crate) mod location;
 
-pub use common::Dto;
+pub(crate) use common::Dto;
+
+pub(crate) fn init_static() {
+	auth::init_static();
+	common::init_static();
+}

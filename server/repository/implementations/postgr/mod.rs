@@ -1,12 +1,13 @@
 mod pool;
 
 use chrono::{DateTime, FixedOffset};
-use sqlx::{Error as EqlxError, PgPool};
+use sqlx::{Error as SqlxError, PgPool, Postgres, QueryBuilder};
 use uuid::Uuid;
 
 use super::super::Store;
 use crate::{
 	auth,
+	dto::event::ReadEventsDto,
 	repository::models::{Company, Event, EventForApplying, Location, UserForAuth},
 	shared::RecordId,
 	system_models::{AppError, CoreResult, ServingError},
@@ -14,8 +15,8 @@ use crate::{
 
 const DUPLICATE_KEY: &str = "duplicate key";
 
-impl From<EqlxError> for AppError {
-	fn from(err: EqlxError) -> Self {
+impl From<SqlxError> for AppError {
+	fn from(err: SqlxError) -> Self {
 		return AppError::system_error(err);
 	}
 }
@@ -132,41 +133,80 @@ impl Store for PostgresStore {
 
 	async fn read_events_list(
 		&self,
-		date_from: DateTime<FixedOffset>,
-		date_to: DateTime<FixedOffset>,
+		query_args: ReadEventsDto,
 		player_id: Option<Uuid>,
 	) -> CoreResult<Vec<Event>> {
-		let events = sqlx::query_as::<_, Event>(
+		let mut qb: QueryBuilder<'_, Postgres> = QueryBuilder::new(
 			"SELECT
 					e.id
 					, c.name AS company
 					, m.nickname AS master
 					, l.name AS location
+					, l.id AS location_id
 					, e.date
-					, jsonb_agg(u.nickname) AS players
+					, COALESCE(jsonb_agg(u.nickname) FILTER (WHERE u.nickname is not null), '[]') AS players
 					, bool_or(y.id is not null) AS you_applied
 					, y.approval AS your_approval
 				FROM events e
 				INNER JOIN companies c
 					ON c.id = e.company
 				INNER JOIN locations l
-					ON l.id = e.location
-				INNER JOIN users m
-					ON m.id = c.master
-				LEFT JOIN applications y
-					ON y.player = $3 and y.event = e.id
+					ON l.id = e.location",
+		);
+
+		if let Some(location_id) = query_args.location {
+			qb.push(" AND l.id = ");
+			qb.push_bind(location_id);
+		}
+
+		qb.push(" INNER JOIN users m ON m.id = c.master");
+
+		if let Some(master_id) = query_args.master {
+			qb.push(" AND m.id = ");
+			qb.push_bind(master_id);
+		} else if let Some(imamaster) = query_args.imamaster {
+			if let Some(my_id) = player_id {
+				match imamaster {
+					true => qb.push(" AND m.id = "),
+					false => qb.push(" AND m.id <> "),
+				};
+				qb.push_bind(my_id);
+			}
+		}
+
+		qb.push(" LEFT JOIN applications y ON y.player = ");
+		qb.push_bind(player_id);
+
+		qb.push(
+			" and y.event = e.id
 				LEFT JOIN applications ap
 					ON ap.event = e.id
 				LEFT JOIN users u
 					ON u.id = ap.player
-				WHERE e.date >= $1 AND e.date <= $2
-				GROUP BY e.id, c.name, m.nickname, l.name, e.date, y.approval;",
-		)
-		.bind(date_from)
-		.bind(date_to)
-		.bind(player_id)
-		.fetch_all(&self.pool)
-		.await?;
+				WHERE e.date >= ",
+		);
+		qb.push_bind(query_args.date_from);
+
+		qb.push(" AND e.date <= ");
+		qb.push_bind(query_args.date_to);
+
+		if let Some(appied) = query_args.appied {
+			match appied {
+				true => qb.push(" AND y.id is not null"),
+				false => qb.push(" AND y.id is null"),
+			};
+		}
+
+		if let Some(not_rejected) = query_args.not_rejected {
+			match not_rejected {
+				true => qb.push(" AND (y.approval is null OR y.approval = true)"),
+				false => qb.push(" AND y.approval = false"),
+			};
+		}
+
+		qb.push(" GROUP BY e.id, c.name, m.nickname, l.name, l.id, e.date, y.approval;");
+
+		let events = qb.build_query_as::<Event>().fetch_all(&self.pool).await?;
 
 		Ok(events)
 	}
@@ -182,8 +222,9 @@ impl Store for PostgresStore {
 				, c.name AS company
 				, m.nickname AS master
 				, l.name AS location
+				, l.id AS location_id
 				, e.date
-				, jsonb_agg(u.nickname) AS players
+				, COALESCE(jsonb_agg(u.nickname) FILTER (WHERE u.nickname is not null), '[]') AS players
 				, bool_or(y.id is not null) AS you_applied
 				, y.approval AS your_approval
 			FROM events e
@@ -200,7 +241,7 @@ impl Store for PostgresStore {
 			LEFT JOIN users u
 				ON u.id = ap.player
 			WHERE e.id = $1
-			GROUP BY e.id, c.name, m.nickname, l.name, e.date, y.approval;",
+			GROUP BY e.id, c.name, m.nickname, l.name, l.id, e.date, y.approval;",
 		)
 		.bind(event_id)
 		.bind(player_id)
