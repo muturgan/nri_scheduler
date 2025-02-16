@@ -15,9 +15,9 @@ pub enum ServingError {
 impl Display for ServingError {
 	fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
 		match self {
-			Self::ConnectionError(err) => write!(f, "{err}"),
-			Self::MigrationError(err) => write!(f, "{err}"),
-			Self::IoError(err) => write!(f, "{err}"),
+			Self::ConnectionError(err) => err.fmt(f),
+			Self::MigrationError(err) => err.fmt(f),
+			Self::IoError(err) => err.fmt(f),
 		}
 	}
 }
