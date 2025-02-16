@@ -5,8 +5,8 @@ import { useStore } from '@nanostores/preact';
 
 import dayjs from 'dayjs';
 
-import { IApiEvent, readEvent } from '../api';
-import { $tz } from '../store/tz';
+import { IApiEvent, readEvent } from '../../api';
+import { $tz } from '../../store/tz';
 
 const EventCard = ({event}: {event: IApiEvent}) => {
 	const tz = useStore($tz);
@@ -20,6 +20,11 @@ const EventCard = ({event}: {event: IApiEvent}) => {
 		<p>Дата: {eventDate.format('YYYY-MM-DD')}</p>
 		{/* todo: добавить продолжительность сессии */}
 		<p>Время: {eventDate.format('HH:mm')}</p>
+
+		<button
+			type="button"
+			className="pure-button pure-button-primary"
+		>Записаться</button>
 	</>;
 };
 

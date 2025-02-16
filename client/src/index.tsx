@@ -1,36 +1,33 @@
 import 'purecss/build/pure.css';
 import './index.css';
 
-import { h, Fragment, render } from 'preact';
+import { h, render } from 'preact';
 import { Router, Route } from 'preact-router';
 import AsyncRoute from 'preact-async-route';
-import { Toaster } from 'react-hot-toast';
 
-import { SignInPage } from './pages/sign_in';
-import { EventPage } from './pages/event';
+import { Layout } from './components/layout';
 
-const App = () => (
-	<>
+import { SignInPage } from './components/pages/sign_in';
+import { CreateEventPage } from './components/pages/create_event';
+import { EventPage } from './components/pages/event';
+import { MasteryPage } from './components/pages/mastery';
+
+const App = () => <Layout page={
 	<Router>
 		<AsyncRoute
 			path="/"
-			getComponent={() => import('./pages/registration').then((module) => module.RegistrationPage)}
+			getComponent={() => import('./components/pages/registration').then((module) => module.RegistrationPage)}
 		/>
 		<Route path="/signin" component={SignInPage} />
 		<AsyncRoute
 			path="/calendar"
-			getComponent={() => import('./pages/calendar').then((module) => module.CalendarPage)}
+			getComponent={() => import('./components/pages/calendar').then((module) => module.CalendarPage)}
 		/>
+		<Route path="/event/create" component={CreateEventPage} />
 		<Route path="/event/:id" component={EventPage} />
+		<Route path="/mastery" component={MasteryPage} />
 		<Route default component={() => <h1>404 - Страница не найдена</h1>} />
 	</Router>
-	<Toaster
-		position="bottom-right"
-	/>
-	</>
-);
+} />;
 
-const root = document.createElement('div');
-document.body.appendChild(root);
-
-render(<App />, root);
+render(<App />, document.body);

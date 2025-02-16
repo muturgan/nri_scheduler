@@ -1,8 +1,10 @@
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { route as navigate } from 'preact-router';
 import { useStore } from '@nanostores/preact';
-import { signIn, whoIAm } from '../api';
-import { $fetching } from '../store/fetching';
+import { signIn, whoIAm } from '../../api';
+import { $fetching } from '../../store/fetching';
+import { toast } from 'react-hot-toast';
 
 export const SignInPage = () => {
 	const fetching = useStore($fetching);
@@ -31,6 +33,8 @@ export const SignInPage = () => {
 				if (res !== null) {
 					console.log('who I am:');
 					console.log(res);
+					toast.success('Успешная авторизация');
+					navigate('/calendar');
 				}
 			});
 	};

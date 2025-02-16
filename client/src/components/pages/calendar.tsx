@@ -11,8 +11,8 @@ import { useEffect } from 'preact/hooks';
 import { route as navigate } from 'preact-router';
 import { useStore } from '@nanostores/preact';
 
-import { readEventsList } from '../api';
-import { $tz } from '../store/tz';
+import { readEventsList } from '../../api';
+import { $tz } from '../../store/tz';
 
 const EVENT_FORMAT = 'YYYY-MM-DD HH:mm';
 
