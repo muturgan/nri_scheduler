@@ -12,7 +12,7 @@ pub(crate) struct UserForAuth {
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
-pub struct User {
+pub(crate) struct User {
 	pub id: Uuid,
 	pub nickname: String,
 	pub phone: Option<String>,
@@ -20,7 +20,7 @@ pub struct User {
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
-pub struct Company {
+pub(crate) struct Company {
 	pub id: Uuid,
 	pub master: Uuid,
 	pub name: String,
@@ -29,7 +29,7 @@ pub struct Company {
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
-pub struct Location {
+pub(crate) struct Location {
 	pub id: Uuid,
 	pub name: String,
 	pub address: Option<String>,
@@ -37,7 +37,7 @@ pub struct Location {
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
-pub struct Event {
+pub(crate) struct Event {
 	pub id: Uuid,
 	pub company: String,
 	pub master: String,
@@ -50,7 +50,7 @@ pub struct Event {
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
-pub struct EventForApplying {
+pub(crate) struct EventForApplying {
 	pub id: Uuid,
 	pub you_are_master: bool,
 	pub already_applied: bool,

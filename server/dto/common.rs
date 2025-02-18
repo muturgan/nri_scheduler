@@ -21,7 +21,7 @@ pub(super) fn init_static() {
 	println!("+ an urlencoded header values is ok");
 }
 
-pub struct Dto<T>(pub T);
+pub(crate) struct Dto<T>(pub(crate) T);
 
 impl<T, S> FromRequest<S> for Dto<T>
 where

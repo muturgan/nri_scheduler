@@ -7,7 +7,7 @@ use crate::{
 	system_models::{AppResponse, AppResult},
 };
 
-pub async fn add_location(
+pub(crate) async fn add_location(
 	State(repo): State<Arc<Repository>>,
 	Dto(body): Dto<NewLocationDto>,
 ) -> AppResult {

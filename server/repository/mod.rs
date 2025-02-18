@@ -1,5 +1,5 @@
 mod implementations;
-pub mod models;
+pub(crate) mod models;
 
 use chrono::{DateTime, FixedOffset};
 use implementations::PostgresStore;

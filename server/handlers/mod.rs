@@ -1,6 +1,6 @@
-pub mod companies;
-pub mod events;
-pub mod locations;
+pub(super) mod companies;
+pub(super) mod events;
+pub(super) mod locations;
 
 use ::std::sync::Arc;
 use axum::{
@@ -21,7 +21,7 @@ use crate::{
 	system_models::{AppError, AppResponse, AppResult},
 };
 
-pub async fn registration(
+pub(super) async fn registration(
 	State(repo): State<Arc<Repository>>,
 	Dto(body): Dto<RegistrationDto>,
 ) -> AppResult {
@@ -32,7 +32,10 @@ pub async fn registration(
 	return AppResponse::user_registered();
 }
 
-pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInDto>) -> Response {
+pub(super) async fn sign_in(
+	State(repo): State<Arc<Repository>>,
+	Dto(body): Dto<SignInDto>,
+) -> Response {
 	let user = match repo.get_user_for_signing_in(&body.email).await {
 		Ok(Some(user)) => user,
 		Ok(None) => return AppError::unauthorized("Неверный пароль").into_response(),
@@ -59,7 +62,7 @@ pub async fn sign_in(State(repo): State<Arc<Repository>>, Dto(body): Dto<SignInD
 	}
 }
 
-pub async fn logout() -> Response {
+pub(super) async fn logout() -> Response {
 	let mut res = AppResponse::scenario_success("Сессия завершена", None).into_response();
 
 	match remove_auth_cookie(&mut res) {
@@ -68,7 +71,7 @@ pub async fn logout() -> Response {
 	}
 }
 
-pub async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {
+pub(super) async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {
 	AppResponse::scenario_success(
 		"I know who I am",
 		Some(serde_json::Value::String(user_id.to_string())),

@@ -10,7 +10,7 @@ use crate::{
 	system_models::{AppError, CoreResult},
 };
 
-pub(crate) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult {
+pub(super) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult {
 	let (cookie_key, secure) = config::get_cookie_params();
 	let auth_cookie =
 		format!("{cookie_key}={jwt}; SameSite; {secure}HttpOnly; max-age={SESSION_LIFETIME}",);
@@ -25,7 +25,7 @@ pub(crate) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult 
 	Ok(())
 }
 
-pub(crate) fn remove_auth_cookie(response: &mut Response) -> CoreResult {
+pub(super) fn remove_auth_cookie(response: &mut Response) -> CoreResult {
 	let (cookie_key, secure) = config::get_cookie_params();
 	let auth_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
 
@@ -39,7 +39,7 @@ pub(crate) fn remove_auth_cookie(response: &mut Response) -> CoreResult {
 	Ok(())
 }
 
-pub(crate) fn extract_jwt_from_cookie(cookie_jar: &CookieJar) -> Option<&str> {
+pub(super) fn extract_jwt_from_cookie(cookie_jar: &CookieJar) -> Option<&str> {
 	let (cookie_key, _) = config::get_cookie_params();
 	cookie_jar.get(cookie_key).map(Cookie::value)
 }

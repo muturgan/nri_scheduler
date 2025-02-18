@@ -3,7 +3,7 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 #[derive(Deserialize)]
-pub struct ReadEventsDto {
+pub(crate) struct ReadEventsDto {
 	pub date_from: DateTime<FixedOffset>,
 	pub date_to: DateTime<FixedOffset>,
 
@@ -20,7 +20,7 @@ pub struct ReadEventsDto {
 }
 
 #[derive(Deserialize)]
-pub struct NewEventDto {
+pub(crate) struct NewEventDto {
 	pub company: Uuid,
 	pub location: Option<Uuid>,
 	pub date: DateTime<FixedOffset>,

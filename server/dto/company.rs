@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-pub struct NewCompanyDto {
+pub(crate) struct NewCompanyDto {
 	pub name: String,
 	pub system: String,
 	pub description: Option<String>,

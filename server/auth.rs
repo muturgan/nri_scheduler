@@ -29,7 +29,7 @@ use crate::{
 	system_models::{AppError, AppResponse, CoreResult},
 };
 
-pub(crate) const SESSION_LIFETIME: u64 = 3600; // 1 час в секундах
+pub(super) const SESSION_LIFETIME: u64 = 3600; // 1 час в секундах
 
 // default params
 // alg: argon2id
@@ -68,7 +68,7 @@ struct Claims {
 	exp: u64,
 }
 
-pub(crate) fn hash_password(password: &str) -> CoreResult<String> {
+pub(super) fn hash_password(password: &str) -> CoreResult<String> {
 	let salt = SaltString::generate(&mut OsRng);
 	let password_hash = ARGON
 		.hash_password(password.as_bytes(), &salt)
@@ -81,7 +81,7 @@ pub(crate) fn hash_password(password: &str) -> CoreResult<String> {
 	Ok(suffix.to_string())
 }
 
-pub(crate) async fn verify_password(password: &str, password_hash: String) -> CoreResult {
+pub(super) async fn verify_password(password: &str, password_hash: String) -> CoreResult {
 	let full_hash = format!("$argon2id$v=19$m=19456,t=2,p=1${password_hash}");
 	let parsed_hash = PasswordHash::new(&full_hash).map_err(|e| {
 		eprintln!("Ошибка парсига пароля: {e}");
@@ -101,7 +101,7 @@ pub(crate) async fn verify_password(password: &str, password_hash: String) -> Co
 	Ok(())
 }
 
-pub(crate) async fn auth_middleware(
+pub(super) async fn auth_middleware(
 	cookie_jar: CookieJar,
 	mut req: Request<Body>,
 	next: Next,
@@ -132,7 +132,7 @@ pub(crate) async fn auth_middleware(
 	next.run(req).await
 }
 
-pub(crate) async fn optional_auth_middleware(
+pub(super) async fn optional_auth_middleware(
 	cookie_jar: CookieJar,
 	mut req: Request<Body>,
 	next: Next,
@@ -175,7 +175,7 @@ async fn handle_invalid_jwt_for_optional_auth(mut req: Request<Body>, next: Next
 	}
 }
 
-pub(crate) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
+pub(super) fn generate_jwt(user_id: Uuid) -> CoreResult<String> {
 	// Время истечения срока действия токена (текущее время + время жизни сессии)
 	let expiration_time = SystemTime::now()
 		.duration_since(UNIX_EPOCH)

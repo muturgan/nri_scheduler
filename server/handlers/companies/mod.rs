@@ -8,7 +8,7 @@ use crate::{
 	system_models::{AppResponse, AppResult},
 };
 
-pub async fn add_company(
+pub(crate) async fn add_company(
 	State(repo): State<Arc<Repository>>,
 	Extension(user_id): Extension<Uuid>,
 	Dto(body): Dto<NewCompanyDto>,

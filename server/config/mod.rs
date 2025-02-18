@@ -22,7 +22,7 @@ pub fn get_http_host_to_serve() -> SocketAddr {
 		.unwrap_or_else(|_| panic!("Unable to parse socket address for {app_host}:{app_port}"));
 }
 
-pub fn get_db_config() -> String {
+pub(super) fn get_db_config() -> String {
 	let db_host = readEnvVar("DB_HOST").expect("DB_HOST environment variable is not defined");
 
 	let db_port = readEnvVar("DB_PORT")
@@ -37,7 +37,7 @@ pub fn get_db_config() -> String {
 	return format!("postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}?schema=public");
 }
 
-pub fn get_db_max_pool_size() -> u32 {
+pub(super) fn get_db_max_pool_size() -> u32 {
 	let default_pool_size = String::from("10");
 
 	return u32::from(
@@ -48,7 +48,7 @@ pub fn get_db_max_pool_size() -> u32 {
 	);
 }
 
-pub fn get_cookie_params() -> (&'static str, &'static str) {
+pub(super) fn get_cookie_params() -> (&'static str, &'static str) {
 	if is_test() {
 		("authorization", "")
 	} else {
@@ -56,6 +56,6 @@ pub fn get_cookie_params() -> (&'static str, &'static str) {
 	}
 }
 
-pub fn is_test() -> bool {
+pub(super) fn is_test() -> bool {
 	readEnvVar("ENV").is_ok_and(|val| val == "test")
 }

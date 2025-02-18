@@ -13,7 +13,7 @@ pub(super) fn init_static() {
 }
 
 #[derive(DebugMasked)]
-pub struct RegistrationDto {
+pub(crate) struct RegistrationDto {
 	pub nickname: String,
 	pub email: String,
 	#[masked]
@@ -57,7 +57,7 @@ impl<'de> Deserialize<'de> for RegistrationDto {
 }
 
 #[derive(DebugMasked)]
-pub struct SignInDto {
+pub(crate) struct SignInDto {
 	pub email: String,
 	#[masked]
 	pub password: String,

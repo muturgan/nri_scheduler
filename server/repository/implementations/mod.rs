@@ -1,3 +1,3 @@
 mod postgr;
 
-pub use postgr::PostgresStore;
+pub(super) use postgr::PostgresStore;

@@ -15,7 +15,7 @@ use crate::{
 	system_models::{AppError, AppResponse, AppResult},
 };
 
-pub async fn read_events_list(
+pub(crate) async fn read_events_list(
 	State(repo): State<Arc<Repository>>,
 	Extension(user_id): Extension<Option<Uuid>>,
 	Dto(query): Dto<ReadEventsDto>,
@@ -30,7 +30,7 @@ pub async fn read_events_list(
 	));
 }
 
-pub async fn read_event(
+pub(crate) async fn read_event(
 	State(repo): State<Arc<Repository>>,
 	Extension(user_id): Extension<Option<Uuid>>,
 	Path(event_id): Path<Uuid>,
@@ -51,7 +51,7 @@ pub async fn read_event(
 	Ok(res)
 }
 
-pub async fn add_event(
+pub(crate) async fn add_event(
 	State(repo): State<Arc<Repository>>,
 	Extension(user_id): Extension<Uuid>,
 	Dto(body): Dto<NewEventDto>,
@@ -71,7 +71,7 @@ pub async fn add_event(
 	));
 }
 
-pub async fn apply_event(
+pub(crate) async fn apply_event(
 	State(repo): State<Arc<Repository>>,
 	Extension(user_id): Extension<Uuid>,
 	Path(event_id): Path<Uuid>,

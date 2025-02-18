@@ -8,7 +8,7 @@ use serde_json::Error as JsonSerializationError;
 use super::AppResponse;
 
 #[derive(Debug)]
-pub enum AppError {
+pub(crate) enum AppError {
 	UnauthorizedError(String),
 	ScenarioError(String, Option<String>),
 	SystemError(String),

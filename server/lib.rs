@@ -1,12 +1,12 @@
-pub mod auth;
+pub(crate) mod auth;
 pub mod config;
-pub mod cookie;
-pub mod dto;
+pub(crate) mod cookie;
+pub(crate) mod dto;
 pub mod graceful_shutdown;
-pub mod handlers;
+pub(crate) mod handlers;
 pub mod repository;
 pub mod router;
-pub mod shared;
+pub(crate) mod shared;
 pub mod system_models;
 #[cfg(debug_assertions)]
-pub mod vite;
+pub(crate) mod vite;

@@ -6,7 +6,7 @@ pub(crate) mod location;
 
 pub(crate) use common::Dto;
 
-pub(crate) fn init_static() {
+pub(super) fn init_static() {
 	auth::init_static();
 	common::init_static();
 }

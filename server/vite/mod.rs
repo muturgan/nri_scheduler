@@ -16,12 +16,12 @@ static VITE_PORT: LazyLock<u16> = LazyLock::new(|| {
 		.unwrap_or_else(|_| panic!("VITE_PORT is not a correct u16 ({env_var})"))
 });
 
-pub(crate) fn init_static() {
+pub(super) fn init_static() {
 	let _ = *VITE_PORT;
 	println!("+ vite static values are ok");
 }
 
-pub(crate) async fn proxy_to_vite(req: Request<Body>) -> Response {
+pub(super) async fn proxy_to_vite(req: Request<Body>) -> Response {
 	fetch_vite(req).await.unwrap_or_else(|err| {
 		(
 			StatusCode::INTERNAL_SERVER_ERROR,

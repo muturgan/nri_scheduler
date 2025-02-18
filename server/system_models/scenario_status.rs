@@ -3,7 +3,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer, de::Error as _};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, PartialEq)]
-pub enum EScenarioStatus {
+pub(crate) enum EScenarioStatus {
 	SCENARIO_SUCCESS,
 	UNAUTHORIZED,
 	SCENARIO_FAIL,

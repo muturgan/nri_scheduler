@@ -8,7 +8,7 @@ use sqlx::{
 use uuid::Uuid;
 
 #[derive(FromRow)]
-pub struct RecordId(Uuid);
+pub(super) struct RecordId(Uuid);
 
 impl RecordId {
 	pub fn to_api(self) -> Option<Value> {

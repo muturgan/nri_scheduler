@@ -6,13 +6,10 @@ use axum::{
 use serde::{Deserialize, Serialize};
 
 use super::AppResult;
-use crate::{
-	repository::models::User,
-	system_models::{errors::AppError, scenario_status::EScenarioStatus},
-};
+use crate::system_models::{errors::AppError, scenario_status::EScenarioStatus};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct AppResponse {
+pub(crate) struct AppResponse {
 	pub status: EScenarioStatus,
 	pub result: String,
 	pub payload: Option<serde_json::Value>,
@@ -38,7 +35,7 @@ impl AppResponse {
 		return Self::new(EScenarioStatus::SCENARIO_SUCCESS, result.into(), payload);
 	}
 
-	pub(crate) fn unauthorized<S: Into<String>>(
+	pub(super) fn unauthorized<S: Into<String>>(
 		result: S,
 		payload: Option<serde_json::Value>,
 	) -> Self {
@@ -59,7 +56,7 @@ impl AppResponse {
 		return Self::new(EScenarioStatus::SYSTEM_ERROR, result.into(), payload);
 	}
 
-	pub(crate) fn session_expired() -> Self {
+	pub(super) fn session_expired() -> Self {
 		return Self::new(EScenarioStatus::SESSION_EXPIRED, "Session expired", None);
 	}
 
@@ -73,22 +70,6 @@ impl AppResponse {
 		return Ok(Self::scenario_success(
 			"Новый пользователь успешно зарегистрирован",
 			None,
-		));
-	}
-
-	pub fn promo_valid() -> AppResult {
-		return Ok(Self::scenario_success("Промокод корректен", None));
-	}
-
-	pub fn promo_activated() -> AppResult {
-		return Ok(Self::scenario_success("Промокод успешно активирован", None));
-	}
-
-	pub fn user_list(users: &[User]) -> AppResult {
-		let payload = serde_json::json!(users);
-		return Ok(Self::scenario_success(
-			"Список пользователей",
-			Some(payload),
 		));
 	}
 }

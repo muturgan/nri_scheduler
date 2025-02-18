@@ -21,12 +21,12 @@ impl From<SqlxError> for AppError {
 	}
 }
 
-pub struct PostgresStore {
+pub(crate) struct PostgresStore {
 	pool: PgPool,
 }
 
 impl PostgresStore {
-	pub async fn new() -> Result<Self, ServingError> {
+	pub(crate) async fn new() -> Result<Self, ServingError> {
 		let pool = pool::create_db_connection().await?;
 		Ok(Self { pool })
 	}
