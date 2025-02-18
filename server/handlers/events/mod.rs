@@ -67,7 +67,7 @@ pub(crate) async fn add_event(
 
 	return Ok(AppResponse::scenario_success(
 		"Событие успешно создано",
-		new_evt_id.to_api(),
+		new_evt_id.into_api(),
 	));
 }
 
@@ -106,7 +106,7 @@ pub(crate) async fn apply_event(
 
 	Ok(AppResponse::scenario_success(
 		"Заявка на событие успешно создана",
-		new_app_id.to_api(),
+		new_app_id.into_api(),
 	))
 }
 

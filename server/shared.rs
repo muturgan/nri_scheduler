@@ -7,11 +7,11 @@ use sqlx::{
 };
 use uuid::Uuid;
 
-#[derive(Clone, Copy, FromRow)]
+#[derive(FromRow)]
 pub(super) struct RecordId(Uuid);
 
 impl RecordId {
-	pub fn to_api(self) -> Option<Value> {
+	pub fn into_api(self) -> Option<Value> {
 		Some(self.into())
 	}
 }

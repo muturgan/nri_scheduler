@@ -17,6 +17,6 @@ pub(crate) async fn add_location(
 
 	return Ok(AppResponse::scenario_success(
 		"Локация успешно добавлена",
-		new_loc_id.to_api(),
+		new_loc_id.into_api(),
 	));
 }

@@ -19,6 +19,6 @@ pub(crate) async fn add_company(
 
 	return Ok(AppResponse::scenario_success(
 		"Компания успешно создана",
-		new_comp_id.to_api(),
+		new_comp_id.into_api(),
 	));
 }
