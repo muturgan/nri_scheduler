@@ -8,6 +8,7 @@ my outstanding trpg scheduler
 - exec `cp env.example .env`
 - fill the `.env` file with values
 - exec `docker compose up` to start a database
+- exec `./script.sh ecdsa` to generate a key pair
 - exec `./script.sh dev` to start an axum server
 - exec `npm ci` to install client dependencies
 - exec `npm run dev` to start a client
