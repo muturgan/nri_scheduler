@@ -7,7 +7,7 @@ use sqlx::{
 };
 use uuid::Uuid;
 
-#[derive(FromRow)]
+#[derive(Clone, Copy, FromRow)]
 pub(super) struct RecordId(Uuid);
 
 impl RecordId {
