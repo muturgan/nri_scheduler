@@ -1,10 +1,9 @@
-import { route as navigate } from 'preact-router';
-import { toast } from 'react-hot-toast';
-
+import { route as navigate } from "preact-router";
+import { toast } from "react-hot-toast";
 import { startFetching, stopFetching } from "./store/fetching";
 import { enter, leave } from "./store/profile";
 
-const POST = 'POST';
+const POST = "POST";
 const URL_ENCODED = true;
 
 export const enum EScenarioStatus {
@@ -16,9 +15,9 @@ export const enum EScenarioStatus {
 }
 
 export interface IApiResponse<T = null> {
-	readonly status: EScenarioStatus,
-	readonly result: string,
-	readonly payload: T,
+	readonly status: EScenarioStatus;
+	readonly result: string;
+	readonly payload: T;
 }
 
 export interface IRequestInit {
@@ -28,26 +27,29 @@ export interface IRequestInit {
 	readonly timeoutMilliseconds?: number;
 }
 
-const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T> | null> => {
+const ajax = <T>(
+	input: string,
+	init?: IRequestInit
+): Promise<IApiResponse<T> | null> => {
 	let controller: AbortController | undefined;
 	let timeoutId: ReturnType<typeof setTimeout>;
 
 	if (init?.timeoutMilliseconds) {
 		controller = new AbortController();
-		timeoutId = setTimeout(() => controller!.abort(), init.timeoutMilliseconds);
+		timeoutId = setTimeout(
+			() => controller!.abort(),
+			init.timeoutMilliseconds
+		);
 	}
 
 	startFetching();
 
-	return fetch(
-		input,
-		{
-			body:    init?.body,
-			headers: init?.headers,
-			method:  init?.method,
-			signal:  controller?.signal,
-		},
-	)
+	return fetch(input, {
+		body: init?.body,
+		headers: init?.headers,
+		method: init?.method,
+		signal: controller?.signal,
+	})
 		.then((res) => checkResponse<T>(res))
 		.finally(() => {
 			clearTimeout(timeoutId);
@@ -55,7 +57,9 @@ const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T> | 
 		});
 };
 
-const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | null> => {
+const checkResponse = async <T>(
+	response: Response
+): Promise<IApiResponse<T> | null> => {
 	if (response.ok === false) {
 		let body: object | string | null = null;
 
@@ -68,12 +72,12 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | n
 				// payload is not a json string
 			}
 		} catch (err) {
-			console.info('http response body parsing error');
+			console.info("http response body parsing error");
 			console.error(err);
 		}
 
-		toast.error('Ошибка обращения к серверу');
-		console.info('Http response is not ok');
+		toast.error("Ошибка обращения к серверу");
+		console.info("Http response is not ok");
 		console.error({
 			status: response.status,
 			statusText: response.statusText,
@@ -94,7 +98,7 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | n
 			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
 				leave();
-				navigate('/signin');
+				navigate("/signin");
 				break;
 
 			case EScenarioStatus.SCENARIO_FAIL:
@@ -103,24 +107,27 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | n
 				break;
 
 			default:
-				toast.error('Неизвестный статус ответа');
-				console.info('Неизвестный статус');
+				toast.error("Неизвестный статус ответа");
+				console.info("Неизвестный статус");
 				console.error(apiRes);
 				break;
 		}
 
 		return null;
-
 	} catch (err) {
-		toast.error('Неизвестная ошибка');
-		console.info('Хрень какая-то...');
+		toast.error("Неизвестная ошибка");
+		console.info("Хрень какая-то...");
 		console.error(err);
 
 		return null;
 	}
 };
 
-const prepareAjax = (payload?: object, method?: string, urlencoded = false): IRequestInit => {
+const prepareAjax = (
+	payload?: object,
+	method?: string,
+	urlencoded = false
+): IRequestInit => {
 	return {
 		body: payload
 			? urlencoded
@@ -129,26 +136,29 @@ const prepareAjax = (payload?: object, method?: string, urlencoded = false): IRe
 			: undefined,
 		headers: payload
 			? urlencoded
-				? {'Content-Type': 'application/x-www-form-urlencoded'}
-				: {'Content-Type': 'application/json'}
+				? { "Content-Type": "application/x-www-form-urlencoded" }
+				: { "Content-Type": "application/json" }
 			: undefined,
 		method,
 	};
 };
 
-export const registration = (nickname: string, email: string, password: string) => {
+export const registration = (
+	nickname: string,
+	email: string,
+	password: string
+) => {
 	return ajax<null>(
-		'/api/registration',
-		prepareAjax({nickname, email, password}, POST, URL_ENCODED),
+		"/api/registration",
+		prepareAjax({ nickname, email, password }, POST, URL_ENCODED)
 	);
 };
 
 export const signIn = (email: string, password: string) => {
 	return ajax<null>(
-		'/api/signin',
-		prepareAjax({email, password}, POST, URL_ENCODED),
-	)
-	.then((res) => {
+		"/api/signin",
+		prepareAjax({ email, password }, POST, URL_ENCODED)
+	).then((res) => {
 		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
 			enter();
 		}
@@ -157,8 +167,8 @@ export const signIn = (email: string, password: string) => {
 	});
 };
 
-export const logout = () => ajax<null>('/api/logout')
-	.then((res) => {
+export const logout = () =>
+	ajax<null>("/api/logout").then((res) => {
 		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
 			leave();
 		}
@@ -179,7 +189,11 @@ export interface IApiEvent {
 }
 
 export const readEventsList = (from: string, to: string) => {
-	return ajax<IApiEvent[]>(`/api/events?date_from=${encodeURIComponent(from)}&date_to=${encodeURIComponent(to)}`);
+	return ajax<IApiEvent[]>(
+		`/api/events?date_from=${encodeURIComponent(
+			from
+		)}&date_to=${encodeURIComponent(to)}`
+	);
 };
 
 export const readEvent = (eventId: string) => {
@@ -187,5 +201,5 @@ export const readEvent = (eventId: string) => {
 };
 
 export const whoIAm = () => {
-	return ajax('/api/check');
+	return ajax("/api/check");
 };

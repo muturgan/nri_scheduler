@@ -1,7 +1,8 @@
 import { preact } from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 
-const VITE_PORT = parseInt(process.env.VITE_PORT);
+// const VITE_PORT = parseInt(process.env.VITE_PORT);
+const VITE_PORT = 3000;
 
 
 // https://vitejs.dev/config/
