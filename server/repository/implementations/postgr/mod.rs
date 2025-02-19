@@ -157,6 +157,7 @@ impl Store for PostgresStore {
 					, l.id AS location_id
 					, e.date
 					, COALESCE(jsonb_agg(u.nickname) FILTER (WHERE u.nickname is not null), '[]') AS players
+					, e.max_slots
 					, bool_or(y.id is not null) AS you_applied
 					, y.approval AS your_approval
 				FROM events e
@@ -239,6 +240,7 @@ impl Store for PostgresStore {
 				, l.id AS location_id
 				, e.date
 				, COALESCE(jsonb_agg(u.nickname) FILTER (WHERE u.nickname is not null), '[]') AS players
+				, e.max_slots
 				, bool_or(y.id is not null) AS you_applied
 				, y.approval AS your_approval
 			FROM events e
