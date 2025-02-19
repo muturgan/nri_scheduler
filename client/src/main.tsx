@@ -17,22 +17,21 @@ import "purecss/build/pure.css";
 import "./styles/index.css";
 
 const App = () => (
-	<Layout
-		page={
-			<Router>
-				{/* Авторизация  */}
-				<Route path="/signin" component={SignInPage} />
-				<Route default component={NotFound} />
+	<Layout>
+		<Router>
+			{/* Авторизация  */}
+			<AsyncRoute path="/signin" component={SignInPage} />
+			<AsyncRoute path="/register" component={RegistrationPage} />
+			<Route default component={NotFound} />
 
-				{/* Контент  */}
-				<AsyncRoute path="/" component={RegistrationPage} />
-				<AsyncRoute path="/calendar" component={CalendarPage} />
-				<Route path="/event/create" component={CreateEventPage} />
-				<Route path="/event/:id" component={EventPage} />
-				<Route path="/mastery" component={MasteryPage} />
-			</Router>
-		}
-	/>
+			{/* Контент  */}
+			<Route path="/" component={CalendarPage} />
+			<AsyncRoute path="/calendar" component={CalendarPage} />
+			<AsyncRoute path="/event/create" component={CreateEventPage} />
+			<AsyncRoute path="/event/:id" component={EventPage} />
+			<AsyncRoute path="/mastery" component={MasteryPage} />
+		</Router>
+	</Layout>
 );
 
 render(<App />, document.body);
