@@ -157,7 +157,7 @@ export const signIn = (email: string, password: string) => {
 	});
 };
 
-export const logout = () => ajax<null>('/api/logout')
+export const logout = () => ajax<null>('/api/logout', prepareAjax(undefined, POST))
 	.then((res) => {
 		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
 			leave();
