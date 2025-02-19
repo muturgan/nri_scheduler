@@ -3,7 +3,7 @@ pub(crate) mod models;
 
 use chrono::{DateTime, FixedOffset};
 use implementations::PostgresStore;
-use models::{Company, Event, EventForApplying, Location, UserForAuth};
+use models::{Company, Event, EventForApplying, Location, Profile, UserForAuth};
 use uuid::Uuid;
 
 use crate::{
@@ -16,6 +16,7 @@ use crate::{
 trait Store {
 	async fn registration(&self, nickname: &str, email: &str, password: &str) -> CoreResult;
 	async fn get_user_for_signing_in(&self, email: &str) -> CoreResult<Option<UserForAuth>>;
+	async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>>;
 
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>>;
 
@@ -93,6 +94,10 @@ impl Repository {
 		email: &str,
 	) -> CoreResult<Option<UserForAuth>> {
 		return self.store.get_user_for_signing_in(email).await;
+	}
+
+	pub(crate) async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>> {
+		return self.store.read_profile(user_id).await;
 	}
 
 	pub(crate) async fn get_location_by_id(

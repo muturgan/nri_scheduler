@@ -25,6 +25,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 				.merge(
 					Router::new()
 						.route("/check", get(H::who_i_am))
+						.route("/profile", get(H::read_profile))
 						.route("/locations", post(H::locations::add_location))
 						.route("/companies", post(H::companies::add_company))
 						.route("/events", post(H::events::add_event))

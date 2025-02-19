@@ -20,6 +20,13 @@ pub(crate) struct User {
 }
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
+pub(crate) struct Profile {
+	pub nickname: String,
+	pub phone: Option<String>,
+	pub email: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, FromRow)]
 pub(crate) struct Company {
 	pub id: Uuid,
 	pub master: Uuid,

@@ -71,6 +71,21 @@ pub(super) async fn logout() -> Response {
 	}
 }
 
+pub(super) async fn read_profile(
+	State(repo): State<Arc<Repository>>,
+	Extension(user_id): Extension<Uuid>,
+) -> AppResult {
+	let profile = repo.read_profile(user_id).await?;
+
+	Ok(match profile {
+		None => AppResponse::scenario_fail("Пользователь не найден", None),
+		Some(profile) => {
+			let payload = serde_json::to_value(profile)?;
+			AppResponse::scenario_success("Профиль получен", Some(payload))
+		}
+	})
+}
+
 pub(super) async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {
 	AppResponse::scenario_success(
 		"I know who I am",

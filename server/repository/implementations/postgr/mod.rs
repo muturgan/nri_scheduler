@@ -8,7 +8,7 @@ use super::super::Store;
 use crate::{
 	auth,
 	dto::event::ReadEventsDto,
-	repository::models::{Company, Event, EventForApplying, Location, UserForAuth},
+	repository::models::{Company, Event, EventForApplying, Location, Profile, UserForAuth},
 	shared::RecordId,
 	system_models::{AppError, CoreResult, ServingError},
 };
@@ -64,6 +64,16 @@ impl Store for PostgresStore {
 				.await?;
 
 		Ok(may_be_user)
+	}
+
+	async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>> {
+		let may_be_profile =
+			sqlx::query_as::<_, Profile>("SELECT nickname, phone, email FROM users WHERE id = $1;")
+				.bind(user_id)
+				.fetch_optional(&self.pool)
+				.await?;
+
+		Ok(may_be_profile)
 	}
 
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>> {
