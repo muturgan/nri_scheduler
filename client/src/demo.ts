@@ -1,4 +1,4 @@
-import { GameSession } from "../../types";
+import { GameSession } from "./types";
 
 export const gameSession: GameSession = {
 	master: {

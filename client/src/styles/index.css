@@ -40,9 +40,24 @@ a {
 	color: inherit;
 }
 
-button {
+.button {
 	cursor: pointer;
 	border: none;
+
+	display: inline-block;
+	border-radius: 10px;
+	padding: 10px 20px;
+}
+
+.button_primary {
+	background-color: var(--primary-color);
+	color: var(--gray-bg);
+}
+
+.button_outline {
+	border: 1px solid var(--primary-color);
+	background-color: transparent;
+	color: var(--primary-color);
 }
 
 .button-primary {
@@ -80,13 +95,6 @@ button {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-}
-.header__button {
-	display: inline-block;
-	background-color: var(--primary-color);
-	color: var(--gray-bg);
-	border-radius: 10px;
-	padding: 10px 20px;
 }
 
 /* MENU  */

@@ -1,4 +1,5 @@
 import { h } from "preact";
+import { Button } from "../UI/Button";
 
 export function Header() {
 	return (
@@ -22,12 +23,8 @@ export function Header() {
 					</a>
 				</nav>
 				<div className="header__buttons">
-					<a href="/signin" className="header__button">
-						Вход
-					</a>
-					<a href="/register" className="header__button">
-						Регистрация
-					</a>
+					<Button title="Вход" href="/signin" />
+					<Button title="Регистрация" href="/register" variant="outline" />
 				</div>
 			</div>
 		</header>
