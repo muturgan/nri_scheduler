@@ -5,7 +5,7 @@ import { RegistrationPage } from "./registration/registration";
 import { NotFound } from "./not-found/NotFound";
 
 import { CalendarPage } from "./calendar/calendar";
-import { CreateEventPage } from "./event-detail/create_event";
+import { CreateEventPage } from "./event/create_event";
 import { EventPage } from "./event-detail/event";
 import { MasteryPage } from "./mastery/mastery";
 

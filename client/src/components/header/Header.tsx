@@ -14,6 +14,9 @@ export function Header() {
 					<a href="/event/create" className="menu__link">
 						Создать событие
 					</a>
+					<a href="/event/1" className="menu__link">
+						Событие
+					</a>
 					<a href="/mastery" className="menu__link">
 						Мастерство
 					</a>
