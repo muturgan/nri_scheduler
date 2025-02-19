@@ -102,7 +102,9 @@ pub(crate) async fn apply_event(
 		));
 	}
 
-	let new_app_id = repo.apply_event(event_id, user_id).await?;
+	let new_app_id = repo
+		.apply_event(event_id, user_id, event.can_auto_approve)
+		.await?;
 
 	Ok(AppResponse::scenario_success(
 		"Заявка на событие успешно создана",

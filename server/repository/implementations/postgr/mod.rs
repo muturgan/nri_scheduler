@@ -261,18 +261,26 @@ impl Store for PostgresStore {
 		player_id: Uuid,
 	) -> CoreResult<Option<EventForApplying>> {
 		let event = sqlx::query_as::<_, EventForApplying>(
-			"select
+			"WITH approved_slots AS (
+				select count(*) as count
+				from applications
+				where event = $1
+				and approval is true
+			)
+			select
 				e.id
 				, (c.master = $2) as you_are_master
 				, bool_or(a.id is not null) AS already_applied
+				, (e.max_slots is null or approved_slots.count < e.max_slots) as can_auto_approve
 			from events e
 			inner join companies c
 				on c.id = e.company
 			left join applications a
 				on a.event = e.id
 				and a.player = $2
+			inner join approved_slots on true
 			where e.id = $1
-			group by e.id, c.master;",
+			group by e.id, c.master, approved_slots.count;",
 		)
 		.bind(event_id)
 		.bind(player_id)
@@ -282,12 +290,20 @@ impl Store for PostgresStore {
 		Ok(event)
 	}
 
-	async fn apply_event(&self, event_id: Uuid, player_id: Uuid) -> CoreResult<RecordId> {
+	async fn apply_event(
+		&self,
+		event_id: Uuid,
+		player_id: Uuid,
+		can_auto_approve: bool,
+	) -> CoreResult<RecordId> {
+		let approval = if can_auto_approve { Some(true) } else { None };
+
 		let new_app_id = sqlx::query_scalar::<_, RecordId>(
-			"INSERT INTO applications (event, player) values ($1, $2) returning id;",
+			"INSERT INTO applications (event, player, approval) values ($1, $2, $3) returning id;",
 		)
 		.bind(event_id)
 		.bind(player_id)
+		.bind(approval)
 		.fetch_one(&self.pool)
 		.await?;
 

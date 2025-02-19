@@ -51,7 +51,12 @@ trait Store {
 		player_id: Uuid,
 	) -> CoreResult<Option<EventForApplying>>;
 
-	async fn apply_event(&self, event_id: Uuid, player_id: Uuid) -> CoreResult<RecordId>;
+	async fn apply_event(
+		&self,
+		event_id: Uuid,
+		player_id: Uuid,
+		can_auto_approve: bool,
+	) -> CoreResult<RecordId>;
 
 	async fn add_event(
 		&self,
@@ -144,8 +149,16 @@ impl Repository {
 		return self.store.get_event_for_applying(event_id, player_id).await;
 	}
 
-	pub(crate) async fn apply_event(&self, event_id: Uuid, player_id: Uuid) -> CoreResult<RecordId> {
-		return self.store.apply_event(event_id, player_id).await;
+	pub(crate) async fn apply_event(
+		&self,
+		event_id: Uuid,
+		player_id: Uuid,
+		can_auto_approve: bool,
+	) -> CoreResult<RecordId> {
+		return self
+			.store
+			.apply_event(event_id, player_id, can_auto_approve)
+			.await;
 	}
 
 	pub(crate) async fn add_event(

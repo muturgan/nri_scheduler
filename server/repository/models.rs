@@ -56,4 +56,5 @@ pub(crate) struct EventForApplying {
 	pub id: Uuid,
 	pub you_are_master: bool,
 	pub already_applied: bool,
+	pub can_auto_approve: bool,
 }
