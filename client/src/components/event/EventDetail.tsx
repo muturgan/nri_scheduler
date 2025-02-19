@@ -7,6 +7,7 @@ import "dayjs/locale/ru";
 import { useStore } from "@nanostores/preact";
 import { useState } from "preact/hooks";
 import { $tz } from "../../modules/store/tz";
+import { Button } from "../UI/Button";
 dayjs.locale("ru");
 
 interface Props {
@@ -75,19 +76,11 @@ export const EventCard = ({ event, game }: Props) => {
 					</a>
 				</p>
 				<p className="event-card__desc">Заметки: {sessionDetails?.notes}</p>
-
-				<button
-					type="button"
-					className="event-card__button"
+				<Button
+					title={isLoading ? "Загрузка ..." : buttonStatus}
 					onClick={handleClick}
-					disabled={isLoading}
-				>
-					{isLoading ? (
-						<span>Загрузка ...</span>
-					) : (
-						<span>{buttonStatus}</span>
-					)}
-				</button>
+					className="full"
+				/>
 			</div>
 		</div>
 	);

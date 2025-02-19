@@ -6,6 +6,7 @@ interface ButtonProps {
 	type?: "button" | "submit" | "reset";
 	onClick?: (event: MouseEvent) => void;
 	href?: string;
+	className?: string;
 }
 
 export function Button({
@@ -13,16 +14,17 @@ export function Button({
 	variant = "primary",
 	type = "button",
 	onClick,
-	href = "#",
+	href,
+	className,
 }: ButtonProps) {
-	const className = `button button_${variant}`;
+	const customName = `button button_${variant}`;
 
 	return href ? (
-		<a href={href} className={className}>
+		<a href={href} className={customName}>
 			{title}
 		</a>
 	) : (
-		<button type={type} className={className} onClick={onClick}>
+		<button type={type} className={customName} onClick={onClick}>
 			{title}
 		</button>
 	);
