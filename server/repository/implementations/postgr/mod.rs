@@ -140,7 +140,9 @@ impl Store for PostgresStore {
 			"SELECT
 					e.id
 					, c.name AS company
+					, c.id AS company_id
 					, m.nickname AS master
+					, m.id AS master_id
 					, l.name AS location
 					, l.id AS location_id
 					, e.date
@@ -204,7 +206,7 @@ impl Store for PostgresStore {
 			};
 		}
 
-		qb.push(" GROUP BY e.id, c.name, m.nickname, l.name, l.id, e.date, y.approval;");
+		qb.push(" GROUP BY e.id, c.name, c.id, m.nickname, m.id, l.name, l.id, e.date, y.approval;");
 
 		let events = qb.build_query_as::<Event>().fetch_all(&self.pool).await?;
 
@@ -220,7 +222,9 @@ impl Store for PostgresStore {
 			"SELECT
 				e.id
 				, c.name AS company
+				, c.id AS company_id
 				, m.nickname AS master
+				, m.id AS master_id
 				, l.name AS location
 				, l.id AS location_id
 				, e.date
@@ -241,7 +245,7 @@ impl Store for PostgresStore {
 			LEFT JOIN users u
 				ON u.id = ap.player
 			WHERE e.id = $1
-			GROUP BY e.id, c.name, m.nickname, l.name, l.id, e.date, y.approval;",
+			GROUP BY e.id, c.name, c.id, m.nickname, m.id, l.name, l.id, e.date, y.approval;",
 		)
 		.bind(event_id)
 		.bind(player_id)

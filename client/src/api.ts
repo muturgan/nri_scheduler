@@ -169,7 +169,9 @@ export const logout = () => ajax<null>('/api/logout')
 export interface IApiEvent {
 	readonly id: string;
 	readonly company: string;
+	readonly company_id: string;
 	readonly master: string;
+	readonly master_id: string,
 	readonly location: string;
 	readonly location_id: string;
 	readonly date: string;

@@ -40,7 +40,9 @@ pub(crate) struct Location {
 pub(crate) struct Event {
 	pub id: Uuid,
 	pub company: String,
+	pub company_id: Uuid,
 	pub master: String,
+	pub master_id: Uuid,
 	pub location: String,
 	pub location_id: Uuid,
 	pub date: DateTime<Utc>,
