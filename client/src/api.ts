@@ -1,3 +1,5 @@
+import type { UUID } from 'node:crypto';
+
 import { route as navigate } from 'preact-router';
 import { toast } from 'react-hot-toast';
 
@@ -167,13 +169,13 @@ export const logout = () => ajax<null>('/api/logout', prepareAjax(undefined, POS
 	});
 
 export interface IApiEvent {
-	readonly id: string;
+	readonly id: UUID;
 	readonly company: string;
-	readonly company_id: string;
+	readonly company_id: UUID;
 	readonly master: string;
-	readonly master_id: string,
+	readonly master_id: UUID,
 	readonly location: string;
-	readonly location_id: string;
+	readonly location_id: UUID;
 	readonly date: string;
 	readonly max_slots: number | null,
 	readonly plan_duration: number | null,
@@ -186,12 +188,12 @@ export const readEventsList = (from: string, to: string) => {
 	return ajax<IApiEvent[]>(`/api/events?date_from=${encodeURIComponent(from)}&date_to=${encodeURIComponent(to)}`);
 };
 
-export const readEvent = (eventId: string) => {
+export const readEvent = (eventId: UUID) => {
 	return ajax<IApiEvent>(`/api/events/${eventId}`);
 };
 
-export const applyEvent = (eventId: string) => {
-	return ajax<string>(`/api/events/apply/${eventId}`, prepareAjax(undefined, POST));
+export const applyEvent = (eventId: UUID) => {
+	return ajax<UUID>(`/api/events/apply/${eventId}`, prepareAjax(undefined, POST));
 };
 
 export const whoIAm = () => {

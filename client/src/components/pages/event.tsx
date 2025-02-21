@@ -1,3 +1,5 @@
+import type { UUID } from 'node:crypto';
+
 import { h, Fragment } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { useRouter } from 'preact-router';
@@ -36,7 +38,7 @@ export const EventPage = () => {
 
 	useEffect(
 		() => {
-			const eventId = route.matches?.id;
+			const eventId = route.matches?.id as UUID | undefined;
 			if (eventId) {
 				setFetching(true);
 				readEvent(eventId)
