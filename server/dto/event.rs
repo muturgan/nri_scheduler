@@ -24,4 +24,8 @@ pub(crate) struct NewEventDto {
 	pub company: Uuid,
 	pub location: Option<Uuid>,
 	pub date: DateTime<FixedOffset>,
+	#[serde(default)]
+	pub max_slots: Option<i16>,
+	#[serde(default)]
+	pub plan_duration: Option<i16>,
 }

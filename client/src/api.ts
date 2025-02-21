@@ -175,6 +175,8 @@ export interface IApiEvent {
 	readonly location: string;
 	readonly location_id: string;
 	readonly date: string;
+	readonly max_slots: number | null,
+	readonly plan_duration: number | null,
 	readonly players: string[];
 	readonly you_applied: boolean;
 	readonly your_approval: boolean | null;

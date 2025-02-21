@@ -62,7 +62,13 @@ pub(crate) async fn add_event(
 	)?;
 
 	let new_evt_id = repo
-		.add_event(body.company, &body.location, body.date)
+		.add_event(
+			body.company,
+			&body.location,
+			body.date,
+			body.max_slots,
+			body.plan_duration,
+		)
 		.await?;
 
 	return Ok(AppResponse::scenario_success(

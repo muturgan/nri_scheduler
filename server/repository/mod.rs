@@ -64,6 +64,8 @@ trait Store {
 		company: Uuid,
 		location: &Option<Uuid>,
 		date: DateTime<FixedOffset>,
+		max_slots: Option<i16>,
+		plan_duration: Option<i16>,
 	) -> CoreResult<RecordId>;
 
 	async fn close(&self);
@@ -171,8 +173,13 @@ impl Repository {
 		company: Uuid,
 		location: &Option<Uuid>,
 		date: DateTime<FixedOffset>,
+		max_slots: Option<i16>,
+		plan_duration: Option<i16>,
 	) -> CoreResult<RecordId> {
-		return self.store.add_event(company, location, date).await;
+		return self
+			.store
+			.add_event(company, location, date, max_slots, plan_duration)
+			.await;
 	}
 
 	pub async fn close(&self) {

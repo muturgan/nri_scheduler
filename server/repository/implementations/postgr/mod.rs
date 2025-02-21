@@ -329,13 +329,17 @@ impl Store for PostgresStore {
 		company: Uuid,
 		location: &Option<Uuid>,
 		date: DateTime<FixedOffset>,
+		max_slots: Option<i16>,
+		plan_duration: Option<i16>,
 	) -> CoreResult<RecordId> {
 		let new_evt_id = sqlx::query_scalar::<_, RecordId>(
-			"INSERT INTO events (company, location, date) values ($1, $2, $3) returning id;",
+			"INSERT INTO events (company, location, date, max_slots, plan_duration) values ($1, $2, $3, $4, $5) returning id;",
 		)
 		.bind(company)
 		.bind(location)
 		.bind(date)
+		.bind(max_slots)
+		.bind(plan_duration)
 		.fetch_one(&self.pool)
 		.await?;
 
