@@ -190,6 +190,10 @@ export const readEvent = (eventId: string) => {
 	return ajax<IApiEvent>(`/api/events/${eventId}`);
 };
 
+export const applyEvent = (eventId: string) => {
+	return ajax<string>(`/api/events/apply/${eventId}`, prepareAjax(undefined, POST));
+};
+
 export const whoIAm = () => {
 	return ajax('/api/check');
 };
