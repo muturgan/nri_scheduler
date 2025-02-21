@@ -55,6 +55,7 @@ pub(crate) struct Event {
 	pub date: DateTime<Utc>,
 	pub players: SqlxJson<Vec<String>>,
 	pub max_slots: Option<i16>,
+	pub plan_duration: Option<i16>,
 	pub you_applied: bool,
 	pub your_approval: Option<bool>,
 }

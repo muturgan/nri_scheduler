@@ -6,6 +6,9 @@ CREATE TABLE "events" (
 	"max_slots"  smallint
 						CONSTRAINT positive_slots CHECK (max_slots > 0)
 						DEFAULT NULL,
+	"plan_duration"  smallint
+						CONSTRAINT positive_duration CHECK (plan_duration > 0)
+						DEFAULT NULL,
 
 	CONSTRAINT "PK_events" PRIMARY KEY ("id"),
 	CONSTRAINT "FK_events_companies" FOREIGN KEY ("company")
