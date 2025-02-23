@@ -8,7 +8,7 @@ use axum::{
 #[cfg(feature = "cors")]
 use tower_http::cors::{Any, CorsLayer};
 
-#[cfg(debug_assertions)]
+#[cfg(feature = "vite")]
 use crate::vite::proxy_to_vite;
 use crate::{auth, handlers as H, repository::Repository};
 
@@ -39,7 +39,7 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 		)
 		.with_state(repo);
 
-	#[cfg(debug_assertions)]
+	#[cfg(feature = "vite")]
 	let router = router.fallback(proxy_to_vite);
 
 	#[cfg(feature = "cors")]

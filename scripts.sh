@@ -5,7 +5,7 @@ build() {
 }
 
 dev() {
-	export $(cat .env | grep -v '^#' | xargs) && cargo run
+	export $(cat .env | grep -v '^#' | xargs) && cargo run --features=vite
 }
 
 start_release() {

@@ -8,5 +8,5 @@ pub mod repository;
 pub mod router;
 pub(crate) mod shared;
 pub mod system_models;
-#[cfg(debug_assertions)]
+#[cfg(feature = "vite")]
 pub(crate) mod vite;
