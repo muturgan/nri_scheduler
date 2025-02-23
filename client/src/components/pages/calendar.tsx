@@ -15,6 +15,7 @@ import { readEventsList } from '../../api';
 import { $tz } from '../../store/tz';
 
 const EVENT_FORMAT = 'YYYY-MM-DD HH:mm';
+const DEFAULT_EVENT_DURATION = 4;
 
 export const CalendarPage = () => {
 	const tz = useStore($tz);
@@ -43,7 +44,7 @@ export const CalendarPage = () => {
 					calendar.events.set(
 						res.payload.map((apiEv) => {
 							const start = dayjs(apiEv.date);
-							const end = start.add(2, 'h');
+							const end = start.add(apiEv.plan_duration || DEFAULT_EVENT_DURATION, 'h');
 
 							return {
 								id: apiEv.id,
