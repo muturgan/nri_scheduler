@@ -6,9 +6,10 @@ use uuid::Uuid;
 
 use super::super::Store;
 use crate::{
-	auth,
 	dto::event::ReadEventsDto,
-	repository::models::{Company, Event, EventForApplying, Location, Profile, UserForAuth},
+	repository::models::{
+		Company, Event, EventForApplying, Location, Profile, SelfInfo, UserForAuth,
+	},
 	shared::RecordId,
 	system_models::{AppError, CoreResult, ServingError},
 };
@@ -33,16 +34,22 @@ impl PostgresStore {
 }
 
 impl Store for PostgresStore {
-	async fn registration(&self, nickname: &str, email: &str, password: &str) -> CoreResult {
-		let hashed_pass = auth::hash_password(password)?;
-
-		let query_result =
-			sqlx::query("INSERT INTO users (nickname, email, pw_hash) values ($1, $2, $3);")
-				.bind(nickname)
-				.bind(email)
-				.bind(hashed_pass)
-				.execute(&self.pool)
-				.await;
+	async fn registration(
+		&self,
+		nickname: &str,
+		email: &str,
+		hashed_pass: &str,
+		timezone_offset: Option<i16>,
+	) -> CoreResult {
+		let query_result = sqlx::query(
+			"INSERT INTO users (nickname, email, pw_hash, timezone_offset) values ($1, $2, $3, $4);",
+		)
+		.bind(nickname)
+		.bind(email)
+		.bind(hashed_pass)
+		.bind(timezone_offset)
+		.execute(&self.pool)
+		.await;
 
 		query_result.map_err(|err| {
 			let err_str = err.to_string();
@@ -74,6 +81,16 @@ impl Store for PostgresStore {
 				.await?;
 
 		Ok(may_be_profile)
+	}
+
+	async fn who_i_am(&self, user_id: Uuid) -> CoreResult<Option<SelfInfo>> {
+		let may_be_self_info =
+			sqlx::query_as::<_, SelfInfo>("SELECT id, timezone_offset FROM users WHERE id = $1;")
+				.bind(user_id)
+				.fetch_optional(&self.pool)
+				.await?;
+
+		Ok(may_be_self_info)
 	}
 
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>> {

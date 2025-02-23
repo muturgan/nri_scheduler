@@ -2,9 +2,11 @@ import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { route as navigate } from 'preact-router';
 import { useStore } from '@nanostores/preact';
+import { toast } from 'react-hot-toast';
 import { signIn, whoIAm } from '../../api';
 import { $fetching } from '../../store/fetching';
-import { toast } from 'react-hot-toast';
+
+import { setOffset } from '../../store/tz';
 
 export const SignInPage = () => {
 	const fetching = useStore($fetching);
@@ -33,6 +35,17 @@ export const SignInPage = () => {
 				if (res !== null) {
 					console.log('who I am:');
 					console.log(res);
+
+					/**
+					 * @todo сделать так чтобы смещение сохранялось после перезагрузки страницы
+					 * сейчас просто делать запрос при старте приложения не подойдёт, так как неавторизованных пользователей перекинет на форму авторизации
+					 * а неавторизованные пользователи тоже должны иметь возможность смотреть календарь
+					 * */
+					let timezone_offset = res.payload.timezone_offset;
+					if (typeof timezone_offset === 'number') {
+						setOffset(timezone_offset);
+					}
+
 					toast.success('Успешная авторизация');
 					navigate('/calendar');
 				}

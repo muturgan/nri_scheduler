@@ -26,7 +26,12 @@ pub(super) async fn registration(
 	Dto(body): Dto<RegistrationDto>,
 ) -> AppResult {
 	repo
-		.registration(&body.nickname, &body.email, &body.password)
+		.registration(
+			&body.nickname,
+			&body.email,
+			&body.password,
+			body.timezone_offset,
+		)
 		.await?;
 
 	return AppResponse::user_registered();
@@ -86,9 +91,17 @@ pub(super) async fn read_profile(
 	})
 }
 
-pub(super) async fn who_i_am(Extension(user_id): Extension<Uuid>) -> AppResponse {
-	AppResponse::scenario_success(
-		"I know who I am",
-		Some(serde_json::Value::String(user_id.to_string())),
-	)
+pub(super) async fn who_i_am(
+	State(repo): State<Arc<Repository>>,
+	Extension(user_id): Extension<Uuid>,
+) -> AppResult {
+	let self_info = repo.who_i_am(user_id).await?;
+
+	Ok(match self_info {
+		None => AppResponse::system_error("Какая-то ерунда, не смогли найти пользователя", None),
+		Some(self_info) => {
+			let payload = serde_json::to_value(self_info)?;
+			AppResponse::scenario_success("I know who I am", Some(payload))
+		}
+	})
 }

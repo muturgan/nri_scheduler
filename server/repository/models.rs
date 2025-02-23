@@ -67,3 +67,9 @@ pub(crate) struct EventForApplying {
 	pub already_applied: bool,
 	pub can_auto_approve: bool,
 }
+
+#[derive(Debug, Deserialize, Serialize, FromRow)]
+pub(crate) struct SelfInfo {
+	pub id: Uuid,
+	pub timezone_offset: Option<i16>,
+}

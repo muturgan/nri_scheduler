@@ -196,6 +196,11 @@ export const applyEvent = (eventId: UUID) => {
 	return ajax<UUID>(`/api/events/apply/${eventId}`, prepareAjax(undefined, POST));
 };
 
+export interface IApiSelfInfo {
+	readonly id: UUID;
+	readonly timezone_offset: number | null;
+}
+
 export const whoIAm = () => {
-	return ajax('/api/check');
+	return ajax<IApiSelfInfo>(`/api/check?timestamp=${Date.now()}`);
 };

@@ -3,10 +3,11 @@ pub(crate) mod models;
 
 use chrono::{DateTime, FixedOffset};
 use implementations::PostgresStore;
-use models::{Company, Event, EventForApplying, Location, Profile, UserForAuth};
+use models::{Company, Event, EventForApplying, Location, Profile, SelfInfo, UserForAuth};
 use uuid::Uuid;
 
 use crate::{
+	auth,
 	dto::event::ReadEventsDto,
 	shared::RecordId,
 	system_models::{CoreResult, ServingError},
@@ -14,9 +15,16 @@ use crate::{
 
 // TODO: разделить на разные репозитоии, только пока не знаю как
 trait Store {
-	async fn registration(&self, nickname: &str, email: &str, password: &str) -> CoreResult;
+	async fn registration(
+		&self,
+		nickname: &str,
+		email: &str,
+		hashed_pass: &str,
+		timezone_offset: Option<i16>,
+	) -> CoreResult;
 	async fn get_user_for_signing_in(&self, email: &str) -> CoreResult<Option<UserForAuth>>;
 	async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>>;
+	async fn who_i_am(&self, user_id: Uuid) -> CoreResult<Option<SelfInfo>>;
 
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>>;
 
@@ -87,8 +95,14 @@ impl Repository {
 		nickname: &str,
 		email: &str,
 		password: &str,
+		timezone_offset: Option<i16>,
 	) -> CoreResult {
-		return self.store.registration(nickname, email, password).await;
+		let hashed_pass = auth::hash_password(password)?;
+
+		return self
+			.store
+			.registration(nickname, email, &hashed_pass, timezone_offset)
+			.await;
 	}
 
 	pub(crate) async fn get_user_for_signing_in(
@@ -100,6 +114,10 @@ impl Repository {
 
 	pub(crate) async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>> {
 		return self.store.read_profile(user_id).await;
+	}
+
+	pub(crate) async fn who_i_am(&self, user_id: Uuid) -> CoreResult<Option<SelfInfo>> {
+		return self.store.who_i_am(user_id).await;
 	}
 
 	pub(crate) async fn get_location_by_id(

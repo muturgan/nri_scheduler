@@ -18,6 +18,7 @@ pub(crate) struct RegistrationDto {
 	pub email: String,
 	#[masked]
 	pub password: String,
+	pub timezone_offset: Option<i16>,
 }
 
 impl<'de> Deserialize<'de> for RegistrationDto {
@@ -30,12 +31,15 @@ impl<'de> Deserialize<'de> for RegistrationDto {
 			nickname: String,
 			email: String,
 			password: String,
+			#[serde(default)]
+			timezone_offset: Option<i16>,
 		}
 
 		let PlainBody {
 			nickname,
 			email,
 			password,
+			timezone_offset,
 		} = PlainBody::deserialize(deserializer)?;
 
 		if nickname.is_empty() {
@@ -47,11 +51,17 @@ impl<'de> Deserialize<'de> for RegistrationDto {
 		if password.is_empty() {
 			return Err(D::Error::custom("Введен некорректный пароль"));
 		}
+		if let Some(tz) = timezone_offset {
+			if !(-12..=12).contains(&tz) {
+				return Err(D::Error::custom("Введена некорректная временная зона"));
+			}
+		}
 
 		Ok(Self {
 			nickname,
 			email,
 			password,
+			timezone_offset,
 		})
 	}
 }
