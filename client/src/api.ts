@@ -209,5 +209,5 @@ export interface IApiSelfInfo {
 }
 
 export const whoIAm = () => {
-	return ajax<IApiSelfInfo>(`/api/check?timestamp=${Date.now()}`);
+	return ajax<IApiSelfInfo>('/api/check');
 };
