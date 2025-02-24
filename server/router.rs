@@ -1,12 +1,8 @@
 use ::std::sync::Arc;
-#[cfg(feature = "cors")]
-use axum::http::Method;
 use axum::{
 	Router, middleware,
 	routing::{get, post},
 };
-#[cfg(feature = "cors")]
-use tower_http::cors::{Any, CorsLayer};
 
 #[cfg(feature = "vite")]
 use crate::vite::proxy_to_vite;
@@ -41,13 +37,6 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 
 	#[cfg(feature = "vite")]
 	let router = router.fallback(proxy_to_vite);
-
-	#[cfg(feature = "cors")]
-	let router = router.layer(
-		CorsLayer::new()
-			.allow_origin(Any)
-			.allow_methods(vec![Method::GET, Method::POST]),
-	);
 
 	return router;
 }
