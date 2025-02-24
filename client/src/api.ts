@@ -6,7 +6,11 @@ import { toast } from 'react-hot-toast';
 import { startFetching, stopFetching } from "./store/fetching";
 import { enter, leave } from "./store/profile";
 
-const API_HOST = import.meta.env.CLIENT_API_HOST as string | undefined || '';
+const API_HOST = import.meta.env.PROD
+	? ''
+	: import.meta.env.CLIENT_API_HOST as string | undefined || '';
+const CREDENTIALS = import.meta.env.PROD ? undefined : 'include';
+
 const POST = 'POST';
 const URL_ENCODED = true;
 
@@ -46,6 +50,7 @@ const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T> | 
 		API_HOST + input,
 		{
 			body:    init?.body,
+			credentials: CREDENTIALS,
 			headers: init?.headers,
 			method:  init?.method,
 			signal:  controller?.signal,

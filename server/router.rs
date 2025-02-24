@@ -4,6 +4,8 @@ use axum::{
 	routing::{get, post},
 };
 
+#[cfg(feature = "cors")]
+use crate::cors;
 #[cfg(feature = "vite")]
 use crate::vite::proxy_to_vite;
 use crate::{auth, handlers as H, repository::Repository};
@@ -37,6 +39,9 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 
 	#[cfg(feature = "vite")]
 	let router = router.fallback(proxy_to_vite);
+
+	#[cfg(feature = "cors")]
+	let router = router.layer(middleware::from_fn(cors::cors_middleware));
 
 	return router;
 }

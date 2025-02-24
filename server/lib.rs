@@ -1,6 +1,8 @@
 pub(crate) mod auth;
 pub mod config;
 pub(crate) mod cookie;
+#[cfg(feature = "cors")]
+pub(crate) mod cors;
 pub(crate) mod dto;
 pub mod graceful_shutdown;
 pub(crate) mod handlers;
