@@ -1,11 +1,17 @@
 use axum::{
 	body::Body,
-	http::{HeaderValue, Request, header},
+	http::{HeaderValue, Method, Request, header},
 	middleware::Next,
 	response::Response,
 };
 
 pub(super) async fn cors_middleware(req: Request<Body>, next: Next) -> Response {
+	let method = req.method().clone();
+	let uri = req.uri().clone();
+	if method == Method::OPTIONS {
+		println!("uri: {uri}");
+	}
+
 	let origin = req
 		.headers()
 		.get(header::ORIGIN)
@@ -17,6 +23,9 @@ pub(super) async fn cors_middleware(req: Request<Body>, next: Next) -> Response 
 	let origin_parts = origin.as_ref().map(|orig| orig.split(':'));
 
 	let mut res = next.run(req).await;
+	if method == Method::OPTIONS {
+		println!("status: {} {uri}", res.status());
+	}
 
 	if let Some(mut origin_parts) = origin_parts {
 		if origin_parts.next() == Some("http") && origin_parts.next() == Some("//localhost") {
