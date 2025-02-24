@@ -12,8 +12,9 @@ use crate::{
 
 pub(super) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult {
 	let (cookie_key, secure) = config::get_cookie_params();
-	let auth_cookie =
-		format!("{cookie_key}={jwt}; SameSite; {secure}HttpOnly; max-age={SESSION_LIFETIME}",);
+	let auth_cookie = format!(
+		"{cookie_key}={jwt}; SameSite; {secure}HttpOnly; path=/api; max-age={SESSION_LIFETIME}",
+	);
 
 	let cookie_val = HeaderValue::from_str(&auth_cookie)
 		.map_err(|_| AppError::system_error("Ошибка установки cookie"))?;
@@ -27,7 +28,8 @@ pub(super) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult 
 
 pub(super) fn remove_auth_cookie(response: &mut Response) -> CoreResult {
 	let (cookie_key, secure) = config::get_cookie_params();
-	let auth_cookie = format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; max-age=0");
+	let auth_cookie =
+		format!("{cookie_key}=logout; SameSite; {secure}HttpOnly; path=/api; max-age=0");
 
 	let cookie_val = HeaderValue::from_str(&auth_cookie)
 		.map_err(|_| AppError::system_error("Ошибка установки cookie"))?;
