@@ -1,8 +1,8 @@
 use axum::{
 	body::Body,
-	http::{HeaderValue, Method, Request, StatusCode, header},
+	http::{HeaderValue, Request, header},
 	middleware::Next,
-	response::{IntoResponse, Response},
+	response::Response,
 };
 
 pub(super) async fn cors_middleware(req: Request<Body>, next: Next) -> Response {
@@ -13,11 +13,7 @@ pub(super) async fn cors_middleware(req: Request<Body>, next: Next) -> Response 
 
 	let origin_parts = origin.as_ref().map(|orig| orig.split(':'));
 
-	let mut res = if req.method() == Method::OPTIONS {
-		StatusCode::OK.into_response()
-	} else {
-		next.run(req).await
-	};
+	let mut res = next.run(req).await;
 
 	if let Some(mut origin_parts) = origin_parts {
 		if origin_parts.next() == Some("http") && origin_parts.next() == Some("//localhost") {
