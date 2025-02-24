@@ -102,6 +102,7 @@ const checkResponse = async <T>(response: Response): Promise<IApiResponse<T> | n
 			case EScenarioStatus.UNAUTHORIZED:
 			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
+				toast.error(apiRes.result);
 				leave();
 				navigate('/signin');
 				break;
