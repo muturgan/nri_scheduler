@@ -137,7 +137,7 @@ const prepareAjax = (payload?: object, method?: string, urlencoded = false): IRe
 				: JSON.stringify(payload)
 			: undefined,
 		headers: payload
-			? {'Content-Type': 'application/' + urlencoded ? 'x-www-form-urlencoded' : 'json'}
+			? {'Content-Type': 'application/' + (urlencoded ? 'x-www-form-urlencoded' : 'json')}
 			: undefined,
 		method,
 	};
