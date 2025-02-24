@@ -50,6 +50,7 @@ const ajax = <T>(input: string, init?: IRequestInit): Promise<IApiResponse<T> | 
 		API_HOST + input,
 		{
 			body:    init?.body,
+			cache:   'no-store',
 			credentials: CREDENTIALS,
 			headers: init?.headers,
 			method:  init?.method,

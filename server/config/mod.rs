@@ -48,6 +48,7 @@ pub(super) fn get_db_max_pool_size() -> u32 {
 	);
 }
 
+#[cfg(not(feature = "https"))]
 pub(super) fn get_cookie_params() -> (&'static str, &'static str) {
 	if is_test() {
 		("authorization", "")
@@ -56,6 +57,12 @@ pub(super) fn get_cookie_params() -> (&'static str, &'static str) {
 	}
 }
 
+#[cfg(feature = "https")]
+pub(super) fn get_cookie_params() -> (&'static str, &'static str) {
+	("__Secure-authorization", "Secure; ")
+}
+
+#[cfg(not(feature = "https"))]
 pub(super) fn is_test() -> bool {
 	readEnvVar("ENV").is_ok_and(|val| val == "test")
 }

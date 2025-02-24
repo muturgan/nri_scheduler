@@ -10,15 +10,15 @@ use crate::{
 	system_models::{AppError, CoreResult},
 };
 
-#[cfg(not(feature = "cors"))]
-const SAME_SITE: &str = "SameSite; ";
-#[cfg(feature = "cors")]
-const SAME_SITE: &str = "";
+#[cfg(not(all(feature = "cors", feature = "https")))]
+const SAME_SITE: &str = "SameSite";
+#[cfg(all(feature = "cors", feature = "https"))]
+const SAME_SITE: &str = "SameSite=None";
 
 pub(super) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult {
 	let (cookie_key, secure) = config::get_cookie_params();
 	let auth_cookie = format!(
-		"{cookie_key}={jwt}; {SAME_SITE}{secure}HttpOnly; path=/api; max-age={SESSION_LIFETIME}",
+		"{cookie_key}={jwt}; {SAME_SITE}; {secure}HttpOnly; path=/api; max-age={SESSION_LIFETIME}",
 	);
 
 	let cookie_val = HeaderValue::from_str(&auth_cookie)
@@ -34,7 +34,7 @@ pub(super) fn set_auth_cookie(response: &mut Response, jwt: &str) -> CoreResult 
 pub(super) fn remove_auth_cookie(response: &mut Response) -> CoreResult {
 	let (cookie_key, secure) = config::get_cookie_params();
 	let auth_cookie =
-		format!("{cookie_key}=logout; {SAME_SITE}{secure}HttpOnly; path=/api; max-age=0");
+		format!("{cookie_key}=logout; {SAME_SITE}; {secure}HttpOnly; path=/api; max-age=0");
 
 	let cookie_val = HeaderValue::from_str(&auth_cookie)
 		.map_err(|_| AppError::system_error("Ошибка установки cookie"))?;
