@@ -12,7 +12,7 @@ pub(crate) struct ReadEventsDto {
 	#[serde(default)]
 	pub location: Option<Uuid>,
 	#[serde(default)]
-	pub appied: Option<bool>,
+	pub applied: Option<bool>,
 	#[serde(default)]
 	pub not_rejected: Option<bool>,
 	#[serde(default)]

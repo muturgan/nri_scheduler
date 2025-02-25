@@ -221,8 +221,8 @@ impl Store for PostgresStore {
 		qb.push(" AND e.date <= ");
 		qb.push_bind(query_args.date_to);
 
-		if let Some(appied) = query_args.appied {
-			match appied {
+		if let Some(applied) = query_args.applied {
+			match applied {
 				true => qb.push(" AND y.id is not null"),
 				false => qb.push(" AND y.id is null"),
 			};
