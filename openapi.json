@@ -86,6 +86,56 @@
 				}
 			}
 		},
+		"/api/check": {
+			"get": {
+				"tags": [
+					"profile"
+				],
+				"summary": "Проверка авторизации, получение минимальной информации о пользователе",
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWhoIAm"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			}
+		},
+		"/api/profile": {
+			"get": {
+				"tags": [
+					"profile"
+				],
+				"summary": "Получение профиля пользователя",
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseProfile"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			}
+		},
 		"/api/events": {
 			"get": {
 				"tags": [
@@ -181,6 +231,39 @@
 						"cookieAuth": []
 					}
 				]
+			},
+			"post": {
+				"tags": [
+					"events"
+				],
+				"summary": "Создание нового события",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewEventDto"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithUuid"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
 			}
 		},
 		"/api/events/{id}": {
@@ -215,6 +298,113 @@
 				},
 				"security": [
 					{},
+					{
+						"cookieAuth": []
+					}
+				]
+			}
+		},
+		"/api/events/apply/{id}": {
+			"post": {
+				"tags": [
+					"events"
+				],
+				"summary": "Подача заявки на участие в игре",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Идентификатор события",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithUuid"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			}
+		},
+		"/api/locations": {
+			"post": {
+				"tags": [
+					"locations"
+				],
+				"summary": "Создание локации",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewLocationDto"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithUuid"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			}
+		},
+		"/api/companies": {
+			"post": {
+				"tags": [
+					"companies"
+				],
+				"summary": "Создание кампании",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewCompanyDto"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithUuid"
+								}
+							}
+						}
+					}
+				},
+				"security": [
 					{
 						"cookieAuth": []
 					}
@@ -362,6 +552,89 @@
 					}
 				}
 			},
+			"NewEventDto": {
+				"type": "object",
+				"description": "Данные для создания события",
+				"required": [
+					"company",
+					"date"
+				],
+				"properties": {
+					"company": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Идентификатор кампании"
+					},
+					"location": {
+						"type": "string",
+						"format": "uuid",
+						"nullable": true,
+						"description": "Идентификатор места проведения"
+					},
+					"date": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2025-02-28T17:00:00+03:00",
+						"description": "Дата и время проведения игры"
+					},
+					"max_slots": {
+						"type": "integer",
+						"nullable": true,
+						"description": "Максимальное количество игроков"
+					},
+					"plan_duration": {
+						"type": "integer",
+						"nullable": true,
+						"description": "Планируемая продолжительность игры в часах"
+					}
+				}
+			},
+			"NewLocationDto": {
+				"type": "object",
+				"description": "Данные для создания локации",
+				"required": [
+					"name"
+				],
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Название локации"
+					},
+					"address": {
+						"type": "string",
+						"nullable": true,
+						"description": "Адрес локации"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true,
+						"description": "Описание локации"
+					}
+				}
+			},
+			"NewCompanyDto": {
+				"type": "object",
+				"description": "Данные для создания кампании",
+				"required": [
+					"name",
+					"system"
+				],
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Название кампании"
+					},
+					"system": {
+						"type": "string",
+						"description": "Система правил"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true,
+						"description": "Описание локации"
+					}
+				}
+			},
 			"AppResponse": {
 				"type": "object",
 				"description": "Ответ приложения без дополнительной информации",
@@ -376,6 +649,93 @@
 					"payload": {
 						"type": "null",
 						"description": "Дополнительные данные"
+					}
+				}
+			},
+			"AppResponseWithUuid": {
+				"type": "object",
+				"description": "Ответ приложения с идентификатором созданной сущности",
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Идентификатор созданной сущности"
+					}
+				}
+			},
+			"SelfInfo": {
+				"type": "object",
+				"description": "Минимальная информация о пользователе",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Идентификатор пользователя"
+					},
+					"timezone_offset": {
+						"type": "integer",
+						"nullable": true,
+						"description": "Временная зона пользователя"
+					}
+				}
+			},
+			"AppResponseWhoIAm": {
+				"type": "object",
+				"description": "Ответ приложения с идентификатором созданной сущности",
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"$ref": "#/components/schemas/SelfInfo"
+					}
+				}
+			},
+			"Profile": {
+				"type": "object",
+				"description": "Минимальная информация о пользователе",
+				"properties": {
+					"nickname": {
+						"type": "string",
+						"description": "Имя пользователя"
+					},
+					"phone": {
+						"type": "string",
+						"nullable": true,
+						"description": "Номер телефона пользователя"
+					},
+					"email": {
+						"type": "string",
+						"format": "email",
+						"nullable": true,
+						"description": "Электронная почта пользователя"
+					}
+				}
+			},
+			"AppResponseProfile": {
+				"type": "object",
+				"description": "Ответ приложения с идентификатором созданной сущности",
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"$ref": "#/components/schemas/Profile"
 					}
 				}
 			},
@@ -436,6 +796,14 @@
 		{
 			"name": "events",
 			"description": "Просмотр предстоящих событий (игр)"
+		},
+		{
+			"name": "locations",
+			"description": "Места проведения игр"
+		},
+		{
+			"name": "companies",
+			"description": "Кампании"
 		}
 	]
 }
