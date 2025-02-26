@@ -90,6 +90,7 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 };
 
 export const EventPage = () => {
+	
 	const [route] = useRouter();
 
 	const [fetching, setFetching] = useState(false);
