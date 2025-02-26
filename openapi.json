@@ -100,7 +100,8 @@
 						"required": true,
 						"schema": {
 							"type": "string",
-							"format": "date-time"
+							"format": "date-time",
+							"example": "2025-02-01T12:00:00+03:00"
 						}
 					},
 					{
@@ -110,7 +111,8 @@
 						"required": true,
 						"schema": {
 							"type": "string",
-							"format": "date-time"
+							"format": "date-time",
+							"example": "2025-12-31T12:00:00+03:00"
 						}
 					},
 					{
