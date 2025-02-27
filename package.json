@@ -2,7 +2,7 @@
 	"name": "nri_scheduler",
 	"version": "0.1.0",
 	"scripts": {
-		"start": "node start.ts",
+		"start": "node start.js",
 		"dev": "export $(cat .env | grep -v '^#' | xargs) && vite",
 		"force": "vite --force",
 		"build": "tsc && vite build",
