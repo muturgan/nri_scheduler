@@ -4,7 +4,7 @@ import { cloneElement, forwardRef } from "preact/compat";
 import type { BoxProps, InputElementProps } from "@chakra-ui/react";
 import { Group, InputElement } from "@chakra-ui/react";
 
-export interface InputGroupProps extends BoxProps {
+export interface IInputGroupProps extends BoxProps {
 	startElementProps?: InputElementProps;
 	endElementProps?: InputElementProps;
 	startElement?: ComponentChild;
@@ -14,7 +14,7 @@ export interface InputGroupProps extends BoxProps {
 	endOffset?: InputElementProps["paddingEnd"];
 }
 
-export const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
+export const InputGroup = forwardRef<HTMLDivElement, IInputGroupProps>(
 	function InputGroup(props, ref) {
 		const {
 			startElement,

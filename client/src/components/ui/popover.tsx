@@ -6,14 +6,14 @@ import {
 	Portal,
 } from "@chakra-ui/react";
 
-interface PopoverContentProps extends ChakraPopover.ContentProps {
+interface IPopoverContentProps extends ChakraPopover.ContentProps {
 	portalled?: boolean;
 	portalRef?: RefObject<HTMLElement>;
 }
 
 export const PopoverContent = forwardRef<
 	HTMLDivElement,
-	PopoverContentProps
+	IPopoverContentProps
 >(function PopoverContent(props, ref) {
 	const { portalled = true, portalRef, ...rest } = props;
 	return (

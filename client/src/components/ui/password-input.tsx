@@ -21,22 +21,22 @@ import {
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { InputGroup } from "./input-group";
 
-export interface PasswordVisibilityProps {
+export interface IPasswordVisibilityProps {
 	defaultVisible?: boolean;
 	visible?: boolean;
 	onVisibleChange?: (visible: boolean) => void;
 	visibilityIcon?: { on: ComponentChild; off: ComponentChild };
 }
 
-export interface PasswordInputProps
+export interface IPasswordInputProps
 	extends InputProps,
-		PasswordVisibilityProps {
+	IPasswordVisibilityProps {
 	rootProps?: GroupProps;
 }
 
 export const PasswordInput = forwardRef<
 	HTMLInputElement,
-	PasswordInputProps
+	IPasswordInputProps
 >(function PasswordInput(props, ref) {
 	const {
 		rootProps,
@@ -100,14 +100,14 @@ const VisibilityTrigger = forwardRef<HTMLButtonElement, ButtonProps>(
 	}
 );
 
-interface PasswordStrengthMeterProps extends StackProps {
+interface IPasswordStrengthMeterProps extends StackProps {
 	max?: number;
 	value: number;
 }
 
 export const PasswordStrengthMeter = forwardRef<
 	HTMLDivElement,
-	PasswordStrengthMeterProps
+	IPasswordStrengthMeterProps
 >(function PasswordStrengthMeter(props, ref) {
 	const { max = 4, value, ...rest } = props;
 

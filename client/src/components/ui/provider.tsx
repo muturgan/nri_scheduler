@@ -1,6 +1,5 @@
 import { h } from "preact";
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
-import { JSX } from "preact";
 
 const system = createSystem(defaultConfig, {
 	theme: {
@@ -8,10 +7,10 @@ const system = createSystem(defaultConfig, {
 	},
 });
 
-interface ProviderProps {
-	children: JSX.Element | JSX.Element[];
+interface IProviderProps {
+	children: h.JSX.Element | h.JSX.Element[];
 }
 
-export function Provider({ children }: ProviderProps) {
+export function Provider({ children }: IProviderProps) {
 	return <ChakraProvider value={system} children={children} />;
 }
