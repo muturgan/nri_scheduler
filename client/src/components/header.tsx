@@ -80,7 +80,7 @@ export const Header = () => {
 												colorPalette="red"
 												onClick={() => {
 													logout();
-													navigate("/signin");
+													navigate('/signin')
 												}}
 											>
 												Выйти

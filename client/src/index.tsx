@@ -6,6 +6,7 @@ import { Layout } from "./components/layout";
 import {
 	CreateEventPage,
 	EventPage,
+	HomePage,
 	MasteryPage,
 	SignInPage,
 } from "./components/pages";
@@ -34,6 +35,7 @@ const App = () => (
 				<Route path="/event/create" component={CreateEventPage} />
 				<Route path="/event/:id" component={EventPage} />
 				<Route path="/mastery" component={MasteryPage} />
+				<Route path="/" component={HomePage} />
 				<Route
 					default
 					component={() => <h1>404 - Страница не найдена</h1>}
