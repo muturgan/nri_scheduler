@@ -11,4 +11,25 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  {
+    plugins: {
+      pluginReact
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off"
+    },
+  },
+  {
+    ignores: [
+      ".cargo/*",
+      ".cargo-husky/*",
+      ".vscode/*",
+      "migrations/*",
+      "node_modules/*",
+      "postgres/*",
+      "server/*",
+      "target/*",
+      "static/*"
+    ]
+  }
 ];
