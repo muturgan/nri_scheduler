@@ -24,7 +24,7 @@ export const Header = () => {
 	const user = {
 		email: "example@mail.ru",
 		name: "Username",
-		avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04",
+		avatar: "/assets/photo.jpeg",
 	};
 	const [open, setOpen] = useState(false);
 
