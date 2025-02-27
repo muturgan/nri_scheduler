@@ -6,6 +6,8 @@ pub(crate) mod cors;
 pub(crate) mod dto;
 pub mod graceful_shutdown;
 pub(crate) mod handlers;
+#[cfg(feature = "swagger")]
+pub(crate) mod openapi;
 pub mod repository;
 pub mod router;
 pub(crate) mod shared;

@@ -12,7 +12,7 @@ pub(crate) struct ReadEventsDto {
 	#[serde(default)]
 	pub location: Option<Uuid>,
 	#[serde(default)]
-	pub appied: Option<bool>,
+	pub applied: Option<bool>,
 	#[serde(default)]
 	pub not_rejected: Option<bool>,
 	#[serde(default)]
@@ -22,6 +22,7 @@ pub(crate) struct ReadEventsDto {
 #[derive(Deserialize)]
 pub(crate) struct NewEventDto {
 	pub company: Uuid,
+	#[serde(default)]
 	pub location: Option<Uuid>,
 	pub date: DateTime<FixedOffset>,
 	#[serde(default)]

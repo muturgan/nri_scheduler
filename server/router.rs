@@ -3,9 +3,13 @@ use axum::{
 	Router, middleware,
 	routing::{get, post},
 };
+#[cfg(feature = "swagger")]
+use utoipa_swagger_ui::SwaggerUi;
 
 #[cfg(feature = "cors")]
 use crate::cors;
+#[cfg(feature = "swagger")]
+use crate::openapi;
 #[cfg(feature = "vite")]
 use crate::vite::proxy_to_vite;
 use crate::{auth, handlers as H, repository::Repository};
@@ -42,6 +46,9 @@ pub fn create_router(repo: Arc<Repository>) -> Router {
 
 	#[cfg(feature = "cors")]
 	let router = router.layer(middleware::from_fn(cors::cors_middleware));
+
+	#[cfg(feature = "swagger")]
+	let router = router.merge(SwaggerUi::new("/swagger").url("/swagger.json", openapi::get_schema()));
 
 	return router;
 }
