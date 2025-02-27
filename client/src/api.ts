@@ -217,6 +217,23 @@ export const readEvent = (eventId: UUID) => {
 	return ajax<IApiEvent>(`/api/events/${eventId}`);
 };
 
+export const createEvent = (
+	company: string,
+	date: string,
+	location: string,
+	max_slots: string,
+	plan_duration: string
+) => {
+	return ajax<IApiEvent>(
+		"/api/events",
+		prepareAjax(
+			{ company, date, location, max_slots, plan_duration },
+			POST,
+			URL_ENCODED
+		)
+	);
+};
+
 export const applyEvent = (eventId: UUID) => {
 	return ajax<UUID>(
 		`/api/events/apply/${eventId}`,

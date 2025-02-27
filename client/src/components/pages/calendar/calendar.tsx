@@ -4,6 +4,7 @@ import "@schedule-x/theme-default/dist/index.css";
 import "./calendar.css";
 
 import dayjs from "dayjs";
+import { v4 as uuidv4 } from "uuid";
 
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/preact";
 import { createViewMonthGrid } from "@schedule-x/calendar";
@@ -12,7 +13,7 @@ import { useEffect, useState } from "preact/hooks";
 import { route as navigate } from "preact-router";
 import { useStore } from "@nanostores/preact";
 
-import { readEventsList } from "../../../api";
+import { createEvent, readEventsList } from "../../../api";
 import { $tz } from "../../../store/tz";
 import { Button, Container, HStack, Input, Stack } from "@chakra-ui/react";
 import {
@@ -32,7 +33,7 @@ const EVENT_FORMAT = "YYYY-MM-DD HH:mm";
 const DEFAULT_EVENT_DURATION = 4;
 
 interface IFormCreateEvent {
-	id: number;
+	id: string;
 	master: string;
 	title: string;
 	start: string;
@@ -40,8 +41,8 @@ interface IFormCreateEvent {
 	end: string;
 	endTime: string;
 	location: string;
-	slots: string;
-	duration: string;
+	max_slots: string;
+	plan_duration: string;
 }
 
 export const CalendarPage = () => {
@@ -91,13 +92,42 @@ export const CalendarPage = () => {
 	}, []);
 
 	const onSubmit = handleSubmit((data) => {
-		const { start, startTime, end, endTime } = data;
+		const {
+			id,
+			start,
+			startTime,
+			end,
+			endTime,
+			title,
+			location,
+			max_slots,
+			plan_duration,
+		} = data;
 
-		data.id = Math.random();
+		const newId = uuidv4();
+
+		data.id = newId;
 		data.start = start + " " + startTime;
 		data.end = end + " " + endTime;
 
 		calendar.events.add(data);
+
+		const startDateTime = new Date(`${start}T${startTime}`);
+
+		if (data) {
+			createEvent(
+				"1eff3781-2223-6f10-9750-f8b1b0900aa1",
+				startDateTime.toISOString(),
+				"1eff3758-f826-6b80-bf7c-a233deaf9f6d",
+				max_slots,
+				plan_duration
+			).then((res) => {
+				if (res !== null) {
+					console.log(res);
+				}
+			});
+		}
+
 		setOpenDraw(false);
 		reset();
 	});
@@ -131,6 +161,7 @@ export const CalendarPage = () => {
 								>
 									<Field label="Мастер">
 										<Input
+											placeholder="Имя мастера"
 											{...register("master", {
 												required: "Заполните поле",
 											})}
@@ -182,6 +213,7 @@ export const CalendarPage = () => {
 									</HStack>
 									<Field label="Локация">
 										<Input
+											placeholder="Введите локацию"
 											{...register("location", {
 												required: "Заполните поле",
 											})}
@@ -191,7 +223,7 @@ export const CalendarPage = () => {
 										<Input
 											type="number"
 											min={2}
-											{...register("slots", {
+											{...register("max_slots", {
 												required: "Заполните поле",
 											})}
 										/>
@@ -199,7 +231,7 @@ export const CalendarPage = () => {
 									<Field label="Длительность">
 										<Input
 											type="number"
-											{...register("duration", {
+											{...register("plan_duration", {
 												required: "Заполните поле",
 											})}
 										/>
