@@ -3,5 +3,13 @@ import { EventPage } from "./event/event";
 import { MasteryPage } from "./mastery";
 import { SignInPage } from "./sign-in/singin";
 import { HomePage } from "./home/home";
+import { NotFoundPage } from "./not-found/not-found";
 
-export { CreateEventPage, EventPage, MasteryPage, SignInPage, HomePage };
+export {
+	CreateEventPage,
+	EventPage,
+	MasteryPage,
+	SignInPage,
+	HomePage,
+	NotFoundPage,
+};
