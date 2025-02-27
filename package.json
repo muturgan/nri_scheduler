@@ -30,7 +30,6 @@
 	"devDependencies": {
 		"@preact/preset-vite": "^2.10.1",
 		"@types/node": "^22.13.5",
-		"@types/react": "^19.0.10",
 		"dotenv": "^16.4.7",
 		"terser": "^5.39.0",
 		"typescript": "^5.7.3",
