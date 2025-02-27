@@ -4,25 +4,21 @@ import {
 	Button,
 	Container,
 	Flex,
-	Group,
 	HStack,
 	Link,
-	LinkBox,
 	Stack,
 	Text,
 } from "@chakra-ui/react";
 import { h } from "preact";
 import { useState } from "preact/hooks";
+
 import {
 	PopoverArrow,
 	PopoverBody,
 	PopoverContent,
 	PopoverRoot,
-	PopoverTitle,
 	PopoverTrigger,
 } from "./ui/popover";
-
-import { whoIAm } from "../api";
 
 export const Header = () => {
 	const user = {
@@ -37,11 +33,18 @@ export const Header = () => {
 			<Box borderBottomWidth={1} mb={6}>
 				<Container>
 					<Flex gap={4} align="center" justify="space-between" py="6">
-						<Link variant="plain" href="/calendar" fontWeight={600} fontSize={24}>
+						<Link
+							variant="plain"
+							href="/calendar"
+							fontWeight={600}
+							fontSize={24}
+						>
 							НРИ Календарь
 						</Link>
 
-						<Button type="button" ml="auto">Вход и регистрация</Button>
+						<Link href="/signin" ml="auto">
+							<Button type="button">Вход и регистрация</Button>
+						</Link>
 
 						<PopoverRoot
 							open={open}

@@ -1,3 +1,4 @@
+import { h } from "preact";
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import { JSX } from "preact";
 

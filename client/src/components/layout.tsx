@@ -3,7 +3,6 @@ import { Provider } from "./ui/provider";
 
 import { Toaster } from "react-hot-toast";
 import { Header } from "./header";
-import { Box } from "@chakra-ui/react";
 
 export const Layout = ({ page }: { page: h.JSX.Element }) => (
 	<Provider>

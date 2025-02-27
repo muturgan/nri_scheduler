@@ -1,26 +1,24 @@
-import "purecss/build/pure.css";
-import "./index.css";
-
 import { h, render } from "preact";
 import { Router, Route } from "preact-router";
 import AsyncRoute from "preact-async-route";
 
 import { Layout } from "./components/layout";
-
-import { SignInPage } from "./components/pages/sign_in";
-import { CreateEventPage } from "./components/pages/event/create_event";
-import { EventPage } from "./components/pages/event/event";
-import { MasteryPage } from "./components/pages/mastery";
+import {
+	CreateEventPage,
+	EventPage,
+	MasteryPage,
+	SignInPage,
+} from "./components/pages";
 
 const App = () => (
 	<Layout
 		page={
 			<Router>
 				<AsyncRoute
-					path="/"
+					path="/signup"
 					getComponent={() =>
-						import("./components/pages/registration").then(
-							(module) => module.RegistrationPage
+						import("./components/pages/sign-up/signup").then(
+							(module) => module.SingUpPage
 						)
 					}
 				/>
