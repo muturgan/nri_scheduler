@@ -37,7 +37,8 @@ export interface IRequestInit {
 
 const ajax = <T>(
 	input: string,
-	init?: IRequestInit
+	init?: IRequestInit,
+	isSoft = false
 ): Promise<IApiResponse<T> | null> => {
 	let controller: AbortController | undefined;
 	let timeoutId: ReturnType<typeof setTimeout>;
@@ -60,7 +61,7 @@ const ajax = <T>(
 		method: init?.method,
 		signal: controller?.signal,
 	})
-		.then((res) => checkResponse<T>(res))
+		.then((res) => checkResponse<T>(res, isSoft))
 		.finally(() => {
 			clearTimeout(timeoutId);
 			stopFetching();
@@ -68,7 +69,8 @@ const ajax = <T>(
 };
 
 const checkResponse = async <T>(
-	response: Response
+	response: Response,
+	isSoft: boolean,
 ): Promise<IApiResponse<T> | null> => {
 	if (response.ok === false) {
 		let body: object | string | null = null;
@@ -107,9 +109,12 @@ const checkResponse = async <T>(
 			case EScenarioStatus.UNAUTHORIZED:
 			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
-				toast.error(apiRes.result);
 				leave();
-				navigate("/signin");
+				if (!isSoft) {
+					toast.error(apiRes.result);
+					navigate("/signin");
+				}
+
 				break;
 
 			case EScenarioStatus.SCENARIO_FAIL:
@@ -171,13 +176,7 @@ export const signIn = (email: string, password: string) => {
 	return ajax<null>(
 		"/api/signin",
 		prepareAjax({ email, password }, POST, URL_ENCODED)
-	).then((res) => {
-		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
-			enter();
-		}
-
-		return res;
-	});
+	);
 };
 
 export const logout = () =>
@@ -229,6 +228,17 @@ export interface IApiSelfInfo {
 	readonly timezone_offset: number | null;
 }
 
-export const whoIAm = () => {
-	return ajax<IApiSelfInfo>("/api/check");
+export const check = async (isSoft = false): Promise<boolean> => {
+	const res = await ajax<IApiSelfInfo>("/api/check", undefined, isSoft);
+
+	if (res !== null) {
+		enter(res.payload);
+	}
+
+	return res !== null;
+};
+
+export const softCheck = async (): Promise<void> => {
+	const SOFT_CHECK = true;
+	await check(SOFT_CHECK);
 };

@@ -31,3 +31,7 @@ export const setOffset = (offset: number) => {
 	let timezone = TIMEZONES[offset as any as keyof typeof TIMEZONES];
 	($tz as WritableAtom<string>).set(timezone);
 };
+
+export const resetOffset = () => {
+	($tz as WritableAtom<string>).set(dayjs.tz.guess());
+};
