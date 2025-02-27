@@ -1,5 +1,5 @@
-import { h } from "preact";
-import React from "preact/compat";
+import { h, RefObject } from "preact";
+import { forwardRef } from "preact/compat";
 import {
 	Popover as ChakraPopover,
 	CloseButton,
@@ -8,10 +8,10 @@ import {
 
 interface PopoverContentProps extends ChakraPopover.ContentProps {
 	portalled?: boolean;
-	portalRef?: React.RefObject<HTMLElement>;
+	portalRef?: RefObject<HTMLElement>;
 }
 
-export const PopoverContent = React.forwardRef<
+export const PopoverContent = forwardRef<
 	HTMLDivElement,
 	PopoverContentProps
 >(function PopoverContent(props, ref) {
@@ -25,7 +25,7 @@ export const PopoverContent = React.forwardRef<
 	);
 });
 
-export const PopoverArrow = React.forwardRef<
+export const PopoverArrow = forwardRef<
 	HTMLDivElement,
 	ChakraPopover.ArrowProps
 >(function PopoverArrow(props, ref) {
@@ -36,7 +36,7 @@ export const PopoverArrow = React.forwardRef<
 	);
 });
 
-export const PopoverCloseTrigger = React.forwardRef<
+export const PopoverCloseTrigger = forwardRef<
 	HTMLButtonElement,
 	ChakraPopover.CloseTriggerProps
 >(function PopoverCloseTrigger(props, ref) {

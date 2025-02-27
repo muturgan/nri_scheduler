@@ -1,5 +1,6 @@
-import { h } from "preact";
-import React from "preact/compat";
+import { ComponentChild, h } from "preact";
+import { forwardRef } from "preact/compat";
+import { useRef } from "preact/hooks";
 import type {
 	ButtonProps,
 	GroupProps,
@@ -24,7 +25,7 @@ export interface PasswordVisibilityProps {
 	defaultVisible?: boolean;
 	visible?: boolean;
 	onVisibleChange?: (visible: boolean) => void;
-	visibilityIcon?: { on: React.ReactNode; off: React.ReactNode };
+	visibilityIcon?: { on: ComponentChild; off: ComponentChild };
 }
 
 export interface PasswordInputProps
@@ -33,7 +34,7 @@ export interface PasswordInputProps
 	rootProps?: GroupProps;
 }
 
-export const PasswordInput = React.forwardRef<
+export const PasswordInput = forwardRef<
 	HTMLInputElement,
 	PasswordInputProps
 >(function PasswordInput(props, ref) {
@@ -52,7 +53,7 @@ export const PasswordInput = React.forwardRef<
 		onChange: onVisibleChange,
 	});
 
-	const inputRef = React.useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	return (
 		<InputGroup
@@ -81,7 +82,7 @@ export const PasswordInput = React.forwardRef<
 	);
 });
 
-const VisibilityTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const VisibilityTrigger = forwardRef<HTMLButtonElement, ButtonProps>(
 	function VisibilityTrigger(props, ref) {
 		return (
 			<IconButton
@@ -104,7 +105,7 @@ interface PasswordStrengthMeterProps extends StackProps {
 	value: number;
 }
 
-export const PasswordStrengthMeter = React.forwardRef<
+export const PasswordStrengthMeter = forwardRef<
 	HTMLDivElement,
 	PasswordStrengthMeterProps
 >(function PasswordStrengthMeter(props, ref) {
