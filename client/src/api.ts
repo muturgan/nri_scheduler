@@ -100,15 +100,15 @@ const checkResponse = async <T>(
 	}
 
 	try {
-		let apiRes: IApiResponse<T> = await response.json();
+		const apiRes: IApiResponse<T> = await response.json();
 
 		switch (apiRes.status) {
 			case EScenarioStatus.SCENARIO_SUCCESS:
 				return apiRes;
 
 			case EScenarioStatus.UNAUTHORIZED:
-			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
+				/** @todo добавить refresh */
 				leave();
 				if (!isSoft) {
 					toast.error(apiRes.result);
