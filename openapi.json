@@ -342,6 +342,24 @@
 			}
 		},
 		"/api/locations": {
+			"get": {
+				"tags": [
+					"locations"
+				],
+				"summary": "Получение списка локаций",
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithLocationsList"
+								}
+							}
+						}
+					}
+				}
+			},
 			"post": {
 				"tags": [
 					"locations"
@@ -376,6 +394,38 @@
 				]
 			}
 		},
+		"/api/locations/{id}": {
+			"get": {
+				"tags": [
+					"locations"
+				],
+				"summary": "Получение локации по идентификатору",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Идентификатор локации",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithLocation"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/companies": {
 			"post": {
 				"tags": [
@@ -399,6 +449,63 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/AppResponseWithUuid"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			}
+		},
+		"/api/companies/{id}": {
+			"get": {
+				"tags": [
+					"companies"
+				],
+				"summary": "Получение кампании по идентификатору",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Идентификатор кампании",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithCompany"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/companies/my": {
+			"get": {
+				"tags": [
+					"companies"
+				],
+				"summary": "Получение списка кампаний которые ведёт пользователь",
+				"responses": {
+					"200": {
+						"description": "Результат выполнения запроса",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AppResponseWithCompanyList"
 								}
 							}
 						}
@@ -589,6 +696,31 @@
 					}
 				}
 			},
+			"Location": {
+				"type": "object",
+				"description": "Место проведения игр",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Идентификатор локации"
+					},
+					"name": {
+						"type": "string",
+						"description": "Название локации"
+					},
+					"address": {
+						"type": "string",
+						"nullable": true,
+						"description": "Адрес локации"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true,
+						"description": "Описание локации"
+					}
+				}
+			},
 			"NewLocationDto": {
 				"type": "object",
 				"description": "Данные для создания локации",
@@ -620,6 +752,35 @@
 					"system"
 				],
 				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Название кампании"
+					},
+					"system": {
+						"type": "string",
+						"description": "Система правил"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true,
+						"description": "Описание локации"
+					}
+				}
+			},
+			"Company": {
+				"type": "object",
+				"description": "Описание кампании",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Идентификатор кампании"
+					},
+					"master": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Идентификатор мастера кампании"
+					},
 					"name": {
 						"type": "string",
 						"description": "Название кампании"
@@ -741,7 +902,7 @@
 			},
 			"AppResponseWithEventsList": {
 				"type": "object",
-				"description": "Ответ приложения без дополнительной информации",
+				"description": "Ответ приложения со списком событий",
 				"properties": {
 					"status": {
 						"$ref": "#/components/schemas/EScenarioStatus"
@@ -760,7 +921,7 @@
 			},
 			"AppResponseWithEvent": {
 				"type": "object",
-				"description": "Ответ приложения без дополнительной информации",
+				"description": "Ответ приложения с информацией о событии",
 				"required": [
 					"status",
 					"result",
@@ -776,6 +937,96 @@
 					},
 					"payload": {
 						"$ref": "#/components/schemas/Event"
+					}
+				}
+			},
+			"AppResponseWithLocationsList": {
+				"type": "object",
+				"description": "Ответ приложения со списком локаций",
+				"required": [
+					"status",
+					"result",
+					"payload"
+				],
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Location"
+						}
+					}
+				}
+			},
+			"AppResponseWithLocation": {
+				"type": "object",
+				"description": "Ответ приложения с информацией о локации",
+				"required": [
+					"status",
+					"result",
+					"payload"
+				],
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"$ref": "#/components/schemas/Location"
+					}
+				}
+			},
+			"AppResponseWithCompanyList": {
+				"type": "object",
+				"description": "Ответ приложения со списком кампаний",
+				"required": [
+					"status",
+					"result",
+					"payload"
+				],
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Company"
+						}
+					}
+				}
+			},
+			"AppResponseWithCompany": {
+				"type": "object",
+				"description": "Ответ приложения с информацией о кампании",
+				"required": [
+					"status",
+					"result",
+					"payload"
+				],
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/EScenarioStatus"
+					},
+					"result": {
+						"type": "string",
+						"description": "Текстовое описание результата"
+					},
+					"payload": {
+						"$ref": "#/components/schemas/Company"
 					}
 				}
 			}

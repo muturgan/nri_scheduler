@@ -189,6 +189,41 @@ export const logout = () =>
 		return res;
 	});
 
+export interface IApiLocation {
+	readonly id: UUID;
+	readonly name: string;
+	readonly address: string | null;
+	readonly description: string | null;
+}
+
+export const readLocations = () => ajax<IApiLocation[]>("/api/locations");
+
+export const readLocationById = (locId: UUID) => ajax<IApiLocation>(`/api/locations/${locId}`);
+
+export const addLocation = (name: string, address?: string | null, description?: string | null) =>
+	ajax<UUID>(
+		"/api/locations",
+		prepareAjax({name, address, description}, POST),
+	);
+
+export interface IApiCompany {
+	readonly id: UUID;
+	readonly master: UUID;
+	readonly name: string;
+	readonly system: string;
+	readonly description: string | null;
+}
+
+export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
+
+export const readCompanyById = (compId: UUID) => ajax<IApiCompany>(`/api/companies/${compId}`);
+
+export const addCompany = (name: string, system: string, description?: string | null) =>
+	ajax<UUID>(
+		"/api/companies",
+		prepareAjax({name, system, description}, POST),
+	);
+
 export interface IApiEvent {
 	readonly id: UUID;
 	readonly company: string;

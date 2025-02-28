@@ -26,6 +26,7 @@ trait Store {
 	async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>>;
 	async fn who_i_am(&self, user_id: Uuid) -> CoreResult<Option<SelfInfo>>;
 
+	async fn get_locations_list(&self) -> CoreResult<Vec<Location>>;
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>>;
 
 	async fn add_location(
@@ -36,6 +37,8 @@ trait Store {
 	) -> CoreResult<RecordId>;
 
 	async fn get_company_by_id(&self, company_id: Uuid) -> CoreResult<Option<Company>>;
+
+	async fn get_my_companies(&self, master: Uuid) -> CoreResult<Vec<Company>>;
 
 	async fn add_company(
 		&self,
@@ -120,6 +123,10 @@ impl Repository {
 		return self.store.who_i_am(user_id).await;
 	}
 
+	pub(crate) async fn get_locations_list(&self) -> CoreResult<Vec<Location>> {
+		return self.store.get_locations_list().await;
+	}
+
 	pub(crate) async fn get_location_by_id(
 		&self,
 		location_id: Uuid,
@@ -138,6 +145,10 @@ impl Repository {
 
 	pub(crate) async fn get_company_by_id(&self, company_id: Uuid) -> CoreResult<Option<Company>> {
 		return self.store.get_company_by_id(company_id).await;
+	}
+
+	pub(crate) async fn get_my_companies(&self, master: Uuid) -> CoreResult<Vec<Company>> {
+		return self.store.get_my_companies(master).await;
 	}
 
 	pub(crate) async fn add_company(
