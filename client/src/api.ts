@@ -218,9 +218,9 @@ export const readEvent = (eventId: UUID) => {
 };
 
 export const createEvent = (
-	company: string,
+	company: UUID,
 	date: string,
-	location: string,
+	location: UUID,
 	max_slots: number | null,
 	plan_duration: number | null
 ) => {
