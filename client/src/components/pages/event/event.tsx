@@ -1,6 +1,6 @@
 import type { UUID } from "node:crypto";
 
-import { h, Fragment } from "preact";
+import { h, Fragment } from "preact"; // eslint-disable-line
 import { useEffect, useState } from "preact/hooks";
 import { useRouter } from "preact-router";
 import { useStore } from "@nanostores/preact";
@@ -90,7 +90,7 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 };
 
 export const EventPage = () => {
-	
+
 	const [route] = useRouter();
 
 	const [fetching, setFetching] = useState(false);

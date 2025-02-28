@@ -12,5 +12,7 @@ interface IProviderProps {
 }
 
 export function Provider({ children }: IProviderProps) {
-	return <ChakraProvider value={system} children={children} />;
+	return <ChakraProvider value={system} >
+		{ children }
+	</ChakraProvider>;
 }

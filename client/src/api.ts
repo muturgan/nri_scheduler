@@ -100,15 +100,15 @@ const checkResponse = async <T>(
 	}
 
 	try {
-		let apiRes: IApiResponse<T> = await response.json();
+		const apiRes: IApiResponse<T> = await response.json();
 
 		switch (apiRes.status) {
 			case EScenarioStatus.SCENARIO_SUCCESS:
 				return apiRes;
 
 			case EScenarioStatus.UNAUTHORIZED:
-			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
+				/** @todo добавить refresh */
 				leave();
 				if (!isSoft) {
 					toast.error(apiRes.result);
@@ -197,12 +197,17 @@ export interface IApiLocation {
 
 export const readLocations = () => ajax<IApiLocation[]>("/api/locations");
 
-export const readLocationById = (locId: UUID) => ajax<IApiLocation>(`/api/locations/${locId}`);
+export const readLocationById = (locId: UUID) =>
+	ajax<IApiLocation>(`/api/locations/${locId}`);
 
-export const addLocation = (name: string, address?: string | null, description?: string | null) =>
+export const addLocation = (
+	name: string,
+	address?: string | null,
+	description?: string | null
+) =>
 	ajax<UUID>(
 		"/api/locations",
-		prepareAjax({name, address, description}, POST),
+		prepareAjax({ name, address, description }, POST)
 	);
 
 export interface IApiCompany {
@@ -215,12 +220,17 @@ export interface IApiCompany {
 
 export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
 
-export const readCompanyById = (compId: UUID) => ajax<IApiCompany>(`/api/companies/${compId}`);
+export const readCompanyById = (compId: UUID) =>
+	ajax<IApiCompany>(`/api/companies/${compId}`);
 
-export const addCompany = (name: string, system: string, description?: string | null) =>
+export const addCompany = (
+	name: string,
+	system: string,
+	description?: string | null
+) =>
 	ajax<UUID>(
 		"/api/companies",
-		prepareAjax({name, system, description}, POST),
+		prepareAjax({ name, system, description }, POST)
 	);
 
 export interface IApiEvent {
@@ -251,6 +261,22 @@ export const readEvent = (eventId: UUID) => {
 	return ajax<IApiEvent>(`/api/events/${eventId}`);
 };
 
+export const createEvent = (
+	company: UUID,
+	date: string,
+	location: UUID,
+	max_slots: number | null,
+	plan_duration: number | null
+) => {
+	return ajax<UUID>(
+		"/api/events",
+		prepareAjax(
+			{ company, date, location, max_slots, plan_duration },
+			POST,
+		)
+	);
+};
+
 export const applyEvent = (eventId: UUID) => {
 	return ajax<UUID>(
 		`/api/events/apply/${eventId}`,
@@ -273,7 +299,17 @@ export const check = async (isSoft = false): Promise<boolean> => {
 	return res !== null;
 };
 
-export const softCheck = async (): Promise<void> => {
+export const softCheck = (): Promise<boolean> => {
 	const SOFT_CHECK = true;
-	await check(SOFT_CHECK);
+	return check(SOFT_CHECK);
+};
+
+export interface IApiUserInfo {
+	readonly email: string | null;
+	readonly nickname: string;
+	readonly phone: string | null;
+}
+
+export const getUserProfile = () => {
+	return ajax<IApiUserInfo>(`/api/profile`);
 };
