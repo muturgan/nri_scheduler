@@ -2,7 +2,7 @@ import { h } from "preact";
 import { route as navigate } from "preact-router";
 import { useForm } from "react-hook-form";
 
-import { signIn, whoIAm } from "../../../api";
+import { signIn, check } from "../../../api";
 
 import {
 	Button,
@@ -41,24 +41,11 @@ export const SignInPage = () => {
 
 		signIn(email, password)
 			.then((res) => {
-				return res === null ? null : whoIAm();
+				return res === null ? null : check();
 			})
-			.then((res) => {
-				if (res !== null) {
-					console.log("who I am:");
-					console.log(res);
+			.then((success) => {
+				if (success) {
 					reset();
-
-					/**
-					 * @todo сделать так чтобы смещение сохранялось после перезагрузки страницы
-					 * сейчас просто делать запрос при старте приложения не подойдёт, так как неавторизованных пользователей перекинет на форму авторизации
-					 * а неавторизованные пользователи тоже должны иметь возможность смотреть календарь
-					 * */
-					let timezone_offset = res.payload.timezone_offset;
-					if (typeof timezone_offset === "number") {
-						setOffset(timezone_offset);
-					}
-
 					toast.success("Успешная авторизация");
 					navigate("/calendar");
 				}
