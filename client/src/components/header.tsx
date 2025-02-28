@@ -23,17 +23,22 @@ import {
 } from "./ui/popover";
 import { useStore } from "@nanostores/preact";
 import { $signed } from "../store/profile";
-import { logout } from "../api";
+import { getProfileUser, IApiUserInfo, logout } from "../api";
+import { useEffect } from "react";
 
 export const Header = () => {
-	const user = {
-		email: "example@mail.ru",
-		name: "Username",
-		avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04",
-	};
-	const [open, setOpen] = useState(false);
+	const [userData, setUserData] = useState<IApiUserInfo | null>(null);
 
+	const [open, setOpen] = useState(false);
 	const auth = useStore($signed);
+
+	useEffect(() => {
+		getProfileUser().then((responce) => {
+			if (responce) {
+				setUserData(responce.payload);
+			}
+		});
+	}, [auth]);
 
 	return (
 		<header>
@@ -54,17 +59,21 @@ export const Header = () => {
 								onOpenChange={(e) => setOpen(e.open)}
 								positioning={{ placement: "bottom-end" }}
 							>
-								<PopoverTrigger asChild>
+								<PopoverTrigger asChild cursor="pointer">
 									<Stack gap="8">
-										<HStack key={user.email} gap="4">
+										<HStack key={userData?.email} gap="4">
 											<Avatar.Root>
-												<Avatar.Fallback name={user.name} />
-												<Avatar.Image src={user.avatar} />
+												<Avatar.Fallback
+													name={userData?.nickname}
+												/>
+												<Avatar.Image src="https://gas-kvas.com/grafic/uploads/posts/2023-09/1695869715_gas-kvas-com-p-kartinki-bez-13.png" />
 											</Avatar.Root>
 											<Stack gap="0">
-												<Text fontWeight="medium">{user.name}</Text>
+												<Text fontWeight="medium">
+													{userData?.nickname}
+												</Text>
 												<Text color="fg.muted" textStyle="sm">
-													{user.email}
+													{userData?.email}
 												</Text>
 											</Stack>
 										</HStack>
@@ -80,7 +89,7 @@ export const Header = () => {
 												colorPalette="red"
 												onClick={() => {
 													logout();
-													navigate('/signin')
+													navigate("/signin");
 												}}
 											>
 												Выйти

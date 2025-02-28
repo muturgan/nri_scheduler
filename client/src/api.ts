@@ -249,3 +249,14 @@ export interface IApiSelfInfo {
 export const whoIAm = () => {
 	return ajax<IApiSelfInfo>("/api/check");
 };
+
+export interface IApiUserInfo {
+	readonly id: UUID;
+	readonly email: string;
+	readonly nickname: string;
+	readonly phone: string;
+}
+
+export const getProfileUser = () => {
+	return ajax<IApiUserInfo>(`/api/profile`);
+};
