@@ -17,6 +17,7 @@ import {
 	IApiCompany,
 	IApiEvent,
 	IApiLocation,
+	readEvent,
 	readEventsList,
 	readLocations,
 	readMyCompanies,
@@ -32,7 +33,6 @@ import {
 	InputAddon,
 	SelectContent,
 	SelectItem,
-	SelectLabel,
 	SelectRoot,
 	SelectTrigger,
 	SelectValueText,
@@ -54,6 +54,8 @@ import { Field } from "../../ui/field";
 import { Controller, useForm } from "react-hook-form";
 import { Company } from "./company";
 import { Location } from "./location";
+import { UUID } from "crypto";
+import toast from "react-hot-toast";
 
 const EVENT_FORMAT = "YYYY-MM-DD HH:mm";
 const DEFAULT_EVENT_DURATION = 4;
@@ -100,11 +102,31 @@ export const CalendarPage = () => {
 		});
 	};
 
+	const getNewEvent = (id: UUID) => {
+		readEvent(id).then((responce) => {
+			if (responce?.payload) {
+				const data = responce.payload;
+				const start = dayjs(data.date);
+				const end = start.add(
+					data.plan_duration || DEFAULT_EVENT_DURATION,
+					"h"
+				);
+
+				calendar.events.add({
+					...data,
+					title: data.company,
+					start: start.format(EVENT_FORMAT),
+					end: end.format(EVENT_FORMAT),
+				});
+			}
+		});
+	};
+
 	const companies = useMemo(() => {
 		return createListCollection({
 			items: companyList,
 			itemToString: (item) => item.name,
-			itemToValue: (item) => item.name,
+			itemToValue: (item) => item.id,
 		});
 	}, [companyList]);
 
@@ -112,7 +134,7 @@ export const CalendarPage = () => {
 		return createListCollection({
 			items: locationList,
 			itemToString: (item) => item.name,
-			itemToValue: (item) => item.name,
+			itemToValue: (item) => item.id,
 		});
 	}, [locationList]);
 
@@ -161,29 +183,26 @@ export const CalendarPage = () => {
 	}
 
 	const onSubmit = handleSubmit((data) => {
-		const { start, startTime, end, endTime, max_slots, plan_duration } = data;
+		const { company, location, start, startTime, max_slots, plan_duration } =
+			data;
 
-		const startDateTime = dayjs(`${start} ${startTime}`).tz(tz);
-		const endDateTime = dayjs(`${end} ${endTime}`).tz(tz);
+		const date = dayjs(`${start}T${startTime}`).tz(tz);
 		if (data) {
 			createEvent(
-				"1eff5ae9-4275-6f50-b3f4-8a673960215b",
-				startDateTime.toISOString(),
-				"1eff5aea-3bca-6220-8ae9-1f2a8794971b",
+				company as UUID,
+				date.toISOString(),
+				location as UUID,
 				max_slots || null,
 				plan_duration || null
 			).then((res) => {
-				if (res !== null) {
-					const eventId = res.payload.id;
-					data.id = eventId;
-					calendar.events.add(data);
-					console.log(1, res);
+				if (res) {
+					toast.success("Событие успешно создано");
+					setOpenDraw(false);
+					getNewEvent(res.payload);
+					reset();
 				}
 			});
 		}
-
-		setOpenDraw(false);
-		reset();
 	});
 
 	return (
@@ -205,7 +224,7 @@ export const CalendarPage = () => {
 							<DrawerBody>
 								<form onSubmit={onSubmit}>
 									<Stack gap="4" w="full">
-										<Field label="Компания">
+										<Field label="Кампания">
 											<Controller
 												control={control}
 												name="company"
@@ -271,28 +290,45 @@ export const CalendarPage = () => {
 												/>
 											</Field>
 										</HStack>
-										<SelectRoot collection={locations}>
-											<SelectLabel>Локация</SelectLabel>
-											<SelectTrigger>
-												<SelectValueText placeholder="Выберите из списка" />
-											</SelectTrigger>
-											<SelectContent>
-												{locations.items.map((location) => (
-													<SelectItem
-														item={location}
-														key={location.name}
-														{...register("location")}
+										<Field label="Локация">
+											<Controller
+												control={control}
+												name="location"
+												render={({ field }) => (
+													<SelectRoot
+														name={field.name}
+														value={field.value}
+														onValueChange={({ value }) =>
+															field.onChange(value)
+														}
+														collection={locations}
 													>
-														{location.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</SelectRoot>
+														<SelectTrigger>
+															<SelectValueText placeholder="Выберите из списка" />
+														</SelectTrigger>
+														<SelectContent>
+															{locations.items.map(
+																(location) => (
+																	<SelectItem
+																		item={location}
+																		key={location.name}
+																	>
+																		{location.name}
+																	</SelectItem>
+																)
+															)}
+														</SelectContent>
+													</SelectRoot>
+												)}
+											/>
+										</Field>
+
 										<Field label="Максимальное количество игроков">
 											<Input
 												type="number"
 												min="1"
 												step="1"
+												defaultValue="1"
 												{...register("max_slots")}
 											/>
 										</Field>
@@ -303,6 +339,7 @@ export const CalendarPage = () => {
 													type="number"
 													min="1"
 													step="1"
+													defaultValue="1"
 													{...register("plan_duration")}
 												/>
 												<InputAddon>час</InputAddon>

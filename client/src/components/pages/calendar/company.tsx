@@ -44,11 +44,11 @@ export const Company = () => {
 		<DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
-				<Button variant="outline">Создать компанию</Button>
+				<Button variant="outline">Создать кампанию</Button>
 			</DrawerTrigger>
 			<DrawerContent>
 				<DrawerHeader>
-					<DrawerTitle>Создание компании</DrawerTitle>
+					<DrawerTitle>Создание кампании</DrawerTitle>
 				</DrawerHeader>
 				<DrawerBody>
 					<form onSubmit={onSubmit}>
@@ -73,7 +73,7 @@ export const Company = () => {
 							</Field>
 							<Field label="Описание">
 								<Textarea
-									placeholder="Расскажите о своей компании"
+									placeholder="Расскажите о своей кампании"
 									{...register("description")}
 								/>
 							</Field>

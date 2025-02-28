@@ -66,7 +66,7 @@ export const Location = () => {
 							</Field>
 							<Field label="Описание">
 								<Textarea
-									placeholder="Расскажите о своей компании"
+									placeholder="Расскажите о своей локации"
 									{...register("description")}
 								/>
 							</Field>
