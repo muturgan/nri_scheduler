@@ -8,11 +8,16 @@ import dayjs from "dayjs";
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/preact";
 import { createViewMonthGrid } from "@schedule-x/calendar";
 
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { route as navigate } from "preact-router";
 import { useStore } from "@nanostores/preact";
 
-import { createEvent, readEventsList } from "../../../api";
+import {
+	createEvent,
+	IApiCompany,
+	readEventsList,
+	readMyCompanies,
+} from "../../../api";
 import { $tz } from "../../../store/tz";
 import {
 	Button,
@@ -22,6 +27,12 @@ import {
 	HStack,
 	Input,
 	InputAddon,
+	SelectContent,
+	SelectItem,
+	SelectLabel,
+	SelectRoot,
+	SelectTrigger,
+	SelectValueText,
 	Stack,
 } from "@chakra-ui/react";
 
@@ -38,6 +49,7 @@ import {
 
 import { Field } from "../../ui/field";
 import { useForm } from "react-hook-form";
+import { Company } from "./company";
 
 const EVENT_FORMAT = "YYYY-MM-DD HH:mm";
 const DEFAULT_EVENT_DURATION = 4;
@@ -56,6 +68,8 @@ interface IFormCreateEvent {
 
 export const CalendarPage = () => {
 	const [openDraw, setOpenDraw] = useState(false);
+	const [companyCreate, setCompanyCreate] = useState(false);
+	const [companyList, setCompanyList] = useState<IApiCompany[]>([]);
 
 	const tz = useStore($tz);
 	const { register, handleSubmit, reset } = useForm<IFormCreateEvent>();
@@ -69,6 +83,22 @@ export const CalendarPage = () => {
 			},
 		},
 	});
+
+	const getCompanies = () => {
+		readMyCompanies().then((responce) => {
+			if (responce?.payload) {
+				setCompanyList(responce.payload);
+			}
+		});
+	};
+
+	const companies = useMemo(() => {
+		return createListCollection({
+			items: companyList,
+			itemToString: (item) => item.name,
+			itemToValue: (item) => item.name,
+		});
+	}, [companyList]);
 
 	useEffect(() => {
 		const now = dayjs().tz(tz);
@@ -147,7 +177,7 @@ export const CalendarPage = () => {
 					>
 						<DrawerBackdrop />
 						<DrawerTrigger asChild>
-							<Button variant="outline" disabled>
+							<Button variant="outline" onClick={getCompanies}>
 								Добавить событие
 							</Button>
 						</DrawerTrigger>
@@ -157,21 +187,23 @@ export const CalendarPage = () => {
 							</DrawerHeader>
 							<DrawerBody>
 								<form onSubmit={onSubmit}>
-									<Stack
-										gap="4"
-										align="flex-start"
-										maxW="lg"
-										w="full"
-										mx="auto"
-									>
-										<Field label="Компания">
-											<Input
-												{...register("company")}
-												disabled
-												placeholder="В разработке"
-											/>
-										</Field>
-
+									<Stack gap="4" w="full">
+										<SelectRoot collection={companies}>
+											<SelectLabel>Компания</SelectLabel>
+											<SelectTrigger>
+												<SelectValueText placeholder="Выберите из списка" />
+											</SelectTrigger>
+											<SelectContent>
+												{companies.items.map((company) => (
+													<SelectItem
+														item={company}
+														key={company.name}
+													>
+														{company.name}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</SelectRoot>
 										<HStack gap={2} width="full">
 											<Field label="Начало">
 												<Input
@@ -246,6 +278,7 @@ export const CalendarPage = () => {
 							<DrawerCloseTrigger />
 						</DrawerContent>
 					</DrawerRoot>
+					<Company />
 				</Stack>
 				<ScheduleXCalendar calendarApp={calendar} />
 			</Container>
