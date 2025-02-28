@@ -64,10 +64,10 @@ export const Location = () => {
 							w="full"
 							mx="auto"
 						>
-							<Field label="Название">
+							<Field label="Название *">
 								<Input
 									placeholder="Заполните поле"
-									{...register("name")}
+									{...register("name", { required: "Заполните поле" })}
 								/>
 							</Field>
 							<Field label="Адрес">

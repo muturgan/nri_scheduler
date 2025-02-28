@@ -71,16 +71,18 @@ export const Company = ({ data }: any) => {
 							w="full"
 							mx="auto"
 						>
-							<Field label="Название">
+							<Field label="Название *">
 								<Input
 									placeholder="Заполните поле"
-									{...register("name")}
+									{...register("name", { required: "Заполните поле" })}
 								/>
 							</Field>
-							<Field label="Система">
+							<Field label="Система *">
 								<Input
 									placeholder="Заполните поле"
-									{...register("system")}
+									{...register("system", {
+										required: "Заполните поле",
+									})}
 								/>
 							</Field>
 							<Field label="Описание">
