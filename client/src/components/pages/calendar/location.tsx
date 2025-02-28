@@ -1,11 +1,4 @@
-import {
-	Button,
-	Heading,
-	Input,
-	Stack,
-	Text,
-	Textarea,
-} from "@chakra-ui/react";
+import { Button, Input, Stack, Textarea } from "@chakra-ui/react";
 import { h } from "preact";
 import { Field } from "../../ui/field";
 import {
@@ -19,18 +12,18 @@ import {
 	DrawerTrigger,
 } from "../../ui/drawer";
 
-import { addCompany, IApiCompany } from "../../../api";
+import { addLocation, IApiLocation } from "../../../api";
 import { useForm } from "react-hook-form";
-import { useState } from "preact/compat";
+import { useState } from "preact/hooks";
 
-export const Company = () => {
+export const Location = () => {
 	const [open, setOpen] = useState(false);
-	const { register, handleSubmit, reset } = useForm<IApiCompany>();
+	const { register, handleSubmit, reset } = useForm<IApiLocation>();
 
 	const onSubmit = handleSubmit((data) => {
-		const { name, system, description } = data;
+		const { name, address, description } = data;
 		if (data) {
-			addCompany(name, system, description).then((res) => {
+			addLocation(name, address, description).then((res) => {
 				if (res !== null) {
 					console.log(res.payload);
 					reset();
@@ -44,11 +37,11 @@ export const Company = () => {
 		<DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
-				<Button variant="outline">Создать компанию</Button>
+				<Button variant="outline">Создать локацию</Button>
 			</DrawerTrigger>
 			<DrawerContent>
 				<DrawerHeader>
-					<DrawerTitle>Создание компании</DrawerTitle>
+					<DrawerTitle>Создание локации</DrawerTitle>
 				</DrawerHeader>
 				<DrawerBody>
 					<form onSubmit={onSubmit}>
@@ -65,10 +58,10 @@ export const Company = () => {
 									{...register("name")}
 								/>
 							</Field>
-							<Field label="Система">
+							<Field label="Адрес">
 								<Input
 									placeholder="Заполните поле"
-									{...register("system")}
+									{...register("address")}
 								/>
 							</Field>
 							<Field label="Описание">
@@ -82,10 +75,6 @@ export const Company = () => {
 							Создать
 						</Button>
 					</form>
-					<Heading size="md" mt={6} mb={4}>
-						Доступные мне
-					</Heading>
-					<Text>Список пуст</Text>
 				</DrawerBody>
 				<DrawerCloseTrigger />
 			</DrawerContent>

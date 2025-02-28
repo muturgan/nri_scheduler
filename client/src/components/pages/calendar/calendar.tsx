@@ -15,7 +15,10 @@ import { useStore } from "@nanostores/preact";
 import {
 	createEvent,
 	IApiCompany,
+	IApiEvent,
+	IApiLocation,
 	readEventsList,
+	readLocations,
 	readMyCompanies,
 } from "../../../api";
 import { $tz } from "../../../store/tz";
@@ -48,31 +51,28 @@ import {
 } from "../../ui/drawer";
 
 import { Field } from "../../ui/field";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Company } from "./company";
+import { Location } from "./location";
 
 const EVENT_FORMAT = "YYYY-MM-DD HH:mm";
 const DEFAULT_EVENT_DURATION = 4;
 
-interface IFormCreateEvent {
-	id: string;
-	company: string;
+interface IFormCreateEvent extends IApiEvent {
 	start: string;
 	startTime: string;
 	end: string;
 	endTime: string;
-	location: string;
-	max_slots: number | null;
-	plan_duration: number | null;
 }
 
 export const CalendarPage = () => {
 	const [openDraw, setOpenDraw] = useState(false);
-	const [companyCreate, setCompanyCreate] = useState(false);
 	const [companyList, setCompanyList] = useState<IApiCompany[]>([]);
+	const [locationList, setLocationList] = useState<IApiLocation[]>([]);
 
 	const tz = useStore($tz);
-	const { register, handleSubmit, reset } = useForm<IFormCreateEvent>();
+	const { register, handleSubmit, reset, control } =
+		useForm<IFormCreateEvent>();
 
 	const calendar = useCalendarApp({
 		locale: "ru-RU",
@@ -92,6 +92,14 @@ export const CalendarPage = () => {
 		});
 	};
 
+	const getLocations = () => {
+		readLocations().then((responce) => {
+			if (responce?.payload) {
+				setLocationList(responce.payload);
+			}
+		});
+	};
+
 	const companies = useMemo(() => {
 		return createListCollection({
 			items: companyList,
@@ -100,10 +108,21 @@ export const CalendarPage = () => {
 		});
 	}, [companyList]);
 
+	const locations = useMemo(() => {
+		return createListCollection({
+			items: locationList,
+			itemToString: (item) => item.name,
+			itemToValue: (item) => item.name,
+		});
+	}, [locationList]);
+
 	useEffect(() => {
 		const now = dayjs().tz(tz);
 		const monthStart = now.startOf("M").format();
 		const monthEnd = now.endOf("M").format();
+
+		getCompanies();
+		getLocations();
 
 		document.addEventListener("keydown", handleKeyDown);
 
@@ -133,6 +152,7 @@ export const CalendarPage = () => {
 
 		return () => {
 			document.removeEventListener("keydown", handleKeyDown);
+			setOpenDraw(false);
 		};
 	}, []);
 
@@ -172,14 +192,11 @@ export const CalendarPage = () => {
 				<Stack mb={4} direction="row" gap={4}>
 					<DrawerRoot
 						open={openDraw}
-						// placement="bottom"
 						onOpenChange={(e) => setOpenDraw(e.open)}
 					>
 						<DrawerBackdrop />
 						<DrawerTrigger asChild>
-							<Button variant="outline" onClick={getCompanies}>
-								Добавить событие
-							</Button>
+							<Button variant="outline">Добавить событие</Button>
 						</DrawerTrigger>
 						<DrawerContent>
 							<DrawerHeader>
@@ -188,22 +205,36 @@ export const CalendarPage = () => {
 							<DrawerBody>
 								<form onSubmit={onSubmit}>
 									<Stack gap="4" w="full">
-										<SelectRoot collection={companies}>
-											<SelectLabel>Компания</SelectLabel>
-											<SelectTrigger>
-												<SelectValueText placeholder="Выберите из списка" />
-											</SelectTrigger>
-											<SelectContent>
-												{companies.items.map((company) => (
-													<SelectItem
-														item={company}
-														key={company.name}
+										<Field label="Компания">
+											<Controller
+												control={control}
+												name="company"
+												render={({ field }) => (
+													<SelectRoot
+														name={field.name}
+														value={field.value}
+														onValueChange={({ value }) =>
+															field.onChange(value)
+														}
+														collection={companies}
 													>
-														{company.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</SelectRoot>
+														<SelectTrigger>
+															<SelectValueText placeholder="Выберите из списка" />
+														</SelectTrigger>
+														<SelectContent>
+															{companies.items.map((company) => (
+																<SelectItem
+																	item={company}
+																	key={company.name}
+																>
+																	{company.name}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</SelectRoot>
+												)}
+											/>
+										</Field>
 										<HStack gap={2} width="full">
 											<Field label="Начало">
 												<Input
@@ -240,15 +271,23 @@ export const CalendarPage = () => {
 												/>
 											</Field>
 										</HStack>
-										<Field label="Локация">
-											<Input
-												disabled
-												placeholder="В разработке"
-												{...register("location", {
-													required: "Заполните поле",
-												})}
-											/>
-										</Field>
+										<SelectRoot collection={locations}>
+											<SelectLabel>Локация</SelectLabel>
+											<SelectTrigger>
+												<SelectValueText placeholder="Выберите из списка" />
+											</SelectTrigger>
+											<SelectContent>
+												{locations.items.map((location) => (
+													<SelectItem
+														item={location}
+														key={location.name}
+														{...register("location")}
+													>
+														{location.name}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</SelectRoot>
 										<Field label="Максимальное количество игроков">
 											<Input
 												type="number"
@@ -279,6 +318,7 @@ export const CalendarPage = () => {
 						</DrawerContent>
 					</DrawerRoot>
 					<Company />
+					<Location />
 				</Stack>
 				<ScheduleXCalendar calendarApp={calendar} />
 			</Container>
