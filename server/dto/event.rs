@@ -22,6 +22,7 @@ pub(crate) struct ReadEventsDto {
 #[derive(Deserialize)]
 pub(crate) struct NewEventDto {
 	pub company: Uuid,
+	#[serde(default)]
 	pub location: Option<Uuid>,
 	pub date: DateTime<FixedOffset>,
 	#[serde(default)]

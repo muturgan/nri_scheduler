@@ -37,7 +37,8 @@ export interface IRequestInit {
 
 const ajax = <T>(
 	input: string,
-	init?: IRequestInit
+	init?: IRequestInit,
+	isSoft = false
 ): Promise<IApiResponse<T> | null> => {
 	let controller: AbortController | undefined;
 	let timeoutId: ReturnType<typeof setTimeout>;
@@ -60,7 +61,7 @@ const ajax = <T>(
 		method: init?.method,
 		signal: controller?.signal,
 	})
-		.then((res) => checkResponse<T>(res))
+		.then((res) => checkResponse<T>(res, isSoft))
 		.finally(() => {
 			clearTimeout(timeoutId);
 			stopFetching();
@@ -68,7 +69,8 @@ const ajax = <T>(
 };
 
 const checkResponse = async <T>(
-	response: Response
+	response: Response,
+	isSoft: boolean,
 ): Promise<IApiResponse<T> | null> => {
 	if (response.ok === false) {
 		let body: object | string | null = null;
@@ -107,9 +109,12 @@ const checkResponse = async <T>(
 			case EScenarioStatus.UNAUTHORIZED:
 			/** @todo добавить refresh */
 			case EScenarioStatus.SESSION_EXPIRED:
-				toast.error(apiRes.result);
 				leave();
-				navigate("/signin");
+				if (!isSoft) {
+					toast.error(apiRes.result);
+					navigate("/signin");
+				}
+
 				break;
 
 			case EScenarioStatus.SCENARIO_FAIL:
@@ -171,13 +176,7 @@ export const signIn = (email: string, password: string) => {
 	return ajax<null>(
 		"/api/signin",
 		prepareAjax({ email, password }, POST, URL_ENCODED)
-	).then((res) => {
-		if (res?.status === EScenarioStatus.SCENARIO_SUCCESS) {
-			enter();
-		}
-
-		return res;
-	});
+	);
 };
 
 export const logout = () =>
@@ -188,6 +187,41 @@ export const logout = () =>
 
 		return res;
 	});
+
+export interface IApiLocation {
+	readonly id: UUID;
+	readonly name: string;
+	readonly address: string | null;
+	readonly description: string | null;
+}
+
+export const readLocations = () => ajax<IApiLocation[]>("/api/locations");
+
+export const readLocationById = (locId: UUID) => ajax<IApiLocation>(`/api/locations/${locId}`);
+
+export const addLocation = (name: string, address?: string | null, description?: string | null) =>
+	ajax<UUID>(
+		"/api/locations",
+		prepareAjax({name, address, description}, POST),
+	);
+
+export interface IApiCompany {
+	readonly id: UUID;
+	readonly master: UUID;
+	readonly name: string;
+	readonly system: string;
+	readonly description: string | null;
+}
+
+export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
+
+export const readCompanyById = (compId: UUID) => ajax<IApiCompany>(`/api/companies/${compId}`);
+
+export const addCompany = (name: string, system: string, description?: string | null) =>
+	ajax<UUID>(
+		"/api/companies",
+		prepareAjax({name, system, description}, POST),
+	);
 
 export interface IApiEvent {
 	readonly id: UUID;
@@ -246,8 +280,19 @@ export interface IApiSelfInfo {
 	readonly timezone_offset: number | null;
 }
 
-export const whoIAm = () => {
-	return ajax<IApiSelfInfo>("/api/check");
+export const check = async (isSoft = false): Promise<boolean> => {
+	const res = await ajax<IApiSelfInfo>("/api/check", undefined, isSoft);
+
+	if (res !== null) {
+		enter(res.payload);
+	}
+
+	return res !== null;
+};
+
+export const softCheck = async (): Promise<void> => {
+	const SOFT_CHECK = true;
+	await check(SOFT_CHECK);
 };
 
 export interface IApiUserInfo {

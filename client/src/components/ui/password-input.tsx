@@ -1,5 +1,6 @@
-import { h } from "preact";
-import React from "preact/compat";
+import { ComponentChild, h } from "preact";
+import { forwardRef } from "preact/compat";
+import { useRef } from "preact/hooks";
 import type {
 	ButtonProps,
 	GroupProps,
@@ -20,22 +21,22 @@ import {
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { InputGroup } from "./input-group";
 
-export interface PasswordVisibilityProps {
+export interface IPasswordVisibilityProps {
 	defaultVisible?: boolean;
 	visible?: boolean;
 	onVisibleChange?: (visible: boolean) => void;
-	visibilityIcon?: { on: React.ReactNode; off: React.ReactNode };
+	visibilityIcon?: { on: ComponentChild; off: ComponentChild };
 }
 
-export interface PasswordInputProps
+export interface IPasswordInputProps
 	extends InputProps,
-		PasswordVisibilityProps {
+	IPasswordVisibilityProps {
 	rootProps?: GroupProps;
 }
 
-export const PasswordInput = React.forwardRef<
+export const PasswordInput = forwardRef<
 	HTMLInputElement,
-	PasswordInputProps
+	IPasswordInputProps
 >(function PasswordInput(props, ref) {
 	const {
 		rootProps,
@@ -52,7 +53,7 @@ export const PasswordInput = React.forwardRef<
 		onChange: onVisibleChange,
 	});
 
-	const inputRef = React.useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	return (
 		<InputGroup
@@ -81,7 +82,7 @@ export const PasswordInput = React.forwardRef<
 	);
 });
 
-const VisibilityTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const VisibilityTrigger = forwardRef<HTMLButtonElement, ButtonProps>(
 	function VisibilityTrigger(props, ref) {
 		return (
 			<IconButton
@@ -99,14 +100,14 @@ const VisibilityTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
 	}
 );
 
-interface PasswordStrengthMeterProps extends StackProps {
+interface IPasswordStrengthMeterProps extends StackProps {
 	max?: number;
 	value: number;
 }
 
-export const PasswordStrengthMeter = React.forwardRef<
+export const PasswordStrengthMeter = forwardRef<
 	HTMLDivElement,
-	PasswordStrengthMeterProps
+	IPasswordStrengthMeterProps
 >(function PasswordStrengthMeter(props, ref) {
 	const { max = 4, value, ...rest } = props;
 

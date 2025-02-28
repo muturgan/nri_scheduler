@@ -1,11 +1,38 @@
 use ::std::sync::Arc;
-use axum::extract::State;
+use axum::extract::{Path, State};
+use uuid::Uuid;
 
 use crate::{
 	dto::{Dto, location::NewLocationDto},
 	repository::Repository,
 	system_models::{AppResponse, AppResult},
 };
+
+pub(crate) async fn get_locations_list(State(repo): State<Arc<Repository>>) -> AppResult {
+	let locations = repo.get_locations_list().await?;
+
+	let json_value = serde_json::to_value(locations)?;
+
+	return Ok(AppResponse::scenario_success(
+		"Список локаций",
+		Some(json_value),
+	));
+}
+
+pub(crate) async fn get_location_by_id(
+	State(repo): State<Arc<Repository>>,
+	Path(location_id): Path<Uuid>,
+) -> AppResult {
+	let maybe_location = repo.get_location_by_id(location_id).await?;
+
+	Ok(match maybe_location {
+		None => AppResponse::scenario_fail("Локация не найдена", None),
+		Some(location) => {
+			let payload = serde_json::to_value(location)?;
+			AppResponse::scenario_success("Информация о локации", Some(payload))
+		}
+	})
+}
 
 pub(crate) async fn add_location(
 	State(repo): State<Arc<Repository>>,

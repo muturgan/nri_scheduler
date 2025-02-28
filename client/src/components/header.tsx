@@ -28,7 +28,6 @@ import { useEffect } from "react";
 
 export const Header = () => {
 	const [userData, setUserData] = useState<IApiUserInfo | null>(null);
-
 	const [open, setOpen] = useState(false);
 	const auth = useStore($signed);
 
