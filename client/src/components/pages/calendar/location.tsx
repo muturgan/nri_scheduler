@@ -14,11 +14,23 @@ import {
 
 import { addLocation, IApiLocation } from "../../../api";
 import { useForm } from "react-hook-form";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 export const Location = () => {
 	const [open, setOpen] = useState(false);
 	const { register, handleSubmit, reset } = useForm<IApiLocation>();
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === "Escape") setOpen(false);
+	}
+
+	useEffect(() => {
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+			setOpen(false);
+		};
+	}, []);
 
 	const onSubmit = handleSubmit((data) => {
 		const { name, address, description } = data;

@@ -31,11 +31,7 @@ import {
 	HStack,
 	Input,
 	InputAddon,
-	SelectContent,
-	SelectItem,
-	SelectRoot,
-	SelectTrigger,
-	SelectValueText,
+	NativeSelect,
 	Stack,
 } from "@chakra-ui/react";
 
@@ -51,7 +47,7 @@ import {
 } from "../../ui/drawer";
 
 import { Field } from "../../ui/field";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Company } from "./company";
 import { Location } from "./location";
 import { UUID } from "crypto";
@@ -124,7 +120,7 @@ export const CalendarPage = () => {
 
 	const companies = useMemo(() => {
 		return createListCollection({
-			items: companyList,
+			items: companyList || [],
 			itemToString: (item) => item.name,
 			itemToValue: (item) => item.id,
 		});
@@ -225,34 +221,25 @@ export const CalendarPage = () => {
 								<form onSubmit={onSubmit}>
 									<Stack gap="4" w="full">
 										<Field label="Кампания">
-											<Controller
-												control={control}
-												name="company"
-												render={({ field }) => (
-													<SelectRoot
-														name={field.name}
-														value={field.value}
-														onValueChange={({ value }) =>
-															field.onChange(value)
-														}
-														collection={companies}
-													>
-														<SelectTrigger>
-															<SelectValueText placeholder="Выберите из списка" />
-														</SelectTrigger>
-														<SelectContent>
-															{companies.items.map((company) => (
-																<SelectItem
-																	item={company}
-																	key={company.name}
-																>
-																	{company.name}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</SelectRoot>
-												)}
-											/>
+											<NativeSelect.Root>
+												<NativeSelect.Field
+													placeholder="Выберите из списка"
+													{...register("company", {
+														required: "Заполните",
+													})}
+													defaultValue={companyList?.[0]?.id}
+												>
+													{companies.items.map((company) => (
+														<option
+															value={company.id}
+															key={company.name}
+														>
+															{company.name}
+														</option>
+													))}
+												</NativeSelect.Field>
+												<NativeSelect.Indicator />
+											</NativeSelect.Root>
 										</Field>
 										<HStack gap={2} width="full">
 											<Field label="Начало">
@@ -291,36 +278,25 @@ export const CalendarPage = () => {
 											</Field>
 										</HStack>
 										<Field label="Локация">
-											<Controller
-												control={control}
-												name="location"
-												render={({ field }) => (
-													<SelectRoot
-														name={field.name}
-														value={field.value}
-														onValueChange={({ value }) =>
-															field.onChange(value)
-														}
-														collection={locations}
-													>
-														<SelectTrigger>
-															<SelectValueText placeholder="Выберите из списка" />
-														</SelectTrigger>
-														<SelectContent>
-															{locations.items.map(
-																(location) => (
-																	<SelectItem
-																		item={location}
-																		key={location.name}
-																	>
-																		{location.name}
-																	</SelectItem>
-																)
-															)}
-														</SelectContent>
-													</SelectRoot>
-												)}
-											/>
+											<NativeSelect.Root>
+												<NativeSelect.Field
+													placeholder="Выберите из списка"
+													{...register("location", {
+														required: "Заполните",
+													})}
+													defaultValue={locationList?.[0]?.id}
+												>
+													{locations.items.map((location) => (
+														<option
+															value={location.id}
+															key={location.name}
+														>
+															{location.name}
+														</option>
+													))}
+												</NativeSelect.Field>
+												<NativeSelect.Indicator />
+											</NativeSelect.Root>
 										</Field>
 
 										<Field label="Максимальное количество игроков">
