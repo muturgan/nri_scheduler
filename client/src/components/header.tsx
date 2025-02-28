@@ -9,7 +9,7 @@ import {
 	Stack,
 	Text,
 } from "@chakra-ui/react";
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 import { route as navigate } from "preact-router";
 
 import { useState } from "preact/hooks";

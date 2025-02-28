@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 import { route as navigate } from "preact-router";
 
 import {

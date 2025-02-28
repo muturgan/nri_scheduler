@@ -1,4 +1,4 @@
-import { ComponentChild, h, VNode } from "preact";
+import { ComponentChild, h, VNode } from "preact"; // eslint-disable-line
 import { cloneElement, forwardRef } from "preact/compat";
 
 import type { BoxProps, InputElementProps } from "@chakra-ui/react";

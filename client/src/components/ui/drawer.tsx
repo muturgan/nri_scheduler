@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 import React from "preact/compat";
 import { Drawer as ChakraDrawer, Portal } from "@chakra-ui/react";
 import { CloseButton } from "./close-button";

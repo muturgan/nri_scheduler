@@ -7,7 +7,7 @@ import {
 	Text,
 	Textarea,
 } from "@chakra-ui/react";
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 import { Field } from "../../ui/field";
 import {
 	DrawerBackdrop,
@@ -24,7 +24,11 @@ import { addCompany, IApiCompany } from "../../../api";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "preact/compat";
 
-export const Company = ({ data }: any) => {
+export interface ICompanyProps {
+	data: IApiCompany[];
+}
+
+export const Company = ({ data }: ICompanyProps) => {
 	const [open, setOpen] = useState(false);
 	const { register, handleSubmit, reset } = useForm<IApiCompany>();
 
@@ -32,9 +36,9 @@ export const Company = ({ data }: any) => {
 		if (event.key === "Escape") setOpen(false);
 	}
 
-	const onSubmit = handleSubmit((data) => {
-		const { name, system, description } = data;
+	const onSubmit = handleSubmit((companyData) => {
 		if (data) {
+			const { name, system, description } = companyData;
 			addCompany(name, system, description).then((res) => {
 				if (res !== null) {
 					reset();
@@ -101,7 +105,7 @@ export const Company = ({ data }: any) => {
 					</Heading>
 					{data ? (
 						<List.Root as="ol" ml={4}>
-							{data.map((item: IApiCompany) => (
+							{data.map((item) => (
 								<List.Item key={item.id}>{item.name}</List.Item>
 							))}
 						</List.Root>

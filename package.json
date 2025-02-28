@@ -14,7 +14,6 @@
 	"dependencies": {
 		"@chakra-ui/react": "^3.8.1",
 		"@nanostores/preact": "^0.5.2",
-		"@nanostores/query": "^0.3.4",
 		"@schedule-x/calendar": "^2.21.0",
 		"@schedule-x/preact": "^2.16.0",
 		"@schedule-x/shared": "^2.21.0",

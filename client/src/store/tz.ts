@@ -28,7 +28,7 @@ export const setOffset = (offset: number) => {
 		return;
 	}
 
-	let timezone = TIMEZONES[offset as any as keyof typeof TIMEZONES];
+	const timezone = TIMEZONES[offset as unknown as keyof typeof TIMEZONES];
 	($tz as WritableAtom<string>).set(timezone);
 };
 

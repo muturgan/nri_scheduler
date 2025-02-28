@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 import type { ButtonProps } from "@chakra-ui/react";
 import { IconButton as ChakraIconButton } from "@chakra-ui/react";
 

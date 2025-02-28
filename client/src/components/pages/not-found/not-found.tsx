@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 import { Button, Container, Heading, Image, Link } from "@chakra-ui/react";
 import NotFoundImage from "../../../../assets/not-found.svg";
 

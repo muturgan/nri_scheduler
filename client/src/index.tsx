@@ -1,4 +1,4 @@
-import { h, render } from "preact";
+import { h, render } from "preact"; // eslint-disable-line
 import { Router, Route } from "preact-router";
 import AsyncRoute from "preact-async-route";
 

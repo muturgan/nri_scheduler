@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h } from "preact"; // eslint-disable-line
 
 import "@schedule-x/theme-default/dist/index.css";
 import "./calendar.css";
@@ -69,7 +69,7 @@ export const CalendarPage = () => {
 	const [locationList, setLocationList] = useState<IApiLocation[]>([]);
 
 	const tz = useStore($tz);
-	const { register, handleSubmit, reset, control } =
+	const { register, handleSubmit, reset } =
 		useForm<IFormCreateEvent>();
 
 	const calendar = useCalendarApp({

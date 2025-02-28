@@ -1,4 +1,4 @@
-import { ComponentChild, h } from "preact";
+import { ComponentChild, h } from "preact"; // eslint-disable-line
 import { forwardRef } from "preact/compat";
 import { useRef } from "preact/hooks";
 import type {

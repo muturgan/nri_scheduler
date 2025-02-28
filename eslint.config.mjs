@@ -15,6 +15,11 @@ export default [
     plugins: {
       pluginReact
     },
+    settings: {
+      react: {
+        version: "18.3.1"
+      }
+    },
     rules: {
       "react/react-in-jsx-scope": "off"
     },
