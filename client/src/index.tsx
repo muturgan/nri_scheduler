@@ -16,6 +16,7 @@ const App = () => (
 	<Layout
 		page={
 			<Router>
+				<Route path="/" component={HomePage} />
 				<AsyncRoute
 					path="/signup"
 					getComponent={() =>
@@ -36,7 +37,7 @@ const App = () => (
 				<Route path="/event/create" component={CreateEventPage} />
 				<Route path="/event/:id" component={EventPage} />
 				<Route path="/mastery" component={MasteryPage} />
-				<Route path="/" component={HomePage} />
+
 				<Route default component={() => <NotFoundPage />} />
 			</Router>
 		}
