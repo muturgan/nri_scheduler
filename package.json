@@ -9,7 +9,7 @@
 		"preview": "npm run build && export $(cat .env | grep -v '^#' | xargs) && vite preview",
 		"tsc": "tsc",
 		"prebuild": "rm -rf static || npx rimraf static",
-		"lint": "./node_modules/.bin/eslint ./client"
+		"lint": "eslint ./client"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^3.8.1",
