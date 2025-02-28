@@ -2,6 +2,7 @@ import {
 	Button,
 	Heading,
 	Input,
+	List,
 	Stack,
 	Text,
 	Textarea,
@@ -23,9 +24,11 @@ import { addCompany, IApiCompany } from "../../../api";
 import { useForm } from "react-hook-form";
 import { useState } from "preact/compat";
 
-export const Company = () => {
+export const Company = ({ data }: any) => {
 	const [open, setOpen] = useState(false);
 	const { register, handleSubmit, reset } = useForm<IApiCompany>();
+
+	console.log(1, data);
 
 	const onSubmit = handleSubmit((data) => {
 		const { name, system, description } = data;
@@ -85,7 +88,15 @@ export const Company = () => {
 					<Heading size="md" mt={6} mb={4}>
 						Доступные мне
 					</Heading>
-					<Text>Список пуст</Text>
+					{data ? (
+						<List.Root as="ol" ml={4}>
+							{data.map((item: IApiCompany) => (
+								<List.Item key={item.id}>{item.name}</List.Item>
+							))}
+						</List.Root>
+					) : (
+						<Text>Список пуст</Text>
+					)}
 				</DrawerBody>
 				<DrawerCloseTrigger />
 			</DrawerContent>

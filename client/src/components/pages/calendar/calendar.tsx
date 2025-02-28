@@ -354,7 +354,7 @@ export const CalendarPage = () => {
 							<DrawerCloseTrigger />
 						</DrawerContent>
 					</DrawerRoot>
-					<Company />
+					<Company data={companyList} />
 					<Location />
 				</Stack>
 				<ScheduleXCalendar calendarApp={calendar} />
