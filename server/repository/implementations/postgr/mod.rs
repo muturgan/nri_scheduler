@@ -93,6 +93,14 @@ impl Store for PostgresStore {
 		Ok(may_be_self_info)
 	}
 
+	async fn get_locations_list(&self) -> CoreResult<Vec<Location>> {
+		let locations = sqlx::query_as::<_, Location>("SELECT * FROM locations;")
+			.fetch_all(&self.pool)
+			.await?;
+
+		Ok(locations)
+	}
+
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>> {
 		let may_be_location = sqlx::query_as::<_, Location>("SELECT * FROM locations WHERE id = $1;")
 			.bind(location_id)
@@ -136,6 +144,15 @@ impl Store for PostgresStore {
 			.await?;
 
 		Ok(may_be_company)
+	}
+
+	async fn get_my_companies(&self, master: Uuid) -> CoreResult<Vec<Company>> {
+		let companies = sqlx::query_as::<_, Company>("SELECT * FROM companies WHERE master = $1;")
+			.bind(master)
+			.fetch_all(&self.pool)
+			.await?;
+
+		Ok(companies)
 	}
 
 	async fn add_company(

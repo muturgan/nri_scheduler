@@ -1,5 +1,8 @@
 use ::std::sync::Arc;
-use axum::{Extension, extract::State};
+use axum::{
+	Extension,
+	extract::{Path, State},
+};
 use uuid::Uuid;
 
 use crate::{
@@ -7,6 +10,35 @@ use crate::{
 	repository::Repository,
 	system_models::{AppResponse, AppResult},
 };
+
+pub(crate) async fn get_company_by_id(
+	State(repo): State<Arc<Repository>>,
+	Path(company_id): Path<Uuid>,
+) -> AppResult {
+	let maybe_company = repo.get_company_by_id(company_id).await?;
+
+	Ok(match maybe_company {
+		None => AppResponse::scenario_fail("Кампания не найдена", None),
+		Some(company) => {
+			let payload = serde_json::to_value(company)?;
+			AppResponse::scenario_success("Информация о кампании", Some(payload))
+		}
+	})
+}
+
+pub(crate) async fn get_my_companies(
+	State(repo): State<Arc<Repository>>,
+	Extension(user_id): Extension<Uuid>,
+) -> AppResult {
+	let my = repo.get_my_companies(user_id).await?;
+
+	let json_value = serde_json::to_value(my)?;
+
+	return Ok(AppResponse::scenario_success(
+		"Список кампаний мастера",
+		Some(json_value),
+	));
+}
 
 pub(crate) async fn add_company(
 	State(repo): State<Arc<Repository>>,
