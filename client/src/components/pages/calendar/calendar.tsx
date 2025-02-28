@@ -14,7 +14,15 @@ import { useStore } from "@nanostores/preact";
 
 import { createEvent, readEventsList } from "../../../api";
 import { $tz } from "../../../store/tz";
-import { Button, Container, HStack, Input, Stack } from "@chakra-ui/react";
+import {
+	Button,
+	Container,
+	Group,
+	HStack,
+	Input,
+	InputAddon,
+	Stack,
+} from "@chakra-ui/react";
 import {
 	DrawerBackdrop,
 	DrawerBody,
@@ -89,6 +97,10 @@ export const CalendarPage = () => {
 				);
 			}
 		});
+
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		};
 	}, []);
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -103,7 +115,7 @@ export const CalendarPage = () => {
 		if (data) {
 			createEvent(
 				"1eff3781-2223-6f10-9750-f8b1b0900aa1",
-				startDateTime.format(EVENT_FORMAT),
+				startDateTime.toISOString(),
 				"1eff3758-f826-6b80-bf7c-a233deaf9f6d",
 				max_slots || null,
 				plan_duration || null
@@ -111,9 +123,6 @@ export const CalendarPage = () => {
 				if (res !== null) {
 					// calendar.events.add(data);
 					console.log(1, res);
-					console.log(2, data);
-					console.log("startDateTime: ", startDateTime);
-					console.log("endDateTime: ", endDateTime);
 				}
 			});
 		}
@@ -202,13 +211,24 @@ export const CalendarPage = () => {
 										/>
 									</Field>
 									<Field label="Максимальное количество игроков">
-										<Input type="number" {...register("max_slots")} />
-									</Field>
-									<Field label="Длительность">
 										<Input
 											type="number"
-											{...register("plan_duration")}
+											min="1"
+											step="1"
+											{...register("max_slots")}
 										/>
+									</Field>
+
+									<Field label="Длительность">
+										<Group attached w="full">
+											<Input
+												type="number"
+												min="1"
+												step="1"
+												{...register("plan_duration")}
+											/>
+											<InputAddon>час</InputAddon>
+										</Group>
 									</Field>
 								</Stack>
 								<Button type="submit" w="full" mt={6}>
