@@ -273,7 +273,6 @@ export const createEvent = (
 		prepareAjax(
 			{ company, date, location, max_slots, plan_duration },
 			POST,
-			URL_ENCODED
 		)
 	);
 };
