@@ -5,6 +5,7 @@ my outstanding trpg scheduler
 - install [docker](https://docs.docker.com), [rust](https://www.rust-lang.org/tools/install), [node.js](https://nodejs.org/en)
 - clone the repository ¯\\\_(ツ)_/¯
 - exec `cargo test` to enable git hooks
+- exec `rustup toolchain install nightly` to be able check all fmt features
 - exec `cp env.example .env`
 - fill the `.env` file with values
 - exec `docker compose up` to start a database
