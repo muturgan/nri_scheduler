@@ -6,6 +6,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+/** @todo добавить все временные зоны */
 const TIMEZONES = {
 	2: 'Europe/Kaliningrad',
 	3: 'Europe/Moscow',
@@ -28,7 +29,7 @@ export const setOffset = (offset: number) => {
 		return;
 	}
 
-	const timeZone = TIMEZONES[offset as unknown as keyof typeof TIMEZONES];
+	const timeZone = TIMEZONES[offset as keyof typeof TIMEZONES];
 	($tz as WritableAtom<string>).set(timeZone);
 };
 

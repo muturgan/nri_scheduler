@@ -55,7 +55,11 @@ export const Header = () => {
 						{auth ? (
 							<PopoverRoot
 								open={open}
-								onOpenChange={(e) => setOpen(e.open)}
+								onOpenChange={(e) => {
+									if (e) {
+										setOpen(e.open);
+									}
+								}}
 								positioning={{ placement: "bottom-end" }}
 							>
 								<PopoverTrigger asChild cursor="pointer">

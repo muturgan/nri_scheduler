@@ -15,7 +15,6 @@ import { useStore } from "@nanostores/preact";
 import {
 	createEvent,
 	IApiCompany,
-	IApiEvent,
 	IApiLocation,
 	readEvent,
 	readEventsList,
@@ -55,12 +54,15 @@ import toast from "react-hot-toast";
 
 const EVENT_FORMAT = "YYYY-MM-DD HH:mm";
 const DEFAULT_EVENT_DURATION = 4;
+const KEEP_LOCAL_TIME = true;
 
-interface IFormCreateEvent extends IApiEvent {
-	start: string;
-	startTime: string;
-	end: string;
-	endTime: string;
+interface IFormCreateEvent {
+	readonly company: UUID;
+	readonly location: UUID;
+	readonly start: string;
+	readonly startTime: string;
+	readonly max_slots: string,
+	readonly plan_duration: string,
 }
 
 export const CalendarPage = () => {
@@ -182,14 +184,15 @@ export const CalendarPage = () => {
 		const { company, location, start, startTime, max_slots, plan_duration } =
 			data;
 
-		const date = dayjs(`${start}T${startTime}`).tz(tz);
 		if (data) {
+			const date = dayjs(`${start}T${startTime}`).tz(tz, KEEP_LOCAL_TIME);
+
 			createEvent(
-				company as UUID,
+				company,
 				date.toISOString(),
-				location as UUID,
-				max_slots || null,
-				plan_duration || null
+				location,
+				Number(max_slots) || null,
+				Number(plan_duration) || null
 			).then((res) => {
 				if (res) {
 					toast.success("Событие успешно создано");
@@ -207,7 +210,11 @@ export const CalendarPage = () => {
 				<Stack mb={4} direction="row" gap={4}>
 					<DrawerRoot
 						open={openDraw}
-						onOpenChange={(e) => setOpenDraw(e.open)}
+						onOpenChange={(e) => {
+							if (e) {
+								setOpenDraw(e.open);
+							}
+						}}
 					>
 						<DrawerBackdrop />
 						<DrawerTrigger asChild>
@@ -259,24 +266,6 @@ export const CalendarPage = () => {
 												/>
 											</Field>
 										</HStack>
-										<HStack gap={2} width="full">
-											<Field label="Конец">
-												<Input
-													type="date"
-													{...register("end", {
-														required: "Заполните поле",
-													})}
-												/>
-											</Field>
-											<Field label="Время">
-												<Input
-													type="time"
-													{...register("endTime", {
-														required: "Заполните поле",
-													})}
-												/>
-											</Field>
-										</HStack>
 										<Field label="Локация">
 											<NativeSelect.Root>
 												<NativeSelect.Field
@@ -309,7 +298,7 @@ export const CalendarPage = () => {
 											/>
 										</Field>
 
-										<Field label="Длительность">
+										<Field label="Планируемая длительность">
 											<Group attached w="full">
 												<Input
 													type="number"

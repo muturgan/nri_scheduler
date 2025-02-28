@@ -46,7 +46,7 @@ export const Location = () => {
 	});
 
 	return (
-		<DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+		<DrawerRoot open={open} onOpenChange={(e) => {if (e) {setOpen(e.open)}}}>
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
 				<Button variant="outline">Создать локацию</Button>

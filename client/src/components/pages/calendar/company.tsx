@@ -57,7 +57,7 @@ export const Company = ({ data }: ICompanyProps) => {
 	}, []);
 
 	return (
-		<DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+		<DrawerRoot open={open} onOpenChange={(e) => {if (e) {setOpen(e.open)}}}>
 			<DrawerBackdrop />
 			<DrawerTrigger asChild>
 				<Button variant="outline">Создать кампанию</Button>
