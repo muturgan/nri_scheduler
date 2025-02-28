@@ -8,7 +8,8 @@
 		"build": "tsc && vite build",
 		"preview": "npm run build && export $(cat .env | grep -v '^#' | xargs) && vite preview",
 		"tsc": "tsc",
-		"prebuild": "rm -rf static || npx rimraf static"
+		"prebuild": "rm -rf static || npx rimraf static",
+		"lint": "eslint ./client"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^3.8.1",
@@ -28,11 +29,16 @@
 		"react-icons": "^5.5.0"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.21.0",
 		"@preact/preset-vite": "^2.10.1",
 		"@types/node": "^22.13.5",
 		"dotenv": "^16.4.7",
+		"eslint": "^9.21.0",
+		"eslint-plugin-react": "^7.37.4",
+		"globals": "^16.0.0",
 		"terser": "^5.39.0",
 		"typescript": "^5.7.3",
+		"typescript-eslint": "^8.25.0",
 		"vite": "^6.2.0"
 	}
 }
