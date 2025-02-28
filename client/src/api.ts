@@ -221,8 +221,8 @@ export const createEvent = (
 	company: string,
 	date: string,
 	location: string,
-	max_slots: string,
-	plan_duration: string
+	max_slots: number | null,
+	plan_duration: number | null
 ) => {
 	return ajax<IApiEvent>(
 		"/api/events",

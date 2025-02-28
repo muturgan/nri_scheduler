@@ -4,7 +4,6 @@ import "@schedule-x/theme-default/dist/index.css";
 import "./calendar.css";
 
 import dayjs from "dayjs";
-import { v4 as uuidv4 } from "uuid";
 
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/preact";
 import { createViewMonthGrid } from "@schedule-x/calendar";
@@ -34,15 +33,14 @@ const DEFAULT_EVENT_DURATION = 4;
 
 interface IFormCreateEvent {
 	id: string;
-	master: string;
 	title: string;
 	start: string;
 	startTime: string;
 	end: string;
 	endTime: string;
 	location: string;
-	max_slots: string;
-	plan_duration: string;
+	max_slots: number | null;
+	plan_duration: number | null;
 }
 
 export const CalendarPage = () => {
@@ -65,6 +63,8 @@ export const CalendarPage = () => {
 		const now = dayjs().tz(tz);
 		const monthStart = now.startOf("M").format();
 		const monthEnd = now.endOf("M").format();
+
+		document.addEventListener("keydown", handleKeyDown);
 
 		/** @todo передавать таймзону, возвращать в нужной таймзоне, присылать название кампании, локации, список людей */
 		readEventsList(monthStart, monthEnd).then((res) => {
@@ -91,39 +91,29 @@ export const CalendarPage = () => {
 		});
 	}, []);
 
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === "Escape") setOpenDraw(false);
+	}
+
 	const onSubmit = handleSubmit((data) => {
-		const {
-			id,
-			start,
-			startTime,
-			end,
-			endTime,
-			title,
-			location,
-			max_slots,
-			plan_duration,
-		} = data;
+		const { start, startTime, end, endTime, max_slots, plan_duration } = data;
 
-		const newId = uuidv4();
-
-		data.id = newId;
-		data.start = start + " " + startTime;
-		data.end = end + " " + endTime;
-
-		calendar.events.add(data);
-
-		const startDateTime = new Date(`${start}T${startTime}`);
-
+		const startDateTime = dayjs(`${start} ${startTime}`).tz(tz);
+		const endDateTime = dayjs(`${end} ${endTime}`).tz(tz);
 		if (data) {
 			createEvent(
 				"1eff3781-2223-6f10-9750-f8b1b0900aa1",
-				startDateTime.toISOString(),
+				startDateTime.format(EVENT_FORMAT),
 				"1eff3758-f826-6b80-bf7c-a233deaf9f6d",
-				max_slots,
-				plan_duration
+				max_slots || null,
+				plan_duration || null
 			).then((res) => {
 				if (res !== null) {
-					console.log(res);
+					// calendar.events.add(data);
+					console.log(1, res);
+					console.log(2, data);
+					console.log("startDateTime: ", startDateTime);
+					console.log("endDateTime: ", endDateTime);
 				}
 			});
 		}
@@ -159,14 +149,6 @@ export const CalendarPage = () => {
 									w="full"
 									mx="auto"
 								>
-									<Field label="Мастер">
-										<Input
-											placeholder="Имя мастера"
-											{...register("master", {
-												required: "Заполните поле",
-											})}
-										/>
-									</Field>
 									<Field label="Название">
 										<Input
 											placeholder="Заполните поле"
@@ -219,21 +201,13 @@ export const CalendarPage = () => {
 											})}
 										/>
 									</Field>
-									<Field label="Количество игроков">
-										<Input
-											type="number"
-											min={2}
-											{...register("max_slots", {
-												required: "Заполните поле",
-											})}
-										/>
+									<Field label="Максимальное количество игроков">
+										<Input type="number" {...register("max_slots")} />
 									</Field>
 									<Field label="Длительность">
 										<Input
 											type="number"
-											{...register("plan_duration", {
-												required: "Заполните поле",
-											})}
+											{...register("plan_duration")}
 										/>
 									</Field>
 								</Stack>
