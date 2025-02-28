@@ -23,7 +23,7 @@ import {
 } from "./ui/popover";
 import { useStore } from "@nanostores/preact";
 import { $signed } from "../store/profile";
-import { getProfileUser, IApiUserInfo, logout } from "../api";
+import { getUserProfile, IApiUserInfo, logout, softCheck } from "../api";
 import { useEffect } from "react";
 
 export const Header = () => {
@@ -32,9 +32,13 @@ export const Header = () => {
 	const auth = useStore($signed);
 
 	useEffect(() => {
-		getProfileUser().then((responce) => {
-			if (responce) {
-				setUserData(responce.payload);
+		softCheck().then((isLoggedIn) => {
+			if (isLoggedIn) {
+				getUserProfile().then((res) => {
+					if (res) {
+						setUserData(res.payload);
+					}
+				});
 			}
 		});
 	}, [auth]);

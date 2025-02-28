@@ -299,18 +299,17 @@ export const check = async (isSoft = false): Promise<boolean> => {
 	return res !== null;
 };
 
-export const softCheck = async (): Promise<void> => {
+export const softCheck = (): Promise<boolean> => {
 	const SOFT_CHECK = true;
-	await check(SOFT_CHECK);
+	return check(SOFT_CHECK);
 };
 
 export interface IApiUserInfo {
-	readonly id: UUID;
-	readonly email: string;
+	readonly email: string | null;
 	readonly nickname: string;
-	readonly phone: string;
+	readonly phone: string | null;
 }
 
-export const getProfileUser = () => {
+export const getUserProfile = () => {
 	return ajax<IApiUserInfo>(`/api/profile`);
 };

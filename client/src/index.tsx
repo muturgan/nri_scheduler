@@ -11,9 +11,6 @@ import {
 	NotFoundPage,
 	SignInPage,
 } from "./components/pages";
-import { softCheck } from "./api";
-
-softCheck();
 
 const App = () => (
 	<Layout
