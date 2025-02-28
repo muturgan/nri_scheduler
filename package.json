@@ -31,14 +31,11 @@
 		"@eslint/js": "^9.21.0",
 		"@preact/preset-vite": "^2.10.1",
 		"@types/node": "^22.13.5",
-<<<<<<< HEAD
 		"eslint": "^9.21.0",
 		"eslint-plugin-react": "^7.37.4",
 		"globals": "^16.0.0",
 		"prettier": "3.5.2",
-=======
 		"dotenv": "^16.4.7",
->>>>>>> 9c5d9e04d40a770a82a4170ed6bfbfefe8397107
 		"terser": "^5.39.0",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.25.0",
