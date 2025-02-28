@@ -1,12 +1,11 @@
 import { h } from "preact"; // eslint-disable-line
 import { Button, Container, Heading, Image, Link } from "@chakra-ui/react";
-import NotFoundImage from "../../../../assets/not-found.svg";
 
 export const NotFoundPage = () => {
 	return (
 		<section>
 			<Container centerContent>
-				<Image src={NotFoundImage} alt="404" maxW="800px" />
+				<Image src="/assets/not-found.svg" alt="404" maxW="800px" />
 				<Heading size="2xl">
 					Oops! Страница, которую вы ищете, не найдена
 				</Heading>
