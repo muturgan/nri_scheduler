@@ -30,7 +30,6 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 	const [buttonMsg, setButtonMsg] = useState(
 		event.you_applied ? "Подписаны" : "Подписаться"
 	);
-	const [button1Msg, setButton1Msg] = useState("Подписаться");
 	const [isLoading, setIsLoading] = useState(false);
 	const [creatorId, setCreatorId] = useState("");
 	const [isCreator, setIsCreator] = useState(false);
@@ -48,7 +47,7 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 				}
 			}
 		});
-	}, [isCreator]);
+	}, [isCreator, creatorId]);
 
 	const checkArray = (data: any) => {
 		if (Array.isArray(data)) {
@@ -81,14 +80,6 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 				setButtonMsg("Подписаны");
 			}
 		});
-	};
-
-	const handleTest = () => {
-		setIsLoading(true);
-		setButton1Msg("...");
-		setTimeout(() => {
-			setButton1Msg("Подписаны");
-		}, 1500);
 	};
 
 	return (
