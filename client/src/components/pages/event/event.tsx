@@ -20,7 +20,7 @@ import {
 	Strong,
 	Text,
 } from "@chakra-ui/react";
-import { $tz } from "../../../store/tz";
+import { $tz } from "../../../store/profile";
 import { IApiEvent, readEvent } from "../../../api";
 
 dayjs.locale("ru");

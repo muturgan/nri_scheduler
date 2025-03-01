@@ -21,7 +21,7 @@ import {
 	readLocations,
 	readMyCompanies,
 } from "../../../api";
-import { $tz } from "../../../store/tz";
+import { $tz } from "../../../store/profile";
 import {
 	Button,
 	Container,
