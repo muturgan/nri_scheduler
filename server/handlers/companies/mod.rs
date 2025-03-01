@@ -6,7 +6,10 @@ use axum::{
 use uuid::Uuid;
 
 use crate::{
-	dto::{Dto, company::NewCompanyDto},
+	dto::{
+		Dto,
+		company::{NewCompanyDto, ReadCompaniesDto},
+	},
 	repository::Repository,
 	system_models::{AppResponse, AppResult},
 };
@@ -29,8 +32,9 @@ pub(crate) async fn get_company_by_id(
 pub(crate) async fn get_my_companies(
 	State(repo): State<Arc<Repository>>,
 	Extension(user_id): Extension<Uuid>,
+	Dto(query): Dto<ReadCompaniesDto>,
 ) -> AppResult {
-	let my = repo.get_my_companies(user_id).await?;
+	let my = repo.get_my_companies(query, user_id).await?;
 
 	let json_value = serde_json::to_value(my)?;
 

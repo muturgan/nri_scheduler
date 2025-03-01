@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use super::super::Store;
 use crate::{
-	dto::event::ReadEventsDto,
+	dto::{company::ReadCompaniesDto, event::ReadEventsDto},
 	repository::models::{
 		Company, Event, EventForApplying, Location, Profile, SelfInfo, UserForAuth,
 	},
@@ -146,11 +146,39 @@ impl Store for PostgresStore {
 		Ok(may_be_company)
 	}
 
-	async fn get_my_companies(&self, master: Uuid) -> CoreResult<Vec<Company>> {
-		let companies = sqlx::query_as::<_, Company>("SELECT * FROM companies WHERE master = $1;")
-			.bind(master)
-			.fetch_all(&self.pool)
-			.await?;
+	async fn get_my_companies(
+		&self,
+		query_args: ReadCompaniesDto,
+		master: Uuid,
+	) -> CoreResult<Vec<Company>> {
+		let mut qb: QueryBuilder<'_, Postgres> = QueryBuilder::new("SELECT *");
+
+		let mut query_name = String::default();
+		if let Some(name) = query_args.name {
+			query_name = name;
+		}
+
+		if !query_name.is_empty() {
+			qb.push(", CASE WHEN LOWER(name) LIKE LOWER(");
+			qb.push_bind(&query_name);
+			qb.push(") || '%' THEN 1 ");
+
+			qb.push("WHEN LOWER(name) LIKE '%' || LOWER(");
+			qb.push_bind(&query_name);
+			qb.push(") || '%' THEN 2 ");
+			qb.push("END AS rank");
+		}
+
+		qb.push(" FROM companies WHERE master = ");
+		qb.push_bind(master);
+
+		if !query_name.is_empty() {
+			qb.push(" AND LOWER(name) LIKE '%' || LOWER(");
+			qb.push_bind(&query_name);
+			qb.push(") || '%'");
+		}
+
+		let companies = qb.build_query_as::<Company>().fetch_all(&self.pool).await?;
 
 		Ok(companies)
 	}

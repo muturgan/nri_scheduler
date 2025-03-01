@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::{
 	auth,
-	dto::event::ReadEventsDto,
+	dto::{company::ReadCompaniesDto, event::ReadEventsDto},
 	shared::RecordId,
 	system_models::{CoreResult, ServingError},
 };
@@ -38,7 +38,11 @@ trait Store {
 
 	async fn get_company_by_id(&self, company_id: Uuid) -> CoreResult<Option<Company>>;
 
-	async fn get_my_companies(&self, master: Uuid) -> CoreResult<Vec<Company>>;
+	async fn get_my_companies(
+		&self,
+		query: ReadCompaniesDto,
+		master: Uuid,
+	) -> CoreResult<Vec<Company>>;
 
 	async fn add_company(
 		&self,
@@ -147,8 +151,12 @@ impl Repository {
 		return self.store.get_company_by_id(company_id).await;
 	}
 
-	pub(crate) async fn get_my_companies(&self, master: Uuid) -> CoreResult<Vec<Company>> {
-		return self.store.get_my_companies(master).await;
+	pub(crate) async fn get_my_companies(
+		&self,
+		query: ReadCompaniesDto,
+		master: Uuid,
+	) -> CoreResult<Vec<Company>> {
+		return self.store.get_my_companies(query, master).await;
 	}
 
 	pub(crate) async fn add_company(
