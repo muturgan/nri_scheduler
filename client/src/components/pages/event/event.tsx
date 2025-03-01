@@ -9,19 +9,16 @@ import dayjs from "dayjs";
 import "dayjs/locale/ru";
 
 import {
-	Box,
 	Button,
 	Card,
 	Container,
+	DataList,
 	Heading,
 	HStack,
 	Link,
-	Stack,
-	Strong,
-	Text,
 } from "@chakra-ui/react";
 import { $tz } from "../../../store/tz";
-import { IApiEvent, readEvent } from "../../../api";
+import { applyEvent, getMinUser, IApiEvent, readEvent } from "../../../api";
 
 dayjs.locale("ru");
 
@@ -31,6 +28,39 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 	const eventDate = dayjs(event.date).tz(tz);
 	const customDay = eventDate.format("DD MMMM");
 
+	const checkArray = (data: any) => {
+		if (Array.isArray(data)) {
+			if (data.length !== 0) {
+				const dataString = data.join(", ");
+				return <p>{dataString}</p>;
+			} else {
+				return <p>Пока никто не записался</p>;
+			}
+		} else {
+			return <p>Пока никто не записался</p>;
+		}
+	};
+
+	const stats = [
+		{ label: "Мастер игры", value: event.master, href: "#" },
+		{ label: "Место проведения", value: event.location, href: "#" },
+		{ label: "Дата", value: customDay },
+		{ label: "Время", value: eventDate.format("HH:mm") },
+		{ label: "Всего игроков", value: event.max_slots || 0 },
+		{ label: "Записаны", value: checkArray(event.players) },
+		{ label: "Продолжительность", value: event.plan_duration || 0 },
+	];
+
+	const handleSubscribe = async () => {
+		getMinUser().then((res) => {
+			if (!res) return;
+			console.log(res.payload.id)
+			applyEvent(res.payload.id).then((responce) => {
+				console.log(responce);
+			});
+		});
+	};
+
 	return (
 		<>
 			<Card.Root width="full">
@@ -39,48 +69,32 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 						<Heading size="3xl">{event.company}</Heading>
 					</HStack>
 					<Card.Description>
-						<Stack gap={4}>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Strong color="fg">Мастер игры: </Strong>
-								<Link href="#" variant="underline" colorPalette="blue">
-									{event.master}
-								</Link>
-							</Box>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Strong color="fg">Место проведения: </Strong>
-								<Text>{event.location}</Text>
-							</Box>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Strong color="fg">Дата: </Strong>
-								<Text>{customDay}</Text>
-							</Box>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Strong color="fg">Время: </Strong>
-								<Text>{eventDate.format("HH:mm")}</Text>
-							</Box>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Strong color="fg">Всего игроков: </Strong>
-								<Link href="#">{event.max_slots || 0}</Link>
-							</Box>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Box display="flex" alignItems="center" gap={2}>
-									<Strong color="fg">Записаны: -</Strong>
-									{event.players.map((item, index) => (
-										<Link href="#" key={index} variant="underline" colorPalette="blue">
-											{`Игрок ${index + 1}`}
-										</Link>
-									))}
-								</Box>
-							</Box>
-							<Box display="flex" alignItems="center" gap={2}>
-								<Strong color="fg">Продолжительность: </Strong>
-								<Link href="#">{event.plan_duration || 0}</Link>
-							</Box>
-						</Stack>
+						<DataList.Root orientation="horizontal">
+							{stats.map((item) => (
+								<DataList.Item key={item.label}>
+									<DataList.ItemLabel minW="150px">
+										{item.label}
+									</DataList.ItemLabel>
+									<DataList.ItemValue color="black" fontWeight="500">
+										{item.href ? (
+											<Link href={item.href} colorPalette="blue">
+												{item.value}
+											</Link>
+										) : (
+											<p>{item.value}</p>
+										)}
+									</DataList.ItemValue>
+								</DataList.Item>
+							))}
+						</DataList.Root>
 					</Card.Description>
 				</Card.Body>
 				<Card.Footer>
-					<Button variant="subtle" colorPalette="blue">
+					<Button
+						variant="subtle"
+						colorPalette="blue"
+						onClick={handleSubscribe}
+					>
 						{event.you_applied ? "Ожидание" : "Записаться"}
 					</Button>
 				</Card.Footer>
@@ -90,7 +104,6 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 };
 
 export const EventPage = () => {
-	
 	const [route] = useRouter();
 
 	const [fetching, setFetching] = useState(false);

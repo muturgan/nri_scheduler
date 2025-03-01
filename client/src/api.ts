@@ -70,7 +70,7 @@ const ajax = <T>(
 
 const checkResponse = async <T>(
 	response: Response,
-	isSoft: boolean,
+	isSoft: boolean
 ): Promise<IApiResponse<T> | null> => {
 	if (response.ok === false) {
 		let body: object | string | null = null;
@@ -197,12 +197,17 @@ export interface IApiLocation {
 
 export const readLocations = () => ajax<IApiLocation[]>("/api/locations");
 
-export const readLocationById = (locId: UUID) => ajax<IApiLocation>(`/api/locations/${locId}`);
+export const readLocationById = (locId: UUID) =>
+	ajax<IApiLocation>(`/api/locations/${locId}`);
 
-export const addLocation = (name: string, address?: string | null, description?: string | null) =>
+export const addLocation = (
+	name: string,
+	address?: string | null,
+	description?: string | null
+) =>
 	ajax<UUID>(
 		"/api/locations",
-		prepareAjax({name, address, description}, POST),
+		prepareAjax({ name, address, description }, POST)
 	);
 
 export interface IApiCompany {
@@ -215,12 +220,17 @@ export interface IApiCompany {
 
 export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
 
-export const readCompanyById = (compId: UUID) => ajax<IApiCompany>(`/api/companies/${compId}`);
+export const readCompanyById = (compId: UUID) =>
+	ajax<IApiCompany>(`/api/companies/${compId}`);
 
-export const addCompany = (name: string, system: string, description?: string | null) =>
+export const addCompany = (
+	name: string,
+	system: string,
+	description?: string | null
+) =>
 	ajax<UUID>(
 		"/api/companies",
-		prepareAjax({name, system, description}, POST),
+		prepareAjax({ name, system, description }, POST)
 	);
 
 export interface IApiEvent {
@@ -269,8 +279,13 @@ export const check = async (isSoft = false): Promise<boolean> => {
 	if (res !== null) {
 		enter(res.payload);
 	}
+	console.log(res !== null);
 
 	return res !== null;
+};
+
+export const getMinUser = () => {
+	return ajax<IApiSelfInfo>("/api/check");
 };
 
 export const softCheck = async (): Promise<void> => {
