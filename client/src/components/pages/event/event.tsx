@@ -27,6 +27,28 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 
 	const eventDate = dayjs(event.date).tz(tz);
 	const customDay = eventDate.format("DD MMMM");
+	const [buttonMsg, setButtonMsg] = useState(
+		event.you_applied ? "Подписаны" : "Подписаться"
+	);
+	const [button1Msg, setButton1Msg] = useState("Подписаться");
+	const [isLoading, setIsLoading] = useState(false);
+	const [creatorId, setCreatorId] = useState("");
+	const [isCreator, setIsCreator] = useState(false);
+
+	useEffect(() => {
+		getMinUser().then((responce) => {
+			if (responce) {
+				const userId = responce?.payload.id;
+				setCreatorId(userId);
+
+				if (event.master_id === userId) {
+					setIsCreator(true);
+				} else {
+					setIsCreator(false);
+				}
+			}
+		});
+	}, [isCreator]);
 
 	const checkArray = (data: any) => {
 		if (Array.isArray(data)) {
@@ -51,14 +73,22 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 		{ label: "Продолжительность", value: event.plan_duration || 0 },
 	];
 
-	const handleSubscribe = async () => {
-		getMinUser().then((res) => {
-			if (!res) return;
-			console.log(res.payload.id)
-			applyEvent(res.payload.id).then((responce) => {
-				console.log(responce);
-			});
+	const handleSubscribe = () => {
+		setIsLoading(true);
+		setButtonMsg("...");
+		applyEvent(event.id).then((responce) => {
+			if (responce?.status === 0) {
+				setButtonMsg("Подписаны");
+			}
 		});
+	};
+
+	const handleTest = () => {
+		setIsLoading(true);
+		setButton1Msg("...");
+		setTimeout(() => {
+			setButton1Msg("Подписаны");
+		}, 1500);
 	};
 
 	return (
@@ -90,13 +120,17 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 					</Card.Description>
 				</Card.Body>
 				<Card.Footer>
-					<Button
-						variant="subtle"
-						colorPalette="blue"
-						onClick={handleSubscribe}
-					>
-						{event.you_applied ? "Ожидание" : "Записаться"}
-					</Button>
+					{!isCreator && (
+						<Button
+							variant="subtle"
+							colorPalette="blue"
+							minW="115px"
+							onClick={handleSubscribe}
+							disabled={isLoading || event.you_applied}
+						>
+							{buttonMsg}
+						</Button>
+					)}
 				</Card.Footer>
 			</Card.Root>
 		</>
