@@ -249,11 +249,27 @@ export interface IApiEvent {
 	readonly your_approval: boolean | null;
 }
 
-export const readEventsList = (from: string, to: string) => {
+export interface IEventsFilter {
+	master?: UUID | null;
+	location?: UUID | null;
+	applied?: boolean | null;
+	not_rejected?: boolean | null;
+	imamaster?: boolean | null;
+}
+
+export const readEventsList = (date_from: string, date_to: string, filters?: IEventsFilter | null) => {
+	const query: Record<string, string> = {date_from, date_to};
+
+	if (filters) {
+		Object.entries(filters).forEach(([key, val]) => {
+			if (val !== null && val !== undefined) {
+				query[key] = val;
+			}
+		});
+	}
+
 	return ajax<IApiEvent[]>(
-		`/api/events?date_from=${encodeURIComponent(
-			from
-		)}&date_to=${encodeURIComponent(to)}`
+		`/api/events?${new URLSearchParams(query)}`
 	);
 };
 

@@ -146,7 +146,6 @@ export const CalendarPage = () => {
 
 		document.addEventListener("keydown", handleKeyDown);
 
-		/** @todo передавать таймзону, возвращать в нужной таймзоне, присылать название кампании, локации, список людей */
 		readEventsList(monthStart, monthEnd).then((res) => {
 			if (res !== null) {
 				calendar.events.set(
