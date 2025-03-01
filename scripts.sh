@@ -5,7 +5,7 @@ build() {
 }
 
 dev() {
-	export $(cat .env | grep -v '^#' | xargs) && cargo run --features=cors
+	export $(cat .env | grep -v '^#' | xargs) && cargo run --features=cors,vite
 }
 
 start_release() {

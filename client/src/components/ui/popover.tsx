@@ -1,4 +1,4 @@
-import { h, RefObject } from "preact";
+import { h, RefObject } from "preact"; // eslint-disable-line
 import { forwardRef } from "preact/compat";
 import {
 	Popover as ChakraPopover,
