@@ -194,6 +194,13 @@ impl Store for PostgresStore {
 					, e.max_slots
 					, e.plan_duration
 					, bool_or(y.id is not null) AS you_applied
+					, (",
+		);
+		qb.push_bind(player_id);
+		qb.push(" is not null and c.master = ");
+		qb.push_bind(player_id);
+		qb.push(
+			") as you_are_master
 					, y.approval AS your_approval
 				FROM events e
 				INNER JOIN companies c
@@ -278,6 +285,7 @@ impl Store for PostgresStore {
 				, e.max_slots
 				, e.plan_duration
 				, bool_or(y.id is not null) AS you_applied
+				, ($2 is not null and c.master = $2) as you_are_master
 				, y.approval AS your_approval
 			FROM events e
 			INNER JOIN companies c

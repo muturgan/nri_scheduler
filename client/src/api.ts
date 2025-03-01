@@ -246,6 +246,7 @@ export interface IApiEvent {
 	readonly plan_duration: number | null;
 	readonly players: string[];
 	readonly you_applied: boolean;
+	readonly you_are_master: boolean;
 	readonly your_approval: boolean | null;
 }
 

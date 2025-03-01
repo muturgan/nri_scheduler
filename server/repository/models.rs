@@ -57,6 +57,7 @@ pub(crate) struct Event {
 	pub max_slots: Option<i16>,
 	pub plan_duration: Option<i16>,
 	pub you_applied: bool,
+	pub you_are_master: bool,
 	pub your_approval: Option<bool>,
 }
 

@@ -652,6 +652,10 @@
 						"type": "boolean",
 						"description": "Подал ли уже пользователь заявку на данную игру"
 					},
+					"you_are_master": {
+						"type": "boolean",
+						"description": "Является ли пользователь мастером на игре"
+					},
 					"your_approval": {
 						"type": "boolean",
 						"nullable": true,
