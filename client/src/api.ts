@@ -218,7 +218,14 @@ export interface IApiCompany {
 	readonly description: string | null;
 }
 
-export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
+export const readMyCompanies = (name?: string | null) => {
+	const query = new URLSearchParams();
+	if (name) {
+		query.append("name", name);
+	}
+
+	return ajax<IApiCompany[]>(`/api/companies/my?${query}`);
+};
 
 export const readCompanyById = (compId: UUID) =>
 	ajax<IApiCompany>(`/api/companies/${compId}`);

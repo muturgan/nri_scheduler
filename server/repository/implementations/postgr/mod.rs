@@ -153,10 +153,7 @@ impl Store for PostgresStore {
 	) -> CoreResult<Vec<Company>> {
 		let mut qb: QueryBuilder<'_, Postgres> = QueryBuilder::new("SELECT *");
 
-		let mut query_name = String::default();
-		if let Some(name) = query_args.name {
-			query_name = name;
-		}
+		let query_name = query_args.name.unwrap_or_default();
 
 		if !query_name.is_empty() {
 			qb.push(", CASE WHEN LOWER(name) LIKE LOWER(");
@@ -177,6 +174,12 @@ impl Store for PostgresStore {
 			qb.push_bind(&query_name);
 			qb.push(") || '%'");
 		}
+
+		qb.push(" order by");
+		if !query_name.is_empty() {
+			qb.push(" rank,");
+		}
+		qb.push(" name asc");
 
 		let companies = qb.build_query_as::<Company>().fetch_all(&self.pool).await?;
 
