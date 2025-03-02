@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use super::super::Store;
 use crate::{
-	dto::{company::ReadCompaniesDto, event::ReadEventsDto},
+	dto::{company::ReadCompaniesDto, event::ReadEventsDto, location::ReadLocationDto},
 	repository::models::{
 		Company, Event, EventForApplying, Location, Profile, SelfInfo, UserForAuth,
 	},
@@ -93,8 +93,37 @@ impl Store for PostgresStore {
 		Ok(may_be_self_info)
 	}
 
-	async fn get_locations_list(&self) -> CoreResult<Vec<Location>> {
-		let locations = sqlx::query_as::<_, Location>("SELECT * FROM locations;")
+	async fn get_locations_list(&self, query_args: ReadLocationDto) -> CoreResult<Vec<Location>> {
+		let mut qb: QueryBuilder<'_, Postgres> = QueryBuilder::new("SELECT *");
+
+		let query_name = query_args.name.unwrap_or_default();
+
+		if !query_name.is_empty() {
+			qb.push(", CASE WHEN LOWER(name) LIKE LOWER(");
+			qb.push_bind(&query_name);
+			qb.push(") || '%' THEN 1 ");
+
+			qb.push("WHEN LOWER(name) LIKE '%' || LOWER(");
+			qb.push_bind(&query_name);
+			qb.push(") || '%' THEN 2 ");
+			qb.push("END AS rank");
+		}
+
+		qb.push(" FROM locations");
+		if !query_name.is_empty() {
+			qb.push(" WHERE LOWER(name) LIKE '%' || LOWER(");
+			qb.push_bind(&query_name);
+			qb.push(") || '%'");
+		}
+
+		qb.push(" order by");
+		if !query_name.is_empty() {
+			qb.push(" rank,");
+		}
+		qb.push(" name asc");
+
+		let locations = qb
+			.build_query_as::<Location>()
 			.fetch_all(&self.pool)
 			.await?;
 

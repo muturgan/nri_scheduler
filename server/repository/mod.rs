@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::{
 	auth,
-	dto::{company::ReadCompaniesDto, event::ReadEventsDto},
+	dto::{company::ReadCompaniesDto, event::ReadEventsDto, location::ReadLocationDto},
 	shared::RecordId,
 	system_models::{CoreResult, ServingError},
 };
@@ -26,7 +26,7 @@ trait Store {
 	async fn read_profile(&self, user_id: Uuid) -> CoreResult<Option<Profile>>;
 	async fn who_i_am(&self, user_id: Uuid) -> CoreResult<Option<SelfInfo>>;
 
-	async fn get_locations_list(&self) -> CoreResult<Vec<Location>>;
+	async fn get_locations_list(&self, query: ReadLocationDto) -> CoreResult<Vec<Location>>;
 	async fn get_location_by_id(&self, location_id: Uuid) -> CoreResult<Option<Location>>;
 
 	async fn add_location(
@@ -127,8 +127,11 @@ impl Repository {
 		return self.store.who_i_am(user_id).await;
 	}
 
-	pub(crate) async fn get_locations_list(&self) -> CoreResult<Vec<Location>> {
-		return self.store.get_locations_list().await;
+	pub(crate) async fn get_locations_list(
+		&self,
+		query: ReadLocationDto,
+	) -> CoreResult<Vec<Location>> {
+		return self.store.get_locations_list(query).await;
 	}
 
 	pub(crate) async fn get_location_by_id(
