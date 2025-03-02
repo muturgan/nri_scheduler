@@ -70,7 +70,7 @@ const ajax = <T>(
 
 const checkResponse = async <T>(
 	response: Response,
-	isSoft: boolean
+	isSoft: boolean,
 ): Promise<IApiResponse<T> | null> => {
 	if (response.ok === false) {
 		let body: object | string | null = null;
@@ -246,6 +246,7 @@ export interface IApiEvent {
 	readonly plan_duration: number | null;
 	readonly players: string[];
 	readonly you_applied: boolean;
+	readonly you_are_master: boolean;
 	readonly your_approval: boolean | null;
 }
 
@@ -270,10 +271,7 @@ export const createEvent = (
 ) => {
 	return ajax<UUID>(
 		"/api/events",
-		prepareAjax(
-			{ company, date, location, max_slots, plan_duration },
-			POST,
-		)
+		prepareAjax({ company, date, location, max_slots, plan_duration }, POST)
 	);
 };
 
@@ -295,13 +293,7 @@ export const check = async (isSoft = false): Promise<boolean> => {
 	if (res !== null) {
 		enter(res.payload);
 	}
-	console.log(res !== null);
-
 	return res !== null;
-};
-
-export const getMinUser = () => {
-	return ajax<IApiSelfInfo>("/api/check");
 };
 
 export const softCheck = (): Promise<boolean> => {

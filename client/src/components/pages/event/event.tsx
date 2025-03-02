@@ -16,40 +16,41 @@ import {
 	Heading,
 	HStack,
 	Link,
+	Skeleton,
 } from "@chakra-ui/react";
 import { $tz } from "../../../store/tz";
-import { applyEvent, getMinUser, IApiEvent, readEvent } from "../../../api";
+import {
+	applyEvent,
+	EScenarioStatus,
+	IApiEvent,
+	readEvent,
+} from "../../../api";
+import toast from "react-hot-toast";
+import { $signed } from "../../../store/profile";
+import { NotFoundPage } from "../not-found/not-found";
 
 dayjs.locale("ru");
 
 const EventCard = ({ event }: { event: IApiEvent }) => {
 	const tz = useStore($tz);
+	const signed = useStore($signed);
+
+	const counterPlayers = !event.max_slots
+		? "Без ограничений"
+		: `${event.players.length} из ${event.max_slots}`;
+
+	const planDuration = !event.plan_duration
+		? "Не строим планов"
+		: `${event.plan_duration} ч`;
 
 	const eventDate = dayjs(event.date).tz(tz);
 	const customDay = eventDate.format("DD MMMM");
 	const [buttonMsg, setButtonMsg] = useState(
-		event.you_applied ? "Подписаны" : "Подписаться"
+		event.you_applied ? "Вы записаны" : "Записаться"
 	);
 	const [isLoading, setIsLoading] = useState(false);
-	const [creatorId, setCreatorId] = useState("");
-	const [isCreator, setIsCreator] = useState(false);
 
-	useEffect(() => {
-		getMinUser().then((responce) => {
-			if (responce) {
-				const userId = responce?.payload.id;
-				setCreatorId(userId);
-
-				if (event.master_id === userId) {
-					setIsCreator(true);
-				} else {
-					setIsCreator(false);
-				}
-			}
-		});
-	}, [isCreator, creatorId]);
-
-	const checkArray = (data: any) => {
+	const checkArray = (data: string[]) => {
 		if (Array.isArray(data)) {
 			if (data.length !== 0) {
 				const dataString = data.join(", ");
@@ -67,19 +68,24 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 		{ label: "Место проведения", value: event.location, href: "#" },
 		{ label: "Дата", value: customDay },
 		{ label: "Время", value: eventDate.format("HH:mm") },
-		{ label: "Всего игроков", value: event.max_slots || 0 },
+		{ label: "Количество игроков", value: counterPlayers },
 		{ label: "Записаны", value: checkArray(event.players) },
-		{ label: "Продолжительность", value: event.plan_duration || 0 },
+		{ label: "Продолжительность", value: planDuration },
 	];
 
 	const handleSubscribe = () => {
 		setIsLoading(true);
 		setButtonMsg("...");
-		applyEvent(event.id).then((responce) => {
-			if (responce?.status === 0) {
-				setButtonMsg("Подписаны");
-			}
-		});
+		applyEvent(event.id)
+			.then((responce) => {
+				if (responce?.status === EScenarioStatus.SCENARIO_SUCCESS) {
+					setButtonMsg("Вы записаны");
+					toast.success("Успех. Запись оформлена");
+				}
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
 	};
 
 	return (
@@ -111,18 +117,60 @@ const EventCard = ({ event }: { event: IApiEvent }) => {
 					</Card.Description>
 				</Card.Body>
 				<Card.Footer>
-					{!isCreator && (
-						<Button
-							variant="subtle"
-							colorPalette="blue"
-							minW="115px"
-							onClick={handleSubscribe}
-							disabled={isLoading || event.you_applied}
-						>
-							{buttonMsg}
-						</Button>
+					{signed ? (
+						!event.you_are_master ? (
+							<Button
+								variant="subtle"
+								colorPalette="blue"
+								minW="115px"
+								onClick={handleSubscribe}
+								disabled={isLoading || event.you_applied}
+							>
+								{buttonMsg}
+							</Button>
+						) : null
+					) : (
+						"необходимо авторизоваться для записи на игру"
 					)}
 				</Card.Footer>
+			</Card.Root>
+		</>
+	);
+};
+
+const EventCardSkeleton = () => {
+	const stats = [
+		{ label: "Мастер игры" },
+		{ label: "Место проведения" },
+		{ label: "Дата" },
+		{ label: "Время" },
+		{ label: "Количество игроков" },
+		{ label: "Записаны" },
+		{ label: "Продолжительность" },
+	];
+
+	return (
+		<>
+			<Card.Root width="full">
+				<Card.Body>
+					<HStack mb="6" gap="3">
+						<Skeleton height="38px" w="30%" />
+					</HStack>
+					<Card.Description>
+						<DataList.Root orientation="horizontal">
+							{stats.map((item, index) => (
+								<DataList.Item key={index}>
+									<DataList.ItemLabel minW="150px">
+										{item.label}
+									</DataList.ItemLabel>
+									<DataList.ItemValue color="black" fontWeight="500">
+										<Skeleton height="20px" w="30%" />
+									</DataList.ItemValue>
+								</DataList.Item>
+							))}
+						</DataList.Root>
+					</Card.Description>
+				</Card.Body>
 			</Card.Root>
 		</>
 	);
@@ -161,11 +209,14 @@ export const EventPage = () => {
 					Вернуться назад
 				</Button>
 				{fetching ? (
-					"Загрузка..."
+					<EventCardSkeleton />
 				) : event !== null ? (
 					<EventCard event={event} />
 				) : (
-					"Ошибка загрузки"
+					<NotFoundPage
+						checkButton={false}
+						title="Событие не найдено, попробуйте еще раз!"
+					/>
 				)}
 			</Container>
 		</section>
