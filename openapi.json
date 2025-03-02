@@ -347,6 +347,17 @@
 					"locations"
 				],
 				"summary": "Получение списка локаций",
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Фильтр названия локации",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "Результат выполнения запроса",
@@ -499,6 +510,17 @@
 					"companies"
 				],
 				"summary": "Получение списка кампаний которые ведёт пользователь",
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Фильтр названия кампании",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "Результат выполнения запроса",

@@ -195,7 +195,14 @@ export interface IApiLocation {
 	readonly description: string | null;
 }
 
-export const readLocations = () => ajax<IApiLocation[]>("/api/locations");
+export const readLocations = (nameFilter?: string | null) => {
+	const query = new URLSearchParams();
+	if (nameFilter) {
+		query.append("name", nameFilter);
+	}
+
+	return ajax<IApiLocation[]>(`/api/locations?${query}`);
+};
 
 export const readLocationById = (locId: UUID) =>
 	ajax<IApiLocation>(`/api/locations/${locId}`);
@@ -218,7 +225,14 @@ export interface IApiCompany {
 	readonly description: string | null;
 }
 
-export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
+export const readMyCompanies = (nameFilter?: string | null) => {
+	const query = new URLSearchParams();
+	if (nameFilter) {
+		query.append("name", nameFilter);
+	}
+
+	return ajax<IApiCompany[]>(`/api/companies/my?${query}`);
+};
 
 export const readCompanyById = (compId: UUID) =>
 	ajax<IApiCompany>(`/api/companies/${compId}`);
