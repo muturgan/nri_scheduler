@@ -195,7 +195,14 @@ export interface IApiLocation {
 	readonly description: string | null;
 }
 
-export const readLocations = () => ajax<IApiLocation[]>("/api/locations");
+export const readLocations = (nameFilter?: string | null) => {
+	const query = new URLSearchParams();
+	if (nameFilter) {
+		query.append("name", nameFilter);
+	}
+
+	return ajax<IApiLocation[]>(`/api/locations?${query}`);
+};
 
 export const readLocationById = (locId: UUID) =>
 	ajax<IApiLocation>(`/api/locations/${locId}`);
@@ -218,7 +225,14 @@ export interface IApiCompany {
 	readonly description: string | null;
 }
 
-export const readMyCompanies = () => ajax<IApiCompany[]>("/api/companies/my");
+export const readMyCompanies = (nameFilter?: string | null) => {
+	const query = new URLSearchParams();
+	if (nameFilter) {
+		query.append("name", nameFilter);
+	}
+
+	return ajax<IApiCompany[]>(`/api/companies/my?${query}`);
+};
 
 export const readCompanyById = (compId: UUID) =>
 	ajax<IApiCompany>(`/api/companies/${compId}`);
@@ -250,11 +264,27 @@ export interface IApiEvent {
 	readonly your_approval: boolean | null;
 }
 
-export const readEventsList = (from: string, to: string) => {
+export interface IEventsFilter {
+	master?: UUID | null;
+	location?: UUID | null;
+	applied?: boolean | null;
+	not_rejected?: boolean | null;
+	imamaster?: boolean | null;
+}
+
+export const readEventsList = (date_from: string, date_to: string, filters?: IEventsFilter | null) => {
+	const query: Record<string, string> = {date_from, date_to};
+
+	if (filters) {
+		Object.entries(filters).forEach(([key, val]) => {
+			if (val !== null && val !== undefined) {
+				query[key] = val;
+			}
+		});
+	}
+
 	return ajax<IApiEvent[]>(
-		`/api/events?date_from=${encodeURIComponent(
-			from
-		)}&date_to=${encodeURIComponent(to)}`
+		`/api/events?${new URLSearchParams(query)}`
 	);
 };
 
